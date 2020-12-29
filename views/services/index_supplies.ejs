@@ -22,6 +22,29 @@
         </select>
     </div>
 </div>
+<%
+
+//difference in months between two dates
+function diff_months(dt2, dt1) 
+ {
+
+  var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+   diff /= (60 * 60 * 24 * 7 * 4);
+  return Math.abs(Math.round(diff));
+ }
+ //function for selecting the border color based on existence and optimum parameters
+function defineBorder(proportion){
+    let border = "";
+    if(proportion<=0.33){
+        border = "danger";
+    }else if(proportion>0.33 && proportion < 0.66){
+        border = "warning"
+    }else{
+        border =  "success"
+    }
+    return border
+}
+ %>
     <!-- //search preview table -->
 <div class="row supplies">
     <%for(let supply of supplies){%>
@@ -52,10 +75,11 @@
                 <div class = "d-inline"><h3 class="card-subtitle "><%= supply.name%> /</h3><h6><%= supply.principle%></h6></div>
                 <h5 class="card-title text-muted"><%= supply.class%></h5>
             </div>
+            <%let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12) %>
             <ul class="list-group list-group-flush">
                 <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };%>
                 
-                <li class="list-group-item">Caducidad: <%=supply.expiration.toLocaleDateString('es-ES', options)%></li>
+                <li class="list-group-item border border-<%=dateColor%>">Caducidad: <%=supply.expiration.toLocaleDateString('es-ES', options)%></li>
                 <li class="list-group-item">Existencias: <%= supply.stock%></li>
                 <li class="list-group-item">Proveedor: <%= supply.supplier%></li>
                 <div class="clearfix split-items">
