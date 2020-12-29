@@ -1,0 +1,81 @@
+<% layout('layouts/boilerplate')%>
+<div class = "container mb-4">
+    <div class = "row offset-sm-2 justify-content-md-center">
+        <div class="col col-lg-10">
+            <div class = "btn-group mr-2" id = "search_group">
+            <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Buscar" aria-label="Search">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-between mb-4"">
+    <div class = "container  col-4">
+        <a class="btn btn-info" href="/services/new?service_type=hospital">Crear servicio hospitalario</a>
+    </div>
+    <div class="container col-2">
+        <select class="btn btn-outline-primary custom-select custom-select-lg mb-3" >
+            <option selected>Ordenar por:</option>
+            <option id= "byName" value="name">Nombre</option>
+            <option id= "byClass" value="class">Clase</option>
+            <option id= "byDoctor" value="doctor">Encargado</option>
+        </select>
+    </div>
+</div>
+    <!-- //search preview table -->
+<div class="row services">
+    <%for(let service of services){%>
+        <!--Create random string for carousel id use-->
+        <%let id_name = "a"+Math.random().toString(36).substring(7); %>
+    <div class="col-3">
+        <div class="card mb-3">
+            <div id=<%=id_name%> class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <% service.images.forEach((img, i) => { %>
+                    <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
+                        <img class="card_img mt-3" src="<%= img.url%>"  alt="">
+                    </div>
+                    <% }) %>
+                </div>
+                <% if(service.images.length > 1) {%>
+                <a class="carousel-control-prev " href="#<%=id_name%>" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#<%=id_name%>" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <% } %>
+            </div>
+            <div class="card-body">
+                <div class = "d-inline"><h3 class="card-subtitle "><%= service.name%> </h3></div>
+                <h5 class="card-title text-muted"><%= service.class%></h5>
+            </div>
+            <%function truncate(str, n){
+                return (str.length > n) ? str.substr(0, n-1) + '...' : str;
+              };
+            %>
+            <ul class="list-group list-group-flush">                
+                <li class="list-group-item">Encargado: <%=service.doctor%></li>
+                <div class="clearfix split-items">
+                    <li class="list-group-item left-side">Precio: $<%= service.price%></li>
+                    <li class="list-group-item right-side ">Unidad: <%= service.unit%></li>
+                </div>
+            </ul>
+            <li class="list-group-item"><small><%=truncate(service.description,75)%></small></li>
+            <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+                <div class="d-flex justify-content-around mx-1 my-1">
+                    <a class="card-link btn btn-info" href="/services/<%=service._id%>/edit?service_type=service">Editar</a>
+                    <form class="d-inline" action="/services/<%=service._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">Borrar</button>
+                    </form>
+                </div>
+            <% } %>
+        </div>
+    </div>
+        <% } %>
+    </div>
+</div>
+<script src="/javascripts/search_in_services.js" ></script>
+
+

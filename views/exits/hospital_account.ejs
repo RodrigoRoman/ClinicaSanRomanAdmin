@@ -1,0 +1,202 @@
+<% layout('layouts/boilerplate')%>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<%
+function makeYMD(date){
+    const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+    y : date.getUTCFullYear()};
+    return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+    }
+function makeDMY(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear()};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+}
+%>
+<div class="container">
+    
+    <h1 class= "display-3 font-weight-bold text-center">Cuenta Clinica San Roman</h1>
+    <div class = "container mb-4">
+        <div class = "row justify-content-md-center mt-4">
+            <div class="offset-sm-1 col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "entry" value = "entry" id="income" checked>
+                      <label class="custom-control-label" for="income">Ingresos</label>
+                    </div>
+                  </form>
+            </div>
+            <div class="col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "exit" value = "exit"  id="outcome" checked>
+                      <label class="custom-control-label" for="outcome">Egresos</label>
+                    </div>
+                  </form>
+            </div>
+            <div class="col-2 offset-sm-1 ">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "hospital" value = "hospital" id="hospital" checked>
+                      <label class="custom-control-label" for="hospital">Hospital</label>
+                    </div>
+                </form>
+            </div>
+            <div class="col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name ="honorary" value = "honorary"" id="honorary" checked>
+                      <label class="custom-control-label" for="honorary">Honorarios</label>
+                    </div>
+                </form>
+            </div>
+            <div class="container col-2">
+                <select class="btn btn-primary custom-select custom-select mb-3" >
+                    <option selected>Ordenar por:</option>
+                    <option id= "byName" value="name">Nombre</option>
+                    <option id= "byClass" value="class">Clase</option>
+                    <%if(currentUser.role == "directAdmin"){%>     
+                        <option id= "byPatient" value="patient">Cuentas de pacientes</option>
+                    <%}%>
+                </select>
+            </div>
+            
+        </div>
+        <hr/>
+        <div class="row justify-content-md-center mb-4">
+            <div class="offset-sm-1 col-6 mb-4">
+                <div class="row"> 
+                  <div class="col-5">
+                    <label> De</label>
+                    <input type="date" name="beginDay" id = "beginDate" value = "2020-10-02" class="form-control">
+                  </div>
+                  <div class="col-5">
+                    <label>Hasta</label>
+                    <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(new Date)%>" class="form-control">
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 offset-sm-4 mt-3">
+                        <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
+                    </div> 
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    
+    <div class="container account">
+        <h1 class = "ml-2">Ingresos</h1>
+        <table class="table table-borderless fixed_header" >
+            <thead class="thead-dark ">
+                <tr>  
+                    <th scope="col"><h6 class="pad">Servicio</h6></th>
+                    <th scope="col"><h6 class="pad">Clase</h6></th> 
+                    <th scope="col"><h6 class="pad">Cantidad</h6></th>   
+                    <%if(currentUser.role == "directAdmin"){%>
+                        <th scope="col"><h6 class="pad">Compra</h6></th>
+                        <th scope="col"><h6 class="pad">Venta</h6></th>
+                        <th scope="col"><h6 class="pad">Egreso</h6></th> 
+                        <th scope="col"><h6 class="pad">Ingreso</h6></th>   
+                        <th scope="col"><h6 class="pad">Ganancia</h6></th> 
+                    <%}%>
+                </tr>  
+            </thead>
+            <tbody >
+            <%let total_income = 0;
+            let total_outcome = 0;
+            transactions.forEach(function(item,index){
+                let price = 0;
+                if(item.service_type == "supply"){price = item.sell_price;buy = item.buy_price}else{price = item.price;buy = 0}
+                let entry_subtotal = +(price * item.amount).toFixed(3);let spent_subtotal = +(buy * item.amount).toFixed(3); let item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3) %>
+                <tr>  
+                    <td><%=item.name%></td>
+                    <td><%=item.class%></td> 
+                    <td><%=item.amount%></td> 
+                    <%if(currentUser.role == "directAdmin"){%>
+                        <%if(item.service_type == "supply"){%>
+                        <td>$<%=buy%></td>  
+                        <%}else{%>
+                        <td></td>
+                        <%}%> 
+                        <td>$<%=price%></td> 
+                        <%if(item.service_type == "supply"){%>
+                        <td>$<%=spent_subtotal%></td>  
+                        <%}else{%>
+                        <td></td>
+                        <%}%> 
+                        <td>$<%=entry_subtotal%></td>
+                        <td>$<%=item_subtotal%></td> 
+                    <%}%> 
+                </tr> 
+                <%
+                total_income += entry_subtotal;
+                total_outcome += spent_subtotal;
+            })%>
+            </tbody> 
+        </table>  
+        <%if(currentUser.role == "directAdmin"){%>
+
+            <div class = "container">
+                <%total_income = +(total_income).toFixed(3)%>
+                
+                <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $<%=total_income%></span></h2>
+            </div>  
+        <%}%>   
+         <br>  <br>
+
+
+        <h1 class = "text-danger">Egresos</h1>
+        <table class="table table-borderless  fixed_header">
+            <thead class="table-danger">
+                <tr>  
+                    <th scope ="col"><h6 class="pad">Nombre</h6></th>
+                    <th scope="col"><h6 class="pad">Liquidacion</h6></th> 
+                    <th scope="col"><h6 class="pad">Pagos</h6></th>  
+                    <th scope="col"><h6 class="pad">Costo</h6></th>  
+                    <th scope="col"><h6 class="pad">Subtotal</h6></th> 
+                </tr>  
+            </thead>
+            <tbody >
+            <%
+            let total_exit = 0;
+            exits.forEach(function(item,index){
+                %>
+                <tr class = "">  
+                    <td><%=item.name%></td>
+                    <td><%=makeDMY(item.dueDate)%></td>
+                    <td><%=item.totalAmount%></td> 
+                    <td>$<%=item.price%></td>  
+                    <td>$<%=item.totalCost%></td>  
+                </tr> 
+                <%
+                total_exit += item.totalCost;
+                total_outcome += item.totalCost;
+            })%>
+            </tbody> 
+        </table>
+        <%
+        total_exit = +(total_exit).toFixed(3);
+        total_income = +(total_income).toFixed(3);
+        total_outcome = +(total_outcome).toFixed(3);
+        %>
+
+        <h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $<%=total_exit%></span></h2>
+        <br>  <br>
+        <%if(currentUser.role == "directAdmin"){%>
+
+            <table class="table table-borderless">
+                <thead class="table-dark">
+                        <tr>  
+                            <th scope="col"><h2 class="pad"><span class = "text-danger">Salida:</span> $<%=total_outcome%></h2></th> 
+                            <th scope="col"><h2 class="pad">Entrada: $<%=total_income%></h2></th> 
+                            <th scope ="col"><h2 class="pad">Ganancia: $<%=+(total_income-total_outcome).toFixed(3)%></h2></th>
+                        </tr>  
+                </thead>
+            </table>
+        <%}%>
+    </div>
+</div>
+
+
+<script src="/javascripts/hospital_account_queries.js" />

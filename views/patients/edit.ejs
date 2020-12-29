@@ -1,0 +1,40 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center">Crear perfil de paciente</h1>
+    <div class="col-md-6 offset-md-3">
+        <form action="/patients/<%=patient._id%>?_method=PUT" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="name">Nombre del paciente</label>
+                <input class="form-control" type="text" id="name" name="patient[name]" value = "<%=patient.name%>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="phone">Telefono</label>
+                <input class="form-control" type="number" id="phone" name="patient[phone]" value = <%=patient.phone%> required >
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-control" type="email" id="email" name="patient[email]" value = <%=patient.email%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="address">Dirección</label>
+                <input class="form-control" type="text" id="address" name="patient[address]" value = <%=patient.address%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="rfc">RFC</label>
+                <input class="form-control" type="number" id="rfc" name="patient[rfc]" value = <%=patient.rfc%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="description">Diagnóstico</label>
+                <textarea class="form-control" type="text" id="description" name="patient[diagnosis]" required><%=patient.diagnosis%></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="doctor">Medico Tratante</label>
+                <input class="form-control" type="text" id="doctor" name="patient[treatingDoctor]" value = "<%=patient.treatingDoctor%>" required>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-success">Actualizar</button>
+            </div>
+        </form>
+        <a href="/patients">Pacientes</a>
+    </div>
+</div>

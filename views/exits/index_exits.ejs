@@ -1,0 +1,72 @@
+<% layout('layouts/boilerplate')%>
+<%
+function makeYMD(date){
+    const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+    y : date.getUTCFullYear()};
+    return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+    }%>
+<div class="container">
+    
+    <h1 class= "display-3 font-weight-bold text-center">Pagos Activos</h1>
+    <div class="container">
+        <div class="row  mb-4"">
+            <div class = "container align-self-start ml-5">
+                <a class="btn btn-info " href="/exits/new">Programar pago</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="patients row mt-4">
+    <%for (let payment of payments){%>
+        <div class="col-md-6">
+            <div class="card index_card_p mb-4 border border-primary>">
+                <div class="row">
+                    <div class="container">
+                        <div class="col-md-16">
+                            <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                            console.log(payment)
+                            let paid_terms = 0; let unpaid_terms = 0;
+                            let paid_amount = 0; let unpaid_amount = 0;
+                            for(let i of payment.exits){
+                                if((new Date).getTime()<= i.dueDate){
+                                    paid_terms+=1;
+                                    paid_amount+=i.moneyAmount
+                                }else{
+                                    unpaid_terms+=1;
+                                    unpaid_amount+=parseFloat(i.moneyAmount);
+                                }
+                            }
+                            %>
+                            <div class="card-body">
+                                <h3 class="card-title text-center"><%= payment.name %> </h3>
+                                <div class="clearfix split-items">
+                                    <h4 class="list-group-item left-side card-title text-muted">Primer pago: <%=payment.exits[0].clearDate.toISOString().substr(0,10)%> </h4>
+                                    <h4 class="list-group-item right-side card-title text-muted">Ultimo pago: <%=payment.exits[payment.exits.length - 1].clearDate.toISOString().substr(0,10)%> </h4>
+                                </div>
+                                <ul class="list-group list-group-flush mb-4">
+                                    <li class="list-group-item text-center">Plazos</li>
+                                    <div class="clearfix split-items">
+                                        <li class="list-group-item left-side">Plazos pagados: <%=paid_terms%></li>
+                                        <li class="list-group-item right-side ">Suma pagada: $<%=paid_amount%></li>
+                                    </div>
+                                    
+                                </ul>
+                                <ul class="list-group list-group-flush mb-4">
+                                <div class="clearfix split-items">
+                                    <li class="list-group-item left-side">Plazos restantes: <%=unpaid_terms%></li>
+                                    <li class="list-group-item right-side ">Suma por pagar: $<%=unpaid_amount%></li>
+                                </div> 
+                                </ul>
+                                    <li class="list-group-item">Total: $<%= paid_amount+unpaid_amount%> </li>
+                                    <form class="d-inline" action="/exits/<%=payment._id%>?_method=DELETE" method="POST">
+                                        <button class="float-right btn btn-outline-danger mx-1 my-1 btn-sm">Borrar</button>
+                                    </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }%>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center">Crear servicio médico-hospitalario</h1>
+    <div class="col-md-6 offset-md-3">
+        <form action="/services/<%=service._id%>/hospital?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label" for="name">Nombre</label>
+                <input class="form-control" type="text" id="name" name="service[name]" value = <%=service.name%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="class">Clasificacion</label>
+                <input class="form-control" type="text" id="class" name="service[class]" value = <%=service.class%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="unit">Unidad (hora, pieza, litro, etc)</label>
+                <input class="form-control" type="text" id="unit" name="service[unit]" value = "<%=service.unit%>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="claveSat">Clave del Sat</label>
+                <input class="form-control" type="number" id="claveSat" name="service[claveSat]" value = <%=service.claveSat%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="buy">Precio del servicio</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="price-label">$</span>
+                    <input type="number" class="form-control" id="buy" placeholder="0.00" aria-label="price"
+                        aria-describedby="price-label" name="service[price]" value= <%=service.price%> required>
+                </div> 
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="doctor">Nombre del profesional de la salud</label>
+                <input class="form-control" type="text" id="doctor" name="service[doctor]" value= <%=service.doctor%> required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="description">Descripción</label>
+                <textarea class="form-control" type="text" id="description" name="service[description]"
+                    required><%=service.description%></textarea>
+            </div>
+            <div class="mb-3">
+                <div class="form-file custom-file">
+                    <input type="file" class="form-file-input" id="image" name="image" multiple>
+                    <label class="form-file-label" for="image">
+                        <span class="form-file-text custom-file-label">Escoger imagen(es)...</span>
+                        <span class="form-file-button">Buscar en computadora</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline1" name="service[hospitalEntry]"value = <%=service.hospitalEntry%> class="custom-control-input"
+                <%if(service.hospitalEntry == "true"){%>
+                    <%="checked"%>
+                <%}%> 
+                >
+                <label class="custom-control-label" for="customRadioInline1">Ingreso a hospital</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline2" name="service[hospitalEntry]" value = "false" class="custom-control-input"
+                <%if(service.hospitalEntry == "false"){%>
+                    <%="checked"%>
+                <%}%> 
+                >
+                <label class="custom-control-label" for="customRadioInline2">Honorarios</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <% service.images.forEach(function(img, i) {  %>
+                <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
+                <div class="form-check-inline">
+                    <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                </div>
+                <label for="image-<%=i%>">Borrar</label>
+                <% })%>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-success">Actualizar</button>
+            </div>
+        </form>
+        <a href="/services">Servicios</a>
+    </div>
+</div>

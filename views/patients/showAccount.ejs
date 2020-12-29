@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica San Roman</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <script src="/javascripts/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/app.css">
+</head>
+<%
+function makeDMY(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear()};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+}
+%>
+ <%- include('../partials/navbar')%>
+    <body>
+        <div class = "toPDF">
+            <div class="jumbotron">
+                <div class="container mt-4">
+                    <div class="row justify-content-center ">
+                        <div class = "col-8">
+                            <!-- <h1 class="display-4">Estado de cuenta</h1> -->
+                            <h1 class="display-4"><%=patient[0].patientName%></h1>
+                        </div>
+                    </div>
+                    <!-- <div class="row justify-content-between">
+                        <div class="col-5">
+                            <p class = "">RFC: <%= patient[0].rfc%></p>
+                            <p class = "">Admisión: <%= makeDMY(patient[0].admissionDate)%></p>
+                            <p class = "">Paciente: <%= patient[0].patientName%></p>
+                        </div>
+                        <div class="col-5">
+                            <p class = "">Medico tratante: <%= patient[0].treatingDoctor%></p>
+                            <p class = "">Diagnostico: <%= patient[0].diagnosis%></p>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <div class="container">
+                <table class="table table-borderless" id="simple_table">
+                    <thead class="thead-dark">
+                        <tr class="border-bottom border-dark">  
+                            <th scope ="col"><h3>Clase</h3></th>
+                            <th scope="col"><h3>Nombre</h3></th>  
+                            <th scope="col"><h3>Cantidad</h3></th>  
+                            <th scope="col"><h3>Precio Unit</h3></th>  
+                            <th scope="col"><h3>Subtotal</h3></th>
+                        </tr>  
+                    </thead>
+                    <tbody>
+                    <%let prev_class= "", subtotal_class = 0, sub_amount = 0,total = 0; 
+                    patient.forEach(function(item,index){%>
+                            <tr>  
+                                <th><%=item.class%></th> 
+                                <th></th> 
+                                <th></th>  
+                                <th></th>  
+                                <th></th> 
+                            </tr>
+                        <%
+                            sub_amount = 0; subtotal_class = 0;
+                        let price = 0;
+                        (item.amount).forEach(function(amnt,i){
+                            if(item.service_type == "supply"){price = item.sell_price[i]}else{price = item.price[i]}
+                            let item_subtotal = +(price * amnt).toFixed(3);%>
+                        <tr>  
+                            <td></td>
+                            <td><%=item.serviceName[i]%></td>  
+                            <td><%=amnt%></td>  
+                            <td>$<%=price%></td>  
+                            <td>$<%=item_subtotal%></td>  
+                        </tr> 
+                        <%
+                        sub_amount += amnt;subtotal_class += item_subtotal;
+                        total += item_subtotal;
+                        subtotal_class = +(subtotal_class).toFixed(3)
+                    })%>
+                        <tr class = "border">  
+                            <th></th>
+                            <th scope="row">Subtotal</th>  
+                            <th scope="row"><%=sub_amount%></th>  
+                            <th scope="row"></th>  
+                            <th scope="row">$<%=subtotal_class%></th> 
+                        </tr>
+                <%})%>
+                    </tbody> 
+                </table> 
+                <div>
+                    <%total = +(total).toFixed(3)%>
+                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=total%></span></h2>
+                </div>
+            </div>
+        </div>        
+ </body> 
+ 
+</html>

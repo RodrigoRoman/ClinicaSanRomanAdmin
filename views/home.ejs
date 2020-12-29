@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica-SR</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/home.css">
+    <link rel="stylesheet" href="/stylesheets/app.css">
+    
+
+</head>
+
+<body class="d-flex text-center text-white bg-dark">
+    <%
+    Array.prototype.sample = function(){
+        return this[Math.floor(Math.random()*this.length)];
+    }
+    let phrases = ["Una vida a tu servicio","La cultura de la mente debe estar al servicio del corazon",
+    "El que no vive para servir no sirve para vivir", "El servicio a otros es la renta que pagas por tu cuarto aqui en la tierra",
+"El verdadero poder es el servicio","Hay que poner la inteligencia al servicio del amor",
+"Para encontrarse a uno mismo hay perderse en el servicio a los demas",
+"El servicio a los demas en su momento de necesidad es un privilegio y un honor","El compromiso es un acto, no una palabra",
+"Las cosas buenas en el mundo surgen nacen de una actitud de aprecio por los demas"]
+    %>
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="mb-auto">
+            <div>
+                <h3 class="float-md-left mb-0">Clinica San Roman</h3>
+                <nav class="nav nav-masthead justify-content-center float-md-right">
+                    <a class="nav-link active" aria-current="page" href="/">Clinica-SR</a>
+                    <%if(currentUser){
+                        if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+                            <a class="nav-link" href="/services">Servicios</a>
+                            <a class="nav-link" href="/exits">Pagos</a>
+                        <%}%>
+                    <a class="nav-link" href="/patients">Pacientes</a>
+                    <%}%>
+                </nav>
+            </div>
+        </header>
+        <main class="px-3">
+          
+            <h1><%=phrases.sample()%></h1>
+                 <div>
+            <% if(!currentUser) { %>
+                <div class="bt_container mb-2">
+                    <a class="bt bt--white" href="/login">Ingresar</a>
+                </div>
+                <div class="bt_container my-4">
+                    <a class="bt bt--white" href="/register">Registrarse</a>
+                </div>
+                <% } else { %>
+                <div class="bt_container my-5">
+                    <a class="bt bt--white" href="/logout">Salir</a>
+                </div>
+                <% } %>
+            </div>
+        </main>
+
+        <footer class="mt-auto text-white-50">
+            <p>&copy; 2020 </p>
+        </footer>
+
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

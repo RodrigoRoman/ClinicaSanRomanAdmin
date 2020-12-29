@@ -1,0 +1,42 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center">Crear perfil de paciente</h1>
+    <div class="col-md-6 offset-md-3">
+        <form action="/patients" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="name">Nombre del paciente</label>
+                <input class="form-control" type="text" id="name" name="patient[name]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="phone">Telefono</label>
+                <input class="form-control" type="number" id="phone" name="patient[phone]">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-control" type="email" id="email" name="patient[email]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="address">Dirección</label>
+                <input class="form-control" type="text" id="address" name="patient[address]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="rfc">RFC</label>
+                <input class="form-control" type="number" id="rfc" name="patient[rfc]" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="description">Diagnóstico</label>
+                <textarea class="form-control" type="text" id="description" name="patient[diagnosis]"
+                    required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="doctor">Médico Tratante</label>
+                <input class="form-control" type="text" id="doctor" name="patient[treatingDoctor]" required>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-success">Agregar paciente</button>
+            </div>
+        </form>
+        <a href="/patients">Pacientes</a>
+    </div>
+</div>

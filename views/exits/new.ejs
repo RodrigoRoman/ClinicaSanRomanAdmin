@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1 class="text-center">Programar pago</h1>
+    <div class="col-md-6 offset-md-3">
+        <form action="/exits" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="name">Nombre pago</label>
+                <input class="form-control" type="text" id="name" name="payment[name]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="dueDate">Fecha en que se terminara de Programar</label>
+                <input class="form-control" type="date" id="dueDate" name="payment[dueDate]" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="terms">Numero de Pagos</label>
+                
+                <div class="amount form-control number-input"><button type = "button" class="minus"></button><input class="text-dark quantity" min="0" name="payment[terms]" value="1" type="number"><button type = "button" class="plus"></button></div>
+               
+                <!-- <input class="form-control" type="number" id="terms" name="payment[terms]" required> -->
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="buy">Monto a pagar</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="price-label">$</span>
+                    <input type="number" class="form-control" id="buy" placeholder="0.00" aria-label="price"
+                        aria-describedby="price-label" name="payment[moneyAmount]" required>
+                </div>   
+            </div>
+            <div class="mb-3">
+                <button type = "submit" class="btn btn-success">Agregar pago</button>
+            </div>
+        </form>
+        <a href="/exits">Pagos</a>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+  //set dates with default values
+});
+
+    // plus minus buttons from input
+$(".amount" ).on( "click", ".minus", function() {
+    const currentValue = parseInt($(this).parent().children(".quantity").val());
+    if(currentValue-1>=0){
+        $(this).parent().children(".quantity").val(currentValue-1);
+    }
+  });
+
+$(".amount" ).on( "click", ".plus", function() {
+    const currentValue = parseInt($(this).parent().children(".quantity").val());
+    if(currentValue+1<999){
+        $(this).parent().children(".quantity").val(currentValue+1);
+    }
+  });
+</script>

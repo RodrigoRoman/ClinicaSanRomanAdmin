@@ -1,0 +1,105 @@
+<% layout('layouts/boilerplate')%>
+
+<%
+function makeYMD(date){
+    const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+    y : date.getUTCFullYear()};
+    return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+    }%>
+<div class="container">
+    
+    <h1 class= "display-3 font-weight-bold text-center">Pacientes</h1>
+    <div class = "container mb-4">
+        <div class = "row offset-sm-2 justify-content-md-center">
+            <div class="col col-lg-10">
+                <div class = "btn-group mr-2" id = "search_group">
+                <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Buscar" aria-label="Search">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-around mb-4"">
+        <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+            <div class = "container col-2">
+                <a class="btn btn-info " href="/patients/new">Registrar paciente</a>
+            </div>
+        <%}%>
+        <div class="col-6 mb-4">
+            <div class="row">
+                
+              <div class="col-5">
+                <label> De</label>
+                <input type="date" name="beginDay" id = "beginDate" value = "2020-10-02" class="form-control">
+              </div>
+              <div class="col-5">
+                <label>Hasta</label>
+                <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(new Date)%>" class="form-control">
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-4 offset-sm-4 mt-3">
+                    <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
+                </div> 
+            </div>
+        </div> 
+        <div class="container col-2">
+            <select class="btn btn-outline-primary custom-select custom-select-lg mb-3" >
+                <option selected>Ordenar por:</option>
+                <option id= "byName" value="name">Nombre</option>
+                <option id= "byDoctor" value="doctor">Medico Tratante</option>
+                <option id= "byDisease" value="disease">Padecimiento</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="patients row mt-4">
+    <%for (let patient of patients){%>
+        <div class="col-md-6">
+            <%let borderColor = (patient.discharged)?"secondary":"primary"%>
+            <div class="card index_card_p mb-4 border border-<%=borderColor%>">
+                <div class="row">
+                    <div class="container">
+                        <div class="col-md-16">
+                            <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };%>
+                            <div class="card-body">
+                                <h3 class="card-title"><%= patient.name %> </h3>
+                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options) %> </h4>
+                                <%if(patient.discharged){%>
+                                <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-ES', options) %> </h4>
+                                <%}%>
+                                <ul class="list-group list-group-flush mb-4">
+                                    <li class="list-group-item">Email: <%= patient.email%></li>
+                                    <li class="list-group-item">Telefono: <%= patient.phone%> </li>
+                                    <li class="list-group-item">RFC: <%= patient.rfc%> </li>
+                                    <li class="list-group-item">Dirección: <%= patient.address%></li>
+                                    <li class="list-group-item">Agregado por:  <%= patient.author.username%></li>
+                                    <li class="list-group-item">Medico tratante:  <%= patient.treatingDoctor%></li>
+                                    <li class="list-group-item text-muted">Diagnostico: <%= patient.diagnosis%></li>
+                                </ul>
+                                <%if(!patient.discharged){%>
+                                    <a class="btn btn-primary" href="/patients/<%=patient._id%>">Ver cuenta</a>
+                                    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+                                        <form class="d-inline" action="/patients/<%=patient._id%>?_method=DELETE" method="POST">
+                                            <button class="float-right btn btn-outline-danger mx-1 my-1 btn-sm">Borrar</button>
+                                        </form> 
+                                        <a class="float-right btn btn-outline-secondary mx-1 my-1 btn-sm" href="/patients/<%=patient._id%>/edit">Editar</a>
+                                    <%}%>
+                                <%}else{%>
+                                    <%
+                                    const b = patient.admissionDate.toISOString().substr(0,10);
+                                    const e = patient.dischargedDate.toISOString().substr(0,10)
+                                    %>
+                                    <a href = "/patients/<%=patient._id%>/makePDF?begin=<%=b%>&end=<%=e%>&name=<%=patient.name%>">
+                                        <button type="button" class="btn btn-outline-secondary">Ver cuenta</button>
+                                    </a>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }%>
+    </div>
+</div>
+<script src="/javascripts/search_in_patients.js" />

@@ -1,0 +1,229 @@
+
+<% layout('layouts/boilerplate')%>
+<script>
+  const patient_id = <%-str_id%>;  
+  const pat = '<%-JSON.stringify(patient)%>';
+  const currentUser = '<%-JSON.stringify(currentUser)%>';
+  const beginD = '<%-JSON.stringify(begin)%>';
+  const endD = '<%-JSON.stringify(end)%>';
+  console.log("in script");
+
+</script>
+<div class = "container">
+  <div class = "btn-group mr-2" id = "search_group">
+    <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-primary" id = "search" type="submit" data-toggle="modal" data-target="#exampleModalCenter">Search</button>
+  </div>
+  <!-- //search preview table -->
+  <div id = "searchList">
+    <table class = "table" id = "searchTable">
+        <tbody>
+        </tbody>
+    </table>
+  </div>
+</div>
+<%
+function makeDMY(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear()};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+}
+let patientCar = []
+let total = 0;
+
+
+      // Make a new object with amount to the same level as price, name and the other fields of servie
+      if(patient.servicesCar){
+       let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
+      serviceCar = serviceCar.filter(el => el!= undefined);
+      patientCar = serviceCar.reduce(function(acc,serv) {
+        let index = acc.map(e => e.name+e.class+e.expiration).indexOf(serv.name+serv.class+serv.expiration);
+        if(index != -1){
+          acc[index].amount += serv.amount;
+        }else{
+          acc.push(serv);
+        }
+        return acc;
+      },[]);
+      patientCar = patientCar.sort((a, b) => b.date - a.date);
+    }
+%> 
+
+
+<div class="row justify-content-center" id = "account-table">
+  <div class="col-12 overflow-auto">
+    <table id="accountrStatus" class="table table-striped table-bordered table-responsive-sm ">
+      <thead>
+        <tr>
+          <th>Nombre
+          </th>
+          <th><small class = "text-muted">Clase<small>
+          </th>
+          <th>Cantidad
+          </th>
+          <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+            <th>Precio Unit
+            </th>
+          <%}%>
+          <th>Fecha cargo 
+          </th>
+          <th><small class = "text-muted">Agregado por</small>
+          </th>
+          <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+            <th>Subtotal
+            </th>
+          <%}else{%>
+            <th>Corregir
+            </th>
+          <%}%>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%for(let item of patientCar){%>
+          <tr>
+            <td class= "item-name" alt = "<%=item._id%>"><%=item.name%></td>
+            <td ><small class = "text-muted"><%=item.class%></small></td>
+            <td>X <span class = "item-amount"><%=item.amount%></span></td>
+            <%let price = (item.service_type == "supply")?item.sell_price:item.price %>
+            <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+              <td class = "item-price">$ <%= price%></td>
+            <%}%>
+            <% const date = {month:item.consumtionDate.getUTCMonth() + 1,
+           day:item.consumtionDate.getUTCDate(),  year:item.consumtionDate.getUTCFullYear()};%>
+            <td class = "item-price"><%=date.day%>/<%=date.month%>/<%=date.year%></td>
+            <%let subtotal = +(item.amount*price).toFixed(3);%>
+            <td ><small class = "text-muted"><%=item.author%></small></td>
+            <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+              <td>$ <%=subtotal%> 
+                <%total+=subtotal%>
+                <span class = "float-right buttons">
+                  <button type="button"  class="delete-item btn btn-sm btn-outline-danger">Borrar</button>
+                  <button type="button"  class="edit-item btn btn-sm btn-outline-info">Editar</button>
+                </span>
+              </td>
+            <%}else{%>
+            <%if(currentUser.username == (item.author)){%>
+              <td>
+                <span class = "float-right buttons">
+                <button type="button"  class="delete-item btn btn-sm btn-outline-danger">Borrar</button>
+                <button type="button"  class="edit-item btn btn-sm btn-outline-info">Editar</button>
+                </span>
+              </td>
+            <%}else{%>
+              <td></td>
+            <%}
+            }%>
+          </tr>
+        <%}%>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Nombre
+          </th>
+          <th><small class = "text-muted">Clase<small>
+          </th>
+          <th>Cantidad
+          </th>
+          <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+            <th>Precio Unit
+            </th>
+          <%}%>
+          <th>Fecha cargo 
+          </th>
+          <th><small class = "text-muted">Agregado por</small>
+          </th>
+          <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+            <th>Subtotal
+            </th>
+          <%}else{%>
+            <th>Corregir
+            </th>
+          <%}%>
+        </tr>
+      </tfoot>
+    </table>
+    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+      <div class="container ">
+        <%total = +(total).toFixed(3)%>
+        <h2 class = "float-right font-italic border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=total%></span></h2>
+      </div>
+    <%}%>
+    <div class="container">
+      <%
+      const b = begin.toISOString().substr(0,10);
+      const e = end.toISOString().substr(0,10)
+      %>
+      <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+        <a href = "/patients/<%=patient._id%>/makePDF?begin=<%=b%>&end=<%=e%>&name=<%=patient.name%>">
+          <button type="button" class="btn btn-outline-secondary">Crear PDF</button>
+        </a>
+        <form class="d-inline" action="/patients/<%=patient._id%>/discharge?_method=PUT" method="POST">
+          <button class="btn btn-outline-warning ml-1">Dar de alta</button>
+        </form>
+      <%}%>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal for complete display of services by search query -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Servicios encontrados</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <table class = "table" id = "searchTableModal">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="close btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+  <div class="col-12 my-4 d-flex justify-content-center">
+    <div class="col-6">
+      <div class="row">
+        <div class="col-12">
+          <div class="btn-group">
+            <button type="button" name="options" class="btn btn-secondary todays" > Hoy</button>
+            <button type="button"  name="options" class="btn btn-secondary tillToday"> Total</button>
+            <button type="button"  name="options" class="btn btn-secondary otherDate"> Elegir</button>
+          </div>
+        </div>
+        <div class="col-12 mt-4">
+          <div class="row offset-md-2">
+            <div class="col-5">
+              <input type="date" name="beginDay" id = "beginDate" class="form-control">
+              <label class = "ml-4">De</label>
+            </div>
+            <div class="col-5">
+              <input type="date" name="endDay"  id = "endDate" class="form-control">
+              <label class = "ml-3">Hasta</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="row">
+        <button type="button" class="btn btn-primary apply_dates">Aplicar fechas</button>
+      </div>
+    </div>
+  </div>
+   
+
+<script src="/javascripts/search_in_account.js" />
+
