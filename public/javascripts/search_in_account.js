@@ -89,6 +89,28 @@ $('.otherDate').click(function(){
 $(".apply_dates").on("click",updateDate);
 
 // Functions =============================================================
+
+function diff_months(dt2, dt1) 
+ {
+
+  var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+   diff /= (60 * 60 * 24 * 7 * 4);
+  return Math.abs(Math.round(diff));
+ }
+
+//function for selecting the border color based on existence and optimum parameters
+function defineBorder(proportion){
+    let border = "";
+    if(proportion<=0.33){
+        border = "danger";
+    }else if(proportion>0.33 && proportion < 0.66){
+        border = "warning"
+    }else{
+        border =  "success"
+    }
+    return border
+} 
+
 function makeDMY(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
   y : date.getUTCFullYear()};
@@ -112,7 +134,8 @@ function populateTable(event) {
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.class + '</small></td>';
-        tableContent += '<td><small alt ='+this._id+' class="text-muted"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
+        let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
+        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+'"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
 
         }
       tableContent += '<td><div class="number-input"><button class="minus" ></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
@@ -146,7 +169,8 @@ function populateTableModal(event) {
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
-        tableContent += '<td><small class="text-muted"> Cad: ' + makeDMY(new Date(this.expiration)) + '</small></td>';
+        let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
+        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+'"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
       };
       tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
       tableContent += '<td><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
