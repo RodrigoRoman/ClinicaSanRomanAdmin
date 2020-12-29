@@ -5,11 +5,11 @@
         <form action="/services/<%=service._id%>/hospital?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="name">Nombre</label>
-                <input class="form-control" type="text" id="name" name="service[name]" value = <%=service.name%> required>
+                <input class="form-control" type="text" id="name" name="service[name]" value = "<%=service.name%>" required>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="class">Clasificacion</label>
-                <input class="form-control" type="text" id="class" name="service[class]" value = <%=service.class%> required>
+                <input class="form-control" type="text" id="class" name="service[class]" value = "<%=service.class%>" required>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="unit">Unidad (hora, pieza, litro, etc)</label>
@@ -29,7 +29,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label" for="doctor">Nombre del profesional de la salud</label>
-                <input class="form-control" type="text" id="doctor" name="service[doctor]" value= <%=service.doctor%> required>
+                <input class="form-control" type="text" id="doctor" name="service[doctor]" value= "<%=service.doctor%>" required>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="description">Descripción</label>
