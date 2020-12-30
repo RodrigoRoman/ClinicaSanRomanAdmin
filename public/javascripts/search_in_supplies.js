@@ -112,6 +112,7 @@ function foundSupplies(event) {
                     </a>`);
                   }
                  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                 
                  let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
                   suppliesContent+=(`
                         </div>

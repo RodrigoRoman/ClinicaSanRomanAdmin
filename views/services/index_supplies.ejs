@@ -75,11 +75,11 @@ function defineBorder(proportion){
                 <div class = "d-inline"><h3 class="card-subtitle "><%= supply.name%> /</h3><h6><%= supply.principle%></h6></div>
                 <h5 class="card-title text-muted"><%= supply.class%></h5>
             </div>
-            <%let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12) %>
+            <%let dateColor = defineBorder(diff_months(new Date(supply.expiration) , new Date())/12) %>
             <ul class="list-group list-group-flush">
                 <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };%>
                 
-                <li class="list-group-item border border-<%=dateColor%>">Caducidad: <%=supply.expiration.toLocaleDateString('es-ES', options)%></li>
+                <li class="list-group-item border border-<%=dateColor%> ">Caducidad: <%=supply.expiration.toLocaleDateString('es-ES', options)%></li>
                 <li class="list-group-item">Existencias: <%= supply.stock%></li>
                 <li class="list-group-item">Proveedor: <%= supply.supplier%></li>
                 <div class="clearfix split-items">

@@ -135,7 +135,7 @@ function populateTable(event) {
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
-        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+'"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
+        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
 
         }
       tableContent += '<td><div class="number-input"><button class="minus" ></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
@@ -170,7 +170,7 @@ function populateTableModal(event) {
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
-        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+'"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
+        tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
       };
       tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
       tableContent += '<td><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
