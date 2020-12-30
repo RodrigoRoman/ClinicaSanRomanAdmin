@@ -8,7 +8,7 @@ module.exports.register = async (req, res, next) => {
     try {
         const { email, username, password,keyword } = req.body;
         let user;
-        if(keyword == "sroleAdmin2497direct"){
+        if(keyword == "Admin"){
             user = new User({ email, username, role:"directAdmin"});
         }
         if(keyword == "sroleAdminDinamico"){
