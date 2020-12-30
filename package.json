@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.11.0",
+    "chrome-aws-lambda": "^5.5.0",
     "cloudinary": "^1.23.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^3.2.0",
@@ -32,6 +33,7 @@
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.0.1",
     "puppeteer": "^5.5.0",
+    "puppeteer-core": "^5.5.0",
     "sanitize-html": "^1.27.4"
   }
 }
