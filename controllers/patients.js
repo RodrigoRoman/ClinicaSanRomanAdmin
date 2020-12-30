@@ -162,7 +162,7 @@ module.exports.accountToPDF = async (req,res) =>{
     let {begin,end,name} = req.query;               
     const browser = await puppeteer.launch();       // run browser
     const page = await browser.newPage();           // open new tab
-    await page.goto(`http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
         waitUntil: 'networkidle0'});          // go to site
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
