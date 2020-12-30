@@ -4,7 +4,7 @@ const Transaction = require('../models/transaction');
 const Patient = require('../models/patient');
 const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
-const puppeteer = require('puppeteer'); 
+const puppeteer = require('puppeteer-core'); 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
