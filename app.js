@@ -94,6 +94,7 @@ const scriptSrcUrls = [
     "https://cdnjs.cloudflare.com",
     "http://www.shieldui.com/",
     "https://rawgit.com/",
+    "https://warm-forest-49475.herokuapp.com"
 ];
 const styleSrcUrls = [
     "https://maxcdn.bootstrapcdn.com/",
