@@ -1,4 +1,5 @@
 const mongoose = require('mongoose'),
+      timeZone = require('mongoose-timezone'),
       Schema = mongoose.Schema;
 
 // https://res.cloudinary.com/douqbebwk/image/upload/w_300/v1600113904/YelpCamp/gxgle1ovzd2f3dgcpass.png
@@ -49,5 +50,6 @@ const HospitalSchema = new Schema({
 const Service = mongoose.model('Service', ServiceSchema);
 const Supply = Service.discriminator('Supply', SupplySchema);
 const Hospital = Service.discriminator('Hospital', HospitalSchema);
+ServiceSchema.plugin(timeZone, { paths: ['date', 'subDocument.subDate'] });
 
 module.exports = {Service, Supply,Hospital}

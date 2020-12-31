@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const timeZone = require('mongoose-timezone');
 const passportLocalMongoose = require('passport-local-mongoose');
 
 const ImageSchema = new Schema({
@@ -28,5 +29,6 @@ const UserSchema = new Schema({
 
 
 UserSchema.plugin(passportLocalMongoose);
+UserSchema.plugin(timeZone, { paths: ['date', 'subDocument.subDate'] });
 
 module.exports = mongoose.model('User', UserSchema);

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose'),
       {Service} = require('./service'),
       Transaction = require('./transaction'),
+      timeZone = require('mongoose-timezone'),
       Schema = mongoose.Schema;
 
 const PatientSchema = new Schema({
@@ -48,6 +49,7 @@ PatientSchema.post('findOneAndDelete', async function(doc) {
 })
 
 // PatientSchema.plugin(mongoosePaginate);
+PatientSchema.plugin(timeZone, { paths: ['date', 'subDocument.subDate'] });
 
 module.exports = mongoose.model("Patient", PatientSchema)
 
