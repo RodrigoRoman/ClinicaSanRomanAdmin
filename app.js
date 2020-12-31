@@ -26,6 +26,8 @@ const patientRoutes = require('./routes/patients');
 const exitRoutes = require('./routes/exits');
 
 const MongoDBStore = require("connect-mongo")(session);
+process.env.TZ = 'America/Mexico_City' // here is the magical line
+
 
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/clinicaSanR';
 

@@ -38,14 +38,20 @@ $('#search_val').on('keypress', function (e) {
 });
 
 //remove search table when modal is closed
-$('.close').click(function(){$('#searchList table tbody').html("")});
 //Return the modal table to an empty state
-$('.close').click(function(){$('#searchTableModal tbody').html("")});
+$('.sp').on("click", function (e) {
+  //If parent does not have class expanded
+  if ($(this).parent().attr("class")=="close"){
+    $('#searchList table tbody').html("")
+    $('#searchTableModal tbody').html("")
+  } 
+});;
 
 
 // Hide search list body when clicked outside it
 $("body").on('click',function(e){
-  if($(e.target).closest("#searchList tbody").length === 0 && $(e.target).parent().attr('class') != "closeAlert" ) { $('#searchList table tbody').html("")};
+  let closed = ["closeAlert","alert-dismissable"]
+  if($(e.target).closest("#searchList tbody").length === 0 && $(e.target).parent().attr('class') !="closeAlert" && $(e.target).attr('class') !="closeAlert") { $('#searchList table tbody').html("")};
 });
 //add service to car
 $("tbody").on('click',".addToCart",addService); 
