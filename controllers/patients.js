@@ -5,6 +5,7 @@ const Patient = require('../models/patient');
 const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
+process.env.TZ = 'America/Mexico_City' 
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -70,7 +71,9 @@ module.exports.deletePatient = async (req, res) => {
 module.exports.showPatient = async (req, res) => {
     let {begin,end} = req.query;
     if(!begin){begin = new Date(2020, 10, 17) }else{begin = new Date(begin)};
-    if(!end){end = new Date}else{end = new Date(end+"T23:59:59")};
+    if(!end){end = new Date}else{end = new Date(end+"T07:40")};
+    console.log(end);
+    console.log(new Date)
     const patient = await Patient.findById(req.params.id).populate({
         path: 'servicesCar',
         populate: {
@@ -87,8 +90,8 @@ module.exports.showPatient = async (req, res) => {
 
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
-    if(!begin){begin = new Date(-8640000000000000)}else{begin = new Date(begin+"T00:00:01")};
-    if(!end){end = new Date}else{end = new Date(end+"T23:59:59")};
+    if(!begin){begin = new Date(-8640000000000000)}else{begin = new Date(begin+"T08:00:01")};
+    if(!end){end = new Date}else{end = new Date(end+"T07:40")};
     console.log(req.params.id);
     const patient = await Patient.aggregate([   
         // put in a single document both transaction and service fields

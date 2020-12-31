@@ -72,7 +72,7 @@ const patientDate = new Date(patient.admissionDate);
 function makeYMD(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
 y : date.getUTCFullYear()};
-  return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+  return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
 }
 
 

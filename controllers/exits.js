@@ -2,6 +2,7 @@ const {Service,Supply,Hospital} = require('../models/service');
 const Transaction = require('../models/transaction');
 const Exit = require('../models/exit');
 const Payment = require('../models/payment');
+process.env.TZ = 'America/Mexico_City' // here is the magical line
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -112,8 +113,8 @@ module.exports.servicesPayments = async (req, res) => {
     // hospitalEntry == true then we just get entries to the hospital
     hospital = (hospital == "hospital")?"true":"false";
     honorary = (honorary == "honorary")?"false":"true";
-    begin = new Date(begin+"T00:00:01");
-    end = new Date(end+"T23:59:59");
+    begin = new Date(begin+"T07:00:01");
+    end = new Date(end+"T08:00:01");
     let transactions = {};
     let exits = {};
     if(exit){
