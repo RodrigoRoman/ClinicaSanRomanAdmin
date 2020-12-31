@@ -4,7 +4,8 @@ const Transaction = require('../models/transaction');
 const Patient = require('../models/patient');
 const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
-const puppeteer = require('puppeteer-core'); 
+const puppeteer = require('puppeteer'); 
+
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
@@ -160,7 +161,18 @@ module.exports.patientAccount = async (req, res) => {
 
 module.exports.accountToPDF = async (req,res) =>{ 
     let {begin,end,name} = req.query;               
-    const browser = await puppeteer.launch();       // run browser
+    // const browser = await puppeteer.launch();       // run browser
+    const chromeOptions = {
+        headless: true,
+        defaultViewport: null,
+        args: [
+            "--incognito",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote"
+        ],
+    };
+    const browser = await puppeteer.launch(chromeOptions);
     const page = await browser.newPage();           // open new tab
     await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
         waitUntil: 'networkidle0'});          // go to site
