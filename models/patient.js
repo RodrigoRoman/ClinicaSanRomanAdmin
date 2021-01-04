@@ -35,10 +35,12 @@ PatientSchema.post('findOneAndDelete', async function(doc) {
             },
           }).execPopulate();
         for(let serv of doc.servicesCar){
-            if(serv.service.service_type=="supply"){serv.service.stock += serv.amount};
+            if(serv.service.service_type == "supply"){serv.service.stock += serv.amount};
             await serv.service.save();
         }
         let id_arr = (doc.servicesCar).map((el)=> el._id);
+        console.log("in delete");
+        console.log("doc services");
         await Transaction.deleteMany({
                 _id: {
                     $in: id_arr
@@ -46,8 +48,6 @@ PatientSchema.post('findOneAndDelete', async function(doc) {
         });
     }
 })
-
-// PatientSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("Patient", PatientSchema)
 

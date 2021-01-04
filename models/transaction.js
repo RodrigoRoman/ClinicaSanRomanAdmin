@@ -1,6 +1,6 @@
 const mongoose = require("mongoose"),
 	  {Service} = require("./service"),
-	  Patient = require("./patient"),
+	//   Patient = require("./patient"),
 	  Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema({

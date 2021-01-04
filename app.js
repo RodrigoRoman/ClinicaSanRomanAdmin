@@ -13,11 +13,11 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-const {Service,Supply,Hospital} = require('./models/service');
-const Transaction = require("./models/transaction");
-const Patient = require("./models/patient");
-const Exit = require("./models/exit");
-const Payment = require("./models/payment");
+// const {Service,Supply,Hospital} = require('./models/service');
+// const Transaction = require("./models/transaction");
+// const Patient = require("./models/patient");
+// const Exit = require("./models/exit");
+// const Payment = require("./models/payment");
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const userRoutes = require('./routes/users');
@@ -26,7 +26,6 @@ const patientRoutes = require('./routes/patients');
 const exitRoutes = require('./routes/exits');
 
 const MongoDBStore = require("connect-mongo")(session);
-process.env.TZ = 'America/Mexico_City' // here is the magical line
 
 
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/clinicaSanR';

@@ -6,9 +6,7 @@ const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 
-//variable for local time 
-const nDate = new Date;
-nDate.setHours(nDate.getHours() - 6);
+
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -26,7 +24,11 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
+    console.log(req.body.patient)
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     patient.author = req.user._id;
+    patient.admissionDate = nDate;
     await patient.save();
     req.flash('success', 'Paciente creado!');
     res.redirect("/patients")
@@ -55,6 +57,9 @@ module.exports.updatePatient = async (req, res) => {
 module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
     const patient = await Patient.findById(id);
+    //variable for local time 
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     patient.discharged = true
     patient.dischargedDate =nDate;
     await patient.save();
@@ -74,6 +79,9 @@ module.exports.deletePatient = async (req, res) => {
 module.exports.showPatient = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
+    //variable for local time 
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     if(!begin){
         begin = pat.admissionDate;
     }else{
@@ -83,8 +91,7 @@ module.exports.showPatient = async (req, res) => {
         end= nDate;
     }else{
         end = new Date(end+"T23:59:01.000Z");
-};
-console.log(begin,end)
+    };
     const patient = await Patient.findById(req.params.id).populate({
         path: 'servicesCar',
         populate: {
@@ -102,6 +109,9 @@ console.log(begin,end)
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
+    //variable for local time 
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     if(!begin){
         begin = pat.admissionDate
     }else{
@@ -280,6 +290,9 @@ module.exports.searchAll = async (req, res) => {
 module.exports.addToCart = async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     const service = await Service.findById(req.body.service);
+    //variable for local time 
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     const transaction = new Transaction({patient: patient,service:service,amount:req.body.addAmount,consumtionDate:nDate,addedBy:req.user});
     if(service.service_type == "supply"){
         if((service.stock - req.body.addAmount) < 0 ){
@@ -301,7 +314,6 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const begin = new Date(req.body.begin+"T00:00:01.000Z");
     const end = new Date(req.body.end+"T23:59:01.000Z");
-    console.log("erase")
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
         path: 'servicesCar',
         populate: {
@@ -329,6 +341,9 @@ module.exports.updateServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const begin = new Date(req.body.begin+"T00:00:01.000Z");
     const end = new Date(req.body.end+"T23:59:01.000Z");
+    //variable for local time 
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     console.log(begin,end)
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
         path: 'servicesCar',

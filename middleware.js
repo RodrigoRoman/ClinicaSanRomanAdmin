@@ -1,6 +1,7 @@
 const {supplySchema,hospitalSchema,serviceSchema, patientSchema,exitSchema,paymentSchema} = require('./schemas.js');
 const ExpressError = require('./utils/ExpressError');
 const {Service,Supply,Hospital} = require('./models/service');
+const Transaction = require('./models/transaction');
 const Patient = require('./models/patient');
 const Exit = require('./models/exit');
 const Payment = require('./models/payment');

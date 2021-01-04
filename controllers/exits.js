@@ -8,8 +8,7 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
 
-const nDate = new Date;
-nDate.setHours(nDate.getHours() - 6);
+
 //functions for calculating array of dates in range by leap of # days
 Date.prototype.addDays = function(days) {
     let dat = new Date(this.valueOf())
@@ -21,7 +20,6 @@ Date.prototype.addDays = function(days) {
 function getDates(startDate, stopDate,terms) {
     let dateArray = [];
     let currentDate = startDate;
-    console.log(startDate)
     startDate = new Date(startDate);
     stopDate = new Date(stopDate+"T23:59:01.000Z");
     //first payment starts after 5 days
@@ -53,6 +51,8 @@ module.exports.index = async (req, res) => {
 }
 
 module.exports.hospital_account = async (req, res) => {
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
 
     const exits = await Exit.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
@@ -280,6 +280,8 @@ module.exports.createPayment = async (req, res, next) => {
     let payment =  new Payment(req.body.payment);
     let terms = parseInt(req.body.payment.terms);
     let exitAmount = (moneyAmount/terms);
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     let datesArray = getDates(nDate, dueDate,terms);
     exitAmount = +(exitAmount).toFixed(3);
     //create exits from range of Dates and then push them to the pyments array
@@ -297,6 +299,8 @@ module.exports.createPayment = async (req, res, next) => {
 
 
 module.exports.index_payments = async (req, res) => {
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     const payments = await Payment.find({dueDate:{$gte:dateLimit}}).populate("exits");
@@ -317,6 +321,8 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.deletePayment = async (req, res) => {
     const { id } = req.params;
     let curr_payment = await Payment.findById(id).populate('exits');
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     let delete_exits = curr_payment.exits.filter(el => el.clearDate >= dateLimit);
