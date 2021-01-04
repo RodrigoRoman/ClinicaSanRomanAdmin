@@ -224,10 +224,10 @@ function foundSupplies(event) {
                                 <tbody>
                             `);
                      (this.expiration).forEach((element,index) => {
-                        let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12)
+                        let dateColor = defineBorder(diff_months(new Date(this.expiration[index]) , new Date())/12)
                         suppliesContent+=(`
                         <tr>
-                            <td class ="border border-`+dateColor+`">`+makeDMY(new Date(element))+`</td>
+                            <td class ="border border-${dateColor}">`+makeDMY(new Date(element))+`</td>
                             <td>`+this.stock[index]+`</td>
                         </tr>`);
                      });
