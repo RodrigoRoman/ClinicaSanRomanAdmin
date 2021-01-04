@@ -2,11 +2,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <%
+const nDate = new Date;
+nDate.setHours(nDate.getHours() - 6);
 function makeYMD(date){
-    const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
-    y : date.getUTCFullYear()};
-    return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
-    }
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+y : date.getUTCFullYear()};
+  return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+}
 function makeDMY(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
   y : date.getUTCFullYear()};
@@ -72,7 +74,7 @@ function makeDMY(date){
                   </div>
                   <div class="col-5">
                     <label>Hasta</label>
-                    <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(new Date)%>" class="form-control">
+                    <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(nDate)%>" class="form-control">
                   </div>
                 </div>
                 <div class="row">
