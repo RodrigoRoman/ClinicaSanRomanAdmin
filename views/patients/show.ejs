@@ -30,8 +30,6 @@ function makeDMY(date){
 }
 let patientCar = []
 let total = 0;
-
-
       // Make a new object with amount to the same level as price, name and the other fields of servie
       if(patient.servicesCar){
        let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});

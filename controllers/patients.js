@@ -5,7 +5,10 @@ const Patient = require('../models/patient');
 const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
-process.env.TZ = 'America/Mexico_City' 
+
+//variable for local time 
+const nDate = new Date;
+nDate.setHours(nDate.getHours() - 6);
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -53,7 +56,7 @@ module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
     const patient = await Patient.findById(id);
     patient.discharged = true
-    patient.dischargedDate =new Date;
+    patient.dischargedDate =nDate;
     await patient.save();
     req.flash('success', 'Paciente dado de alta!');
     res.redirect(`/patients`)
@@ -70,10 +73,18 @@ module.exports.deletePatient = async (req, res) => {
 
 module.exports.showPatient = async (req, res) => {
     let {begin,end} = req.query;
-    if(!begin){begin = new Date(2020, 10, 17) }else{begin = new Date(begin)};
-    if(!end){end = new Date}else{end = new Date(end+"T07:40")};
-    console.log(end);
-    console.log(new Date)
+    let pat = await Patient.findById(req.params.id);
+    if(!begin){
+        begin = pat.admissionDate;
+    }else{
+        begin = new Date(begin+"T00:00:01.000Z");
+    };
+    if(!end){
+        end= nDate;
+    }else{
+        end = new Date(end+"T23:59:01.000Z");
+};
+console.log(begin,end)
     const patient = await Patient.findById(req.params.id).populate({
         path: 'servicesCar',
         populate: {
@@ -90,9 +101,15 @@ module.exports.showPatient = async (req, res) => {
 
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
-    if(!begin){begin = new Date(-8640000000000000)}else{begin = new Date(begin+"T08:00:01")};
-    if(!end){end = new Date}else{end = new Date(end+"T07:40")};
-    console.log(req.params.id);
+    let pat = await Patient.findById(req.params.id);
+    if(!begin){
+        begin = pat.admissionDate
+    }else{
+        begin = new Date(begin+"T00:00:01.000Z");
+    };
+    if(!end){
+        end= nDate;
+    }else{end = new Date(end+"T23:59:01.000Z")};
     const patient = await Patient.aggregate([   
         // put in a single document both transaction and service fields
         {$match: {_id:  mongoose.Types.ObjectId(req.params.id)}},
@@ -117,7 +134,7 @@ module.exports.patientAccount = async (req, res) => {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromTransaction", 0 ] }, "$$ROOT" ] } }
          },
          { $project: { fromTransaction: 0, servicesCar:0 } },
-         {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+        {$match: {consumtionDate:{$gte:begin,$lte:end}}},
         {
             $lookup: {
                from: "services",
@@ -213,15 +230,14 @@ module.exports.search_3 = async (req, res) => {
 //search for hospital services
 module.exports.searchAllPatients = async (req, res) => {
     let {search,sorted,begin,end} = req.query;
-    console.log(req.query)
     search = new RegExp(escapeRegExp(search), 'gi');
     let dbQueries =  [
             { name: search },
             { treatingDoctor: search },
             { description: search },
         ];
-    begin = new Date(begin+"T00:00:01")
-    end = new Date(end+"T23:59:59")
+    begin = new Date(begin+"T00:00:01.000Z")
+    end = new Date(end+"T23:59:01.000Z")
     let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).sort("-admissionDate").populate("author");
     begin = req.query.begin;
     end = req.query.end;
@@ -264,7 +280,7 @@ module.exports.searchAll = async (req, res) => {
 module.exports.addToCart = async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     const service = await Service.findById(req.body.service);
-    const transaction = new Transaction({patient: patient,service:service._id,amount:req.body.addAmount,consumtionDate:new Date,addedBy:req.user});
+    const transaction = new Transaction({patient: patient,service:service,amount:req.body.addAmount,consumtionDate:nDate,addedBy:req.user});
     if(service.service_type == "supply"){
         if((service.stock - req.body.addAmount) < 0 ){
             return res.send({ msg: "False",serviceName:`${service.name}`});
@@ -272,6 +288,7 @@ module.exports.addToCart = async (req, res) => {
             service.stock = service.stock-req.body.addAmount;
         }
     }
+    console.log(transaction.consumtionDate)
     patient.servicesCar.push(transaction);
     await transaction.save();
     await patient.save();
@@ -282,18 +299,26 @@ module.exports.addToCart = async (req, res) => {
 
 module.exports.deleteServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
-    const begin = req.body.begin+"T00:00:01";
-    const end = req.body.end+"T23:59:59";
-    console.log(begin,end)
-    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{services:service,consumtionDate:{$gte:begin,$lte:end}}}).populate({
+    const begin = new Date(req.body.begin+"T00:00:01.000Z");
+    const end = new Date(req.body.end+"T23:59:01.000Z");
+    console.log("erase")
+    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
         path: 'servicesCar',
         populate: {
           path: 'service',
         },
       });
-    let trans = await Transaction.find({patient: patient,service:service,consumtionDate:{$gte:begin,$lte:end}});
+    let trans = await Transaction.find({patient:patient,service:service,$and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]});
     for(let t of trans){
-        await Transaction.findByIdAndDelete({_id:t._id});
+        console.log("inn")
+        await Transaction.findByIdAndDelete(t._id, function (err, docs) { 
+            if (err){ 
+                console.log(err) 
+            } 
+            else{ 
+                console.log("Deleted : ", docs); 
+            } 
+        });
     }
     if(service.service_type=="supply"){service.stock += parseInt(req.body.amount)};
     await service.save()
@@ -302,7 +327,10 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
 
 module.exports.updateServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
-    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{service:service}}).populate({
+    const begin = new Date(req.body.begin+"T00:00:01.000Z");
+    const end = new Date(req.body.end+"T23:59:01.000Z");
+    console.log(begin,end)
+    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
         path: 'servicesCar',
         populate: {
           path: 'service',
@@ -323,8 +351,8 @@ module.exports.updateServiceFromAccount = async (req, res) => {
     }else{
         service.stock = service.stock + Math.abs(difference);
     }
-    await Transaction.deleteMany({patient:patient,service:service});
-    const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,consumtionDate:new Date,addedBy:req.user});
+    await Transaction.deleteMany({patient:patient,service:service,$and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]});
+    const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,consumtionDate:nDate,addedBy:req.user});
     patient.servicesCar.push(new_trans);
     await new_trans.save();
     //Remove supply from the inventory

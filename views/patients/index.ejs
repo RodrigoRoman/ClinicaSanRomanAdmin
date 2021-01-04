@@ -2,10 +2,10 @@
 
 <%
 function makeYMD(date){
-    const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
-    y : date.getUTCFullYear()};
-    return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
-    }%>
+const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+y : date.getUTCFullYear()};
+return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+}%>
 <div class="container">
     
     <h1 class= "display-3 font-weight-bold text-center">Pacientes</h1>
@@ -81,7 +81,8 @@ function makeYMD(date){
                                     <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
                                         <form class="d-inline" action="/patients/<%=patient._id%>?_method=DELETE" method="POST">
                                             <button class="float-right btn btn-outline-danger mx-1 my-1 btn-sm">Borrar</button>
-                                        </form> 
+                                        </form>
+ 
                                         <a class="float-right btn btn-outline-secondary mx-1 my-1 btn-sm" href="/patients/<%=patient._id%>/edit">Editar</a>
                                     <%}%>
                                 <%}else{%>

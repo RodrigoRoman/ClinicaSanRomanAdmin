@@ -4,7 +4,10 @@ function makeYMD(date){
     const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
     y : date.getUTCFullYear()};
     return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
-    }%>
+    }
+const nDate = new Date;
+nDate.setHours(nDate.getHours() - 6);
+    %>
 <div class="container">
     
     <h1 class= "display-3 font-weight-bold text-center">Pagos Activos</h1>
@@ -28,7 +31,7 @@ function makeYMD(date){
                             let paid_terms = 0; let unpaid_terms = 0;
                             let paid_amount = 0; let unpaid_amount = 0;
                             for(let i of payment.exits){
-                                if((new Date).getTime()<= i.dueDate){
+                                if((nDate).getTime()<= i.dueDate){
                                     paid_terms+=1;
                                     paid_amount+=i.moneyAmount
                                 }else{

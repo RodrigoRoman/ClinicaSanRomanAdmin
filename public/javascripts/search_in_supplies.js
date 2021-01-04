@@ -125,8 +125,8 @@ function foundSupplies(event) {
                             <li class="list-group-item">Existencias: `+this.stock+`</li>
                             <li class="list-group-item">Proveedor: `+this.supplier+`</li>
                             <div class="clearfix split-items">
-                                <li class="list-group-item left-side">Compra: $`+ this.sell_price+` /cu</li>
-                                <li class="list-group-item right-side ">Venta: $`+this.buy_price+` /cu</li>
+                                <li class="list-group-item left-side">Compra: $`+ this.buy_price+` /cu</li>
+                                <li class="list-group-item right-side ">Venta: $`+this.sell_price+` /cu</li>
                             </div>
                         </ul>`);
                     if(true){
@@ -236,8 +236,8 @@ function foundSupplies(event) {
                     </table>
                     <ul class="list-group list-group-flush">
                         <div class="clearfix split-items">
-                            <li class="list-group-item left-side">Compra: $`+ this.sell_price+` /cu</li>
-                            <li class="list-group-item right-side ">Venta: $`+this.buy_price+` /cu</li>
+                            <li class="list-group-item left-side">Compra: $`+ this.buy_price+` /cu</li>
+                            <li class="list-group-item right-side ">Venta: $`+this.sell_price+` /cu</li>
                         </div>
                     </ul>`)
                  if(array_len>1){

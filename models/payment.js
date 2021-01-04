@@ -1,6 +1,5 @@
 const mongoose = require('mongoose'),
       Exit = require("./exit"),
-      timeZone = require('mongoose-timezone'),
       Schema = mongoose.Schema;
 
 
@@ -13,6 +12,5 @@ const PaymentSchema = new Schema({
 	}],
     moneyAmount: { type: Number, required: true, get: p => `${p}.00` }
 });
-PaymentSchema.plugin(timeZone, { paths: ['date', 'subDocument.subDate'] });
 
 module.exports = mongoose.model("Payment", PaymentSchema)

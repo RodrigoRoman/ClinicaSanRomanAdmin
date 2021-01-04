@@ -2,13 +2,14 @@ const {Service,Supply,Hospital} = require('../models/service');
 const Transaction = require('../models/transaction');
 const Exit = require('../models/exit');
 const Payment = require('../models/payment');
-process.env.TZ = 'America/Mexico_City' // here is the magical line
+const { date } = require('joi');
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
 
-
+const nDate = new Date;
+nDate.setHours(nDate.getHours() - 6);
 //functions for calculating array of dates in range by leap of # days
 Date.prototype.addDays = function(days) {
     let dat = new Date(this.valueOf())
@@ -20,12 +21,15 @@ Date.prototype.addDays = function(days) {
 function getDates(startDate, stopDate,terms) {
     let dateArray = [];
     let currentDate = startDate;
+    console.log(startDate)
     startDate = new Date(startDate);
-    stopDate = new Date(stopDate);
+    stopDate = new Date(stopDate+"T23:59:01.000Z");
     //first payment starts after 5 days
     startDate = startDate.addDays(5);
+    
+    //If there is a single payment then we want the end date to be precisely the payment date
     if(terms == 1){
-        return [startDate];
+        return [stopDate];
     }
     currentDate  = startDate;
     // To calculate the time difference of two dates 
@@ -38,7 +42,6 @@ function getDates(startDate, stopDate,terms) {
         dateArray.push(currentDate)
         currentDate = currentDate.addDays(leap);
     }
-   
     return dateArray;
  }
 
@@ -55,8 +58,7 @@ module.exports.hospital_account = async (req, res) => {
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
             //first we need to have access to the service fields. So we unwind all of them
-
-            {$match: {clearDate:{$lte:new Date}}},
+            {$match: {clearDate:{$lte:nDate}}},
             {$group: {
                 //match the begining of the name field
                 _id:"$name",
@@ -70,7 +72,6 @@ module.exports.hospital_account = async (req, res) => {
          ]
           //specify language-specific rules for string comparison
     ).collation({locale:"en", strength: 1});
-    // const payments = await Payment.find({}).sort("-dueDate").populate('exits');
 
     const transactions = await Transaction.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
@@ -113,16 +114,14 @@ module.exports.servicesPayments = async (req, res) => {
     // hospitalEntry == true then we just get entries to the hospital
     hospital = (hospital == "hospital")?"true":"false";
     honorary = (honorary == "honorary")?"false":"true";
-    begin = new Date(begin+"T07:00:01");
-    end = new Date(end+"T08:00:01");
+    begin = new Date(begin+"T00:00:01.000Z");
+    end = new Date(end+"T23:59:01.000Z");
     let transactions = {};
     let exits = {};
     if(exit){
         exits = await Exit.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
-                //first we need to have access to the service fields. So we unwind all of them
-                // {$match: {clearDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
                 {$match: {clearDate:{$gte:begin,$lte:end}}},
                 {$group: {
                     //match the begining of the name field
@@ -281,7 +280,7 @@ module.exports.createPayment = async (req, res, next) => {
     let payment =  new Payment(req.body.payment);
     let terms = parseInt(req.body.payment.terms);
     let exitAmount = (moneyAmount/terms);
-    let datesArray = getDates(new Date, dueDate,terms);
+    let datesArray = getDates(nDate, dueDate,terms);
     exitAmount = +(exitAmount).toFixed(3);
     //create exits from range of Dates and then push them to the pyments array
     datesArray.forEach(async (element) => {
@@ -291,13 +290,14 @@ module.exports.createPayment = async (req, res, next) => {
         await exit.save();
     });
     await payment.save()
+    console.log(payment.exits)
     req.flash('success', 'Pago creado');
     res.redirect(`/exits`)
 }
 
 
 module.exports.index_payments = async (req, res) => {
-    let dateLimit = new Date;
+    let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     const payments = await Payment.find({dueDate:{$gte:dateLimit}}).populate("exits");
     res.render('exits/index_exits',{payments})
@@ -317,13 +317,17 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.deletePayment = async (req, res) => {
     const { id } = req.params;
     let curr_payment = await Payment.findById(id).populate('exits');
-    let dateLimit = new Date;
+    let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     let delete_exits = curr_payment.exits.filter(el => el.clearDate >= dateLimit);
-    const patient = await Payment.findByIdAndUpdate(id,{$pull:{clearDate:{$gte:dateLimit}},dueDate:dateLimit}).populate('exits');
+    let size_equal =  delete_exits.length == curr_payment.exits.length
+    const new_payment = await Payment.findByIdAndUpdate(id,{$pull:{exits:{$and:[{clearDate:{$gte:nDate}}]}}}).populate('exits');
     let after = await Payment.findById(id).populate('exits');
     for(let t of delete_exits){
-        await Exit.findByIdAndDelete({_id:t._id});
+        await Exit.findByIdAndDelete(t._id);
+    }
+    if(size_equal){
+        await Payment.remove({_id:curr_payment._id})
     }
     res.redirect(`payments`);
 }

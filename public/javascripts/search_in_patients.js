@@ -18,7 +18,11 @@ function truncate(str, n){
     return (str.length > n) ? str.substr(0, n-1) + '...' : str;
   };
 
-
+function makeYMD(date){
+const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+y : date.getUTCFullYear()};
+return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+}
 // Fill table with data
 function foundPatients(event) {
     event.preventDefault();
@@ -84,8 +88,8 @@ function foundPatients(event) {
                  patientsContent+=`</div>`
                 // Inject the whole content string into our existing HTML table
                  $('.patients').html( patientsContent);
-                 $('#beginDate').val(response.begin);
-                 $('#endDate').val(response.end);
+                 $('#beginDate').val(makeYMD(response.begin));
+                 $('#endDate').val(makeYMD(response.end));
    });
  };
 

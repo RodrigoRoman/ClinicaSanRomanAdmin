@@ -1,6 +1,6 @@
 const userListData = [];
-console.log("connected--------");
-
+const nDate = new Date;
+nDate.setHours(nDate.getHours() - 6);
 // DOM Ready =============================================================
 $(document).ready(function() {
   //set dates with default values
@@ -78,11 +78,11 @@ y : date.getUTCFullYear()};
 
 //set date buttons
 $('.todays').click(function(){
-  $("#endDate").val(makeYMD(new Date));
-  $("#beginDate").val(makeYMD(new Date));
+  $("#endDate").val(makeYMD(nDate));
+  $("#beginDate").val(makeYMD(nDate));
 })
 $('.tillToday').click(function(){
-  $("#endDate").val(makeYMD(new Date));
+  $("#endDate").val(makeYMD(nDate));
   $("#beginDate").val(makeYMD(new Date(patientDate)));
 })
 $('.otherDate').click(function(){
@@ -140,7 +140,7 @@ function populateTable(event) {
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.class + '</small></td>';
-        let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
+        let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
 
         }
@@ -175,7 +175,7 @@ function populateTableModal(event) {
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
-        let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
+        let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
       };
       tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
@@ -289,7 +289,9 @@ function submitEditService(event) {
         url: `/patients/${patient_id}/accountCart`,
         data: {
           'serviceID': $(this).parent().parent().parent().find(".item-name").attr("alt"),
-          'amount': parseInt($(this).parent().parent().parent().find(".amountEdit").val())
+          'amount': parseInt($(this).parent().parent().parent().find(".amountEdit").val()),
+          'begin':makeYMD(new Date(JSON.parse(beginD))),
+          'end':makeYMD(new Date(JSON.parse(endD))) 
         },
         dataType: 'JSON',
       }).done(function(response){

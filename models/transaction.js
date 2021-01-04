@@ -1,7 +1,6 @@
 const mongoose = require("mongoose"),
 	  {Service} = require("./service"),
 	  Patient = require("./patient"),
-	  timeZone = require('mongoose-timezone'),
 	  Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema({
@@ -20,5 +19,4 @@ const TransactionSchema = new Schema({
 		ref: 'User'
 	}
 });
-TransactionSchema.plugin(timeZone, { paths: ['date', 'subDocument.subDate'] });
 module.exports = mongoose.model("Transaction", TransactionSchema)
