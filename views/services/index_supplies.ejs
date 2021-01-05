@@ -30,14 +30,14 @@ function diff_months(dt2, dt1)
 
   var diff =(dt2.getTime() - dt1.getTime()) / 1000;
    diff /= (60 * 60 * 24 * 7 * 4);
-  return Math.abs(Math.round(diff));
+  return Math.round(diff);
  }
  //function for selecting the border color based on existence and optimum parameters
 function defineBorder(proportion){
     let border = "";
-    if(proportion<=0.33){
+    if(proportion <= 0.33){
         border = "danger";
-    }else if(proportion>0.33 && proportion < 0.66){
+    }else if(proportion > 0.33 && proportion < 0.66){
         border = "warning"
     }else{
         border =  "success"
@@ -72,7 +72,7 @@ function defineBorder(proportion){
                 <% } %>
             </div>
             <div class="card-body">
-                <div class = "d-inline"><h3 class="card-subtitle "><%= supply.name%> /</h3><h6><%= supply.principle%></h6></div>
+                <div class = "d-inline"><h3 class="card-subtitle "><%= supply.name%> </h3><h6><%= supply.principle%></h6></div>
                 <h5 class="card-title text-muted"><%= supply.class%></h5>
             </div>
             <%let dateColor = defineBorder(diff_months(new Date(supply.expiration) , new Date())/12) %>

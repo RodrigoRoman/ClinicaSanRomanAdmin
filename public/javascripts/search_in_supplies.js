@@ -48,9 +48,8 @@ function diff_months(dt2, dt1)
 
   var diff =(dt2.getTime() - dt1.getTime()) / 1000;
    diff /= (60 * 60 * 24 * 7 * 4);
-  return Math.abs(Math.round(diff));
+  return Math.round(diff);
  }
-
 //function for selecting the border color based on existence and optimum parameters
 function defineBorder(proportion){
     let border = "";
@@ -117,7 +116,7 @@ function foundSupplies(event) {
                   suppliesContent+=(`
                         </div>
                         <div class="card-body">
-                            <div class = "d-inline"><h3 class="card-subtitle ">`+this.name+`/</h3><h6>`+this.principle+`</h6></div>
+                            <div class = "d-inline"><h3 class="card-subtitle ">`+this.name+`</h3><h6>`+this.principle+`</h6></div>
                             <h5 class="card-title text-muted">`+ this.class+`</h5>
                         </div>
                         <ul class="list-group list-group-flush">
@@ -205,7 +204,7 @@ function foundSupplies(event) {
                  suppliesContent+=(`
                             </div>
                             <div class="card-body">
-                                <div class = "d-inline"><h3 class="card-subtitle ">`+this.name+`/</h3><h6>`+this.principle+`</h6></div>
+                                <div class = "d-inline"><h3 class="card-subtitle ">`+this.name+`</h3><h6>`+this.principle+`</h6></div>
                                 <h5 class="card-title text-muted">`+ this.class+`</h5>
                             </div>
                             <ul class="list-group list-group-flush">
