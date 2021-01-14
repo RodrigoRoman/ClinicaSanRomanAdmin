@@ -6,6 +6,13 @@
   margin: 0px 0px 0px 0px !important;
 }
 
+.image_print{
+  position:absolute;
+  top:80px;
+  left:20px;
+  width:330px;
+  height: 120px;
+}
 
 /* Table with fixed header */
 .fixed_header{

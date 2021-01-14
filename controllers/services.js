@@ -120,6 +120,7 @@ module.exports.searchAllSupplies = async (req, res) => {
                 {$group: {
                     _id:"$name",
                     class:{$last:"$class"},
+                    suppID:{$last:"$_id"},
                     principle:{$last:"$principle"},
                     name: { $last: "$name" },
                     expiration:{ $push: "$expiration" },

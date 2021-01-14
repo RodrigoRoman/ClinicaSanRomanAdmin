@@ -250,7 +250,7 @@ function foundSupplies(event) {
                         if(true){
                     suppliesContent+= (`
                             <div class="d-flex justify-content-around mx-1 my-1">
-                                <a class="card-link btn btn-info" href="/services/`+this._id+`/edit?service_type=supply">Editar</a>
+                                <a class="card-link btn btn-info" href="/services/`+this.suppID+`/edit?service_type=supply">Editar</a>
                                 <form class="d-inline" action="/services/`+this._id+`?_method=DELETE" method="POST">
                                     <button class="btn btn-danger">Borrar</button>
                                 </form>

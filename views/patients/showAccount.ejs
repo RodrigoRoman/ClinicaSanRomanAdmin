@@ -25,21 +25,25 @@ function makeDMY(date){
             <div class="jumbotron">
                 <div class="container mt-4">
                     <div class="row justify-content-center ">
-                        <div class = "col-8">
-                            <h1 class="display-3">Farmacia San Roman</h1>
-                            <h3 class="display-4"><%=patient[0].patientName%></h3>
+                        <div class = "col-5">
+                            <h1>
+                                Administracion ClinicaSR
+                            </h1>
+                            <h5 class="display-4">   Estado de cuenta</h5>
+                            <img src="/imgs/clinicaSR_img.jpg" class = "image_print" alt="clinica">
+                            <!-- <h1 class="display-4"><%=patient[0].patientName%></h1> -->
                         </div>
                     </div>
-                    <!-- <div class="row justify-content-between">
+                    <div class="row justify-content-between">
                         <div class="col-5">
                             <p class = "">Admisión: <%= makeDMY(patient[0].admissionDate)%></p>
                             <p class = "">Paciente: <%= patient[0].patientName%></p>
                         </div>
-                        <div class="col-5">
+                        <div class="col-4">
                             <p class = "">Medico tratante: <%= patient[0].treatingDoctor%></p>
                             <p class = "">Diagnostico: <%= patient[0].diagnosis%></p>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
             <div class="container">
