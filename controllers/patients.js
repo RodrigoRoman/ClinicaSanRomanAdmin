@@ -206,12 +206,22 @@ module.exports.accountToPDF = async (req,res) =>{
     const page = await browser.newPage();           // open new tab
     await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
         waitUntil: 'networkidle0'});          // go to site
+    // await page.goto(
+    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //       waitUntil: 'networkidle0'});
+    
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
     }) // Get DOM HTML
     await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
     await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
-    await page.addStyleTag({path: 'https://warm-forest-49475.herokuapp.com/public/stylesheets/app.css'})
+    await page.addStyleTag({content: `.image_print{
+        position:absolute;
+        top:80px;
+        left:20px;
+        width:330px;
+        height: 120px;
+      }`})
     const pdf = await page.pdf({landscape: true})
     await browser.close(); 
     res.contentType("application/pdf");
