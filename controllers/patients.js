@@ -211,7 +211,7 @@ module.exports.accountToPDF = async (req,res) =>{
     }) // Get DOM HTML
     await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
     await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
-    await page.addStyleTag({path: '/stylesheets/app.css'})
+    await page.addStyleTag({path: 'https://warm-forest-49475.herokuapp.com/public/stylesheets/app.css'})
     const pdf = await page.pdf({landscape: true})
     await browser.close(); 
     res.contentType("application/pdf");
