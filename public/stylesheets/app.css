@@ -220,6 +220,7 @@ input[type="number"] {
   .number-input input[type=number] {
     font-family: sans-serif;
     max-width: 2rem;
+    max-height: 2rem;
     padding: .2rem;
     border: none;
     border-width: 0 2px;
