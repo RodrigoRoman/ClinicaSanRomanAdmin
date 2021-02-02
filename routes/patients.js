@@ -16,7 +16,7 @@ router.route('/')
 router.get('/searchPatients',isLoggedIn,catchAsync(patients.searchAllPatients))
 
 
-router.get('/new', isLoggedIn,isDinamicDirectAdmin, patients.renderNewForm)
+router.get('/new', isLoggedIn, patients.renderNewForm)
 
 //SHOW ROUTE FOR PRODUCTS
 
@@ -26,8 +26,8 @@ router.route('/:id/discharge')
 
 router.route('/:id')
     .get(isLoggedIn,catchAsync(patients.showPatient))
-    .put(isLoggedIn, validatePatient, catchAsync(patients.updatePatient))
-    .delete(isLoggedIn, catchAsync(patients.deletePatient))
+    .put(isLoggedIn,isDinamicDirectAdmin, validatePatient, catchAsync(patients.updatePatient))
+    .delete(isLoggedIn, isDinamicDirectAdmin, catchAsync(patients.deletePatient))
 
 
 router.get('/:id/edit', isLoggedIn,isDinamicDirectAdmin, catchAsync(patients.renderEditForm))
