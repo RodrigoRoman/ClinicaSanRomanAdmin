@@ -201,7 +201,7 @@ input[type="number"] {
     position: absolute;
     content: '';
     width: 0.7rem;
-    height: 1px;
+    height: 2px;
     background-color: #212121;
     transform: translate(-50%, -50%);
   }
@@ -221,7 +221,7 @@ input[type="number"] {
     font-family: sans-serif;
     max-width: 2rem;
     max-height: 2rem;
-    padding: .2rem;
+    padding: .1rem;
     border: none;
     border-width: 0 2px;
     font-size: 1.3rem;

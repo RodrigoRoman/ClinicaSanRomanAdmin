@@ -90,9 +90,11 @@ return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.
                                     const b = patient.admissionDate.toISOString().substr(0,10);
                                     const e = patient.dischargedDate.toISOString().substr(0,10)
                                     %>
+                                    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
                                     <a href = "/patients/<%=patient._id%>/makePDF?begin=<%=b%>&end=<%=e%>&name=<%=patient.name%>">
                                         <button type="button" class="btn btn-outline-secondary">Ver cuenta</button>
                                     </a>
+                                    <%}%>
                                 <%}%>
                             </div>
                         </div>
