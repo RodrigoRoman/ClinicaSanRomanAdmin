@@ -220,9 +220,9 @@ module.exports.accountToPDF = async (req,res) =>{
     await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
     await page.addStyleTag({content: `.image_print{
         position:absolute;
-        top:80px;
+        top:50px;
         left:20px;
-        width:330px;
+        width:300px;
         height: 120px;
       }`})
     const pdf = await page.pdf({landscape: false})
