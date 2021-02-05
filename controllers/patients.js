@@ -222,7 +222,7 @@ module.exports.accountToPDF = async (req,res) =>{
         position:absolute;
         top:50px;
         left:20px;
-        width:300px;
+        width:250px;
         height: 120px;
       }`})
     const pdf = await page.pdf({landscape: false})
