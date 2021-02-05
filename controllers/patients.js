@@ -225,7 +225,7 @@ module.exports.accountToPDF = async (req,res) =>{
         width:330px;
         height: 120px;
       }`})
-    const pdf = await page.pdf({landscape: true})
+    const pdf = await page.pdf({landscape: false})
     await browser.close(); 
     res.contentType("application/pdf");
     res.send(pdf);
