@@ -239,6 +239,7 @@ module.exports.search_3 = async (req, res) => {
         const dbQueries =  [
             { name: search },
             { class: search },
+            { principle: search },
             { description: search },
             { doctor: search}
         ];
@@ -291,6 +292,7 @@ module.exports.searchAll = async (req, res) => {
         const dbQueries =  [
             { name: search },
             { class: search },
+            { principle: search },
             { description: search },
             { doctor: search}
         ];
