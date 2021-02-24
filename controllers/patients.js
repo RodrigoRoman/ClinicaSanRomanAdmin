@@ -171,6 +171,7 @@ module.exports.patientAccount = async (req, res) => {
             cost: {$push:0},
             sell_price: { $push:"$sell_price"},
             buy_price: { $push: "$buy_price"},
+            buy_price: { $push: "$buy_price"},
             amount: { $push:"$amount"}}},
         {$addFields:{totalSell : { $sum: "$sell_price" }}},
         {$addFields:{totalBuy : { $sum: "$buy_price" }}},
