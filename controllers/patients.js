@@ -157,6 +157,18 @@ module.exports.patientAccount = async (req, res) => {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
          },
          { $project: { fromService: 0 } },
+         {
+            $lookup: {
+               from: "services",
+               localField: "service",    // field in the Trasaction collection
+               foreignField: "_id",  // field in the Service collection
+               as: "fromService"
+            }
+         },
+         {
+            $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
+         },
+         { $project: { fromService: 0 } },
         {$group: {
             _id:"$class",
             patientName:{$last:"$patientName"},
@@ -169,9 +181,9 @@ module.exports.patientAccount = async (req, res) => {
             admissionDate : {$last:"$admissionDate"},
             price: {$push:"$price"},
             cost: {$push:0},
+            consumtionDate: { $last:"$consumtionDate"},
             sell_price: { $push:"$sell_price"},
             buy_price: { $push: "$buy_price"},
-            expiration: { $push: "$expiration"},
             amount: { $push:"$amount"}}},
         {$addFields:{totalSell : { $sum: "$sell_price" }}},
         {$addFields:{totalBuy : { $sum: "$buy_price" }}},
@@ -184,6 +196,7 @@ module.exports.patientAccount = async (req, res) => {
     }
     begin = req.query.begin;
     end = req.query.end;
+    // console.log(patient[0].consumtionDate)
     patient.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
     res.render(`patients/showAccount`, { patient,begin,end});
 }

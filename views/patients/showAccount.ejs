@@ -53,9 +53,10 @@ function makeDMY(date){
                     <thead class="thead-dark">
                         <tr class="border-bottom border-dark">  
                             <th scope ="col"><h3>Clase</h3></th>
-                            <th scope="col"><h3>Nombre</h3></th>  
+                            <th scope="col"><h3>Nombre</h3></th> 
                             <th scope="col"><h3>Cantidad</h3></th>  
-                            <th scope="col"><h3>Precio Unit</h3></th>  
+                            <th scope="col"><h3>Precio Unit</h3></th>
+                            <th scope="col"><h3>Fecha de consumo</h3></th>
                             <th scope="col"><h3>Subtotal</h3></th>
                         </tr>  
                     </thead>
@@ -66,7 +67,9 @@ function makeDMY(date){
                                 <th><%=item.class%></th> 
                                 <th></th> 
                                 <th></th>  
-                                <th></th>  
+                                <th></th>
+                                <th></th>
+                                <th></th>   
                                 <th></th> 
                             </tr>
                         <%
@@ -77,9 +80,10 @@ function makeDMY(date){
                             let item_subtotal = +(price * amnt).toFixed(3);%>
                         <tr>  
                             <td></td>
-                            <td><%=item.serviceName[i]%></td>  
+                            <td><%=item.serviceName[i]%></td> 
                             <td><%=amnt%></td>  
-                            <td>$<%=price%></td>  
+                            <td>$<%=price%></td>
+                            <td><%=item.consumtionDate%></td>
                             <td>$<%=item_subtotal%></td>  
                         </tr> 
                         <%
