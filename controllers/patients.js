@@ -181,7 +181,7 @@ module.exports.patientAccount = async (req, res) => {
             admissionDate : {$last:"$admissionDate"},
             price: {$push:"$price"},
             cost: {$push:0},
-            consumtionDate: { $last:"$consumtionDate"},
+            expiration: { $push:"$expiration"},
             sell_price: { $push:"$sell_price"},
             buy_price: { $push: "$buy_price"},
             amount: { $push:"$amount"}}},

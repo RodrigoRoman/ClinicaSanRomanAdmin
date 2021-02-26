@@ -56,7 +56,7 @@ function makeDMY(date){
                             <th scope="col"><h3>Nombre</h3></th> 
                             <th scope="col"><h3>Cantidad</h3></th>  
                             <th scope="col"><h3>Precio Unit</h3></th>
-                            <th scope="col"><h3>Fecha de consumo</h3></th>
+                            <th scope="col"><h3>Fecha de caducidad</h3></th>
                             <th scope="col"><h3>Subtotal</h3></th>
                         </tr>  
                     </thead>
@@ -83,7 +83,8 @@ function makeDMY(date){
                             <td><%=item.serviceName[i]%></td> 
                             <td><%=amnt%></td>  
                             <td>$<%=price%></td>
-                            <td><%=item.consumtionDate%></td>
+                            <%let prov_arr = item.expiration.map(e => makeDMY(e))_%>
+                            <td><%=prov_arr[i]%></td>
                             <td>$<%=item_subtotal%></td>  
                         </tr> 
                         <%
