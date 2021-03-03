@@ -1,6 +1,7 @@
 const {Service,Supply,Hospital} = require('../models/service');
 const Transaction = require('../models/transaction');
 const Exit = require('../models/exit');
+const Point = require('../models/refillPoint');
 const Payment = require('../models/payment');
 const { date } = require('joi');
 
@@ -156,7 +157,7 @@ module.exports.servicesPayments = async (req, res) => {
                     $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
                 },
                 { $project: { fromService: 0 } },
-                {$match: {hospitalEntry:{$in:[hospital,honorary]}}},
+                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
                 {$group: {
                     _id:"$name",
                     name:{$last:"$name"},
@@ -170,7 +171,7 @@ module.exports.servicesPayments = async (req, res) => {
                 {$addFields:{totalSell : { $multiply: ["$sell_price","$amount"] }}},
                 {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
                 {$addFields:{totalPrice : { $multiply: ["$price","$amount"] }}},
-                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
 
             ]).collation({locale:"en", strength: 1});
         // transactions = await Transaction.find({consumtionDate:{$gte:begin,$lte:end},service:{hospitalEntry:$or[honorary,hospital]}}).populate('service')
@@ -270,9 +271,16 @@ module.exports.servicesPayments = async (req, res) => {
 }
 
 
-
-module.exports.renderNewForm = (req, res) => {
+module.exports.renderNewForm = async (req, res) => {
+    let setPoint = await Point.findOne();
+    let transactions =  await Transaction.find({consumtionDate:{$gte:setPoint}}).populate("service");
     res.render(`exits/new`);
+}
+
+// render list of products to be refilled.
+module.exports.renderNewForm = (req, res) => {
+
+    res.render(`exits/refill_form`);
 }
 
 module.exports.createPayment = async (req, res, next) => {
