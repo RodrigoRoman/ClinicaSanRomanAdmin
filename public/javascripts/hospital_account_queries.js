@@ -125,7 +125,7 @@ function foundServicePayment(event) {
             </table> </div>`
             if(response.currentUser.role == "directAdmin"){     
                 accountContent+=`<div class = "container">
-                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income}</span></h2>
+                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income.toFixed(3)}</span></h2>
                 </div>`
             }    
             accountContent+=`<br><br>`
@@ -166,7 +166,7 @@ function foundServicePayment(event) {
                 </table> </div>`
                 if(response.currentUser.role == "directAdmin"){     
                     accountContent+=`<div class = "container">
-                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income}</span></h2>
+                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income.toFixed(3)}</span></h2>
                     </div>`
                 }
             accountContent+=`<br>  <br>`
@@ -202,7 +202,7 @@ function foundServicePayment(event) {
                     accountContent+=`</tbody>
                     </table> </div>
                     <div class = "container">
-                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income}</span></h2>
+                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $${total_income.toFixed(3)}</span></h2>
                 </div>      <br>  <br>`
                     }
                 if(response.exit =="exit"){
@@ -249,7 +249,7 @@ function foundServicePayment(event) {
                             <thead class="table-dark">
                                     <tr>  
                                         <th scope="col"><h2 class="pad"><span class = "text-danger">Salida:</span> $${total_outcome}</h2></th> 
-                                        <th scope="col"><h2 class="pad">Entrada: $${total_income}</h2></th> 
+                                        <th scope="col"><h2 class="pad">Entrada: $${total_income.toFixed(3)}</h2></th> 
                                         <th scope ="col"><h2 class="pad">Ganancia: $${+(total_income-total_outcome).toFixed(3)}</h2></th>
                                     </tr>  
                             </thead>
