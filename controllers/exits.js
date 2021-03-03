@@ -157,7 +157,8 @@ module.exports.servicesPayments = async (req, res) => {
                     $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
                 },
                 { $project: { fromService: 0 } },
-                // {$match: {hospitalEntry:{$in:[hospital,honorary]}}},
+                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
+
                 {$group: {
                     _id:"$name",
                     name:{$last:"$name"},
@@ -171,8 +172,6 @@ module.exports.servicesPayments = async (req, res) => {
                 {$addFields:{totalSell : { $multiply: ["$sell_price","$amount"] }}},
                 {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
                 {$addFields:{totalPrice : { $multiply: ["$price","$amount"] }}},
-                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
-
             ]).collation({locale:"en", strength: 1});
         // transactions = await Transaction.find({consumtionDate:{$gte:begin,$lte:end},service:{hospitalEntry:$or[honorary,hospital]}}).populate('service')
         transactions.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
