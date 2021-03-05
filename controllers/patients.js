@@ -157,6 +157,22 @@ module.exports.patientAccount = async (req, res) => {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
          },
          { $project: { fromService: 0 } },
+         {$group: {
+            _id:"$name",
+            patientName:{$last:"$patientName"},
+            class:{$last:"$class"},
+            name: {$last:"$name"},
+            treatingDoctor:{$last:"$treatingDoctor"},
+            service_type : {$last:"$service_type"},
+            rfc : {$last:"$rfc"},
+            diagnosis : {$last:"$diagnosis"},
+            admissionDate : {$last:"$admissionDate"},
+            price: {$last:"$price"},
+            cost: {$last:0},
+            expiration: { $push:"$expiration"},
+            sell_price: { $last:"$sell_price"},
+            buy_price: { $last: "$buy_price"},
+            amount: { $sum:"$amount"}}},
          {
             $lookup: {
                from: "services",
@@ -169,6 +185,7 @@ module.exports.patientAccount = async (req, res) => {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
          },
          { $project: { fromService: 0 } },
+        
         {$group: {
             _id:"$class",
             patientName:{$last:"$patientName"},
@@ -185,6 +202,7 @@ module.exports.patientAccount = async (req, res) => {
             sell_price: { $push:"$sell_price"},
             buy_price: { $push: "$buy_price"},
             amount: { $push:"$amount"}}},
+
         {$addFields:{totalSell : { $sum: "$sell_price" }}},
         {$addFields:{totalBuy : { $sum: "$buy_price" }}},
         {$addFields:{totalPrice : { $sum: "$price" }}},
@@ -221,11 +239,11 @@ module.exports.accountToPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-        waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+          waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
@@ -323,6 +341,7 @@ module.exports.addToCart = async (req, res) => {
     //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
+    console.log("transaction hour registered",nDate);
     const transaction = new Transaction({patient: patient,service:service,amount:req.body.addAmount,consumtionDate:nDate,addedBy:req.user});
     if(service.service_type == "supply"){
         if((service.stock - req.body.addAmount) < 0 ){
