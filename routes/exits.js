@@ -17,6 +17,14 @@ router.route('/')
 
 router.get('/new', isLoggedIn, isDinamicDirectAdmin, exits.renderNewForm)
 
+router.get('/refill',exits.refillForm)
+    .put('/refill', exits.editDatePoint)
+
+router.get('/refillPDF', exits.refillFormPDF)
+
+
+
+
 router.route('/:id')
     .delete(isLoggedIn, isLoggedIn, isDinamicDirectAdmin, catchAsync(exits.deletePayment))
 

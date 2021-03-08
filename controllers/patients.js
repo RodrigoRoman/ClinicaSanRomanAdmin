@@ -340,9 +340,17 @@ module.exports.addToCart = async (req, res) => {
     const service = await Service.findById(req.body.service);
     //variable for local time 
     const nDate = new Date;
+    console.log(req.body.location)
     nDate.setHours(nDate.getHours() - 6);
     console.log("transaction hour registered",nDate);
-    const transaction = new Transaction({patient: patient,service:service,amount:req.body.addAmount,consumtionDate:nDate,addedBy:req.user});
+    const transaction = new Transaction({
+        patient: patient,
+        service:service,
+        amount:req.body.addAmount,
+        consumtionDate:nDate,
+        addedBy:req.user,
+        location:req.body.location
+    });
     if(service.service_type == "supply"){
         if((service.stock - req.body.addAmount) < 0 ){
             return res.send({ msg: "False",serviceName:`${service.name}`});
@@ -350,7 +358,6 @@ module.exports.addToCart = async (req, res) => {
             service.stock = service.stock-req.body.addAmount;
         }
     }
-    console.log(transaction.consumtionDate)
     patient.servicesCar.push(transaction);
     await transaction.save();
     await patient.save();
@@ -393,7 +400,6 @@ module.exports.updateServiceFromAccount = async (req, res) => {
     //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
-    console.log(begin,end)
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
         path: 'servicesCar',
         populate: {

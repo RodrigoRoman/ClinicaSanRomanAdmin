@@ -1,101 +1,110 @@
-<% layout('layouts/boilerplate')%>
+<!DOCTYPE html>
+<html lang="en">
+    
 
-<div class="card_container">
-<div class="row justify-content-around mb-4">
-    <div class="col-3">
-       <div class="card_ind">
-           <div class="card__side card__side--front">
-                <div class="card__picture_admin card__pictureAdmin--1">
-                    &nbsp;
-                </div>
-                <h4 class="card__heading">
-                    <span class="card__heading-span card__heading-span--1">Crear pago</span>
-                </h4>
-                <div class="card__details">
-                    <ul>
-                        <li>Planificar pagos</li>
-                        <li>Nomina</li>
-                        <li>Inversiones</li>
-                        <li>Equipo medico</li>
-                        <li>Gastos de hospital</li>
-                    </ul>
-                </div>
-           </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica San Roman</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <script src="/javascripts/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/app.css">
+</head>
+<%
+function makeDMY(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear()};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+}
+function makeDMYHour(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear(),h:date.getUTCHours(), min:date.getMinutes() };
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
+}
+//Array with supplies to be refilled
+let refill_location = {};
+transactions.forEach(element => {
+    let trans = { 
+            name: element.service.name,
+            class: element.service.class,
+            consumtionDate: element.consumtionDate,
+            expiration: element.service.expiration,
+            amount: element.amount,
+            author:element.addedBy.username
+                }
+    if(element.location in refill_location){
+        refill_location[element.location].push(trans);
+    }else{
+        refill_location[element.location] = [trans]
+    }
+});
+console.log("inside refill form")
+console.log(refill_location);
+%>
+ <%- include('../partials/navbar')%>
+    <body>
+        <div class = "toPDF">
+            <div class="jumbotron">
+            <div class = "m-4 p-4">
+              <%  for (const property in refill_location) {%>
 
-           <div class="card__side card__side--back card__side--back-1">
-                <div class="card__cta">
-                    <div class="card__back-box">
-                        <p class="card__back_title">Crear pago</p>
-                    </div>
-                    <div class="bt_container">
-                        <a href="/exits/new" class="bt bt--white">Crear</a>
+                <table class="table table-borderless" id="simple_table">
+                    <thead class="thead-dark">
+                        <tr class="border-bottom border-dark">  
+                            <th scope ="col"><h3></h3></th>
+                            <th scope="col"><h3></h3></th> 
+                            <th scope="col"><h3><%=property%></h3></th>  
+                            <th scope="col"><h3></h3></th>
+                            <th scope="col"><h3></h3></th>
+                            <th scope="col"><h3></h3></th>
+                        </tr>  
+                    </thead>
+                    <tbody>
+                        <tr>  
+                            <th>Nombre</th> 
+                            <th>Clase</th> 
+                            <th>Cantidad</th>  
+                            <th>Caducidad</th>
+                            <th>Agregado</th>
+                            <th>Usuario</th>
+                        </tr>
+                    <%
+                    refill_location[property].forEach(function(item,index){%>
+                        <tr>  
+                            <td><%=item.name%></td> 
+                            <td><%=item.class%></td>  
+                            <td><%=item.amount%></td>  
+                            <td><%=makeDMY(item.expiration)%></td>
+                            <td><%=makeDMYHour(item.consumtionDate)%></td>  
+                            <td><%=item.author%></td> 
+                        </tr> 
+                    <%})%>
+                    </tbody> 
+                </table> 
+            <%}%>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                    <textarea id="notes" name="story" rows="5" cols="33">Recibe: <%=currentUser.username%>
+                    </textarea> 
                     </div>
                 </div>
             </div>
-       </div>
-    </div>
+        </div> 
+        </div> 
+        <div class="container"><a href = "/exits/refillPDF">
+                <button type="button" class="btn btn-outline-secondary">Crear PDF</button>
+            </a>
+            <form action="/exits/refill?_method=PUT" method="POST" novalidate class="validated-form">
+                <div class="float-right">
+                    <button type = "submit" class="btn btn-danger">Reiniciar lista</button>
+                </div>
+            </form>  
+            </div>    
 
-
-    <div class="col-3">
-        <div class="card_ind">
-            <div class="card__side card__side--front">
-                <div class="card__picture_admin card__pictureAdmin--2">
-                    &nbsp;
-                </div>
-                <h4 class="card__heading">
-                    <span class="card__heading-span card__heading-span--1">Pagos programados</span>
-                </h4>
-                <div class="card__details">
-                    <ul>
-                        <li>Gastos programados</li>
-                        <li>Visualizar pagos</li>
-                        <li>Editar pagos</li>
-                        <li>Borrar pagos</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card__side card__side--back card__side--back-2">
-                <div class="card__cta">
-                    <div class="card__back-box">
-                        <p class="card__back_title">Pagos programados</p>
-                    </div>
-                    <div class="bt_container">
-                        <a href="/exits/payments" class="bt bt--white">Ver</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-3">
-        <div class="card_ind">
-            <div class="card__side card__side--front">
-                <div class="card__picture_admin card__pictureAdmin--3">
-                    &nbsp;
-                </div>
-                <h4 class="card__heading">
-                    <span class="card__heading-span card__heading-span--1">Estado de cuenta del hospital</span>
-                </h4>
-                <div class="card__details">
-                    <ul>
-                        <li>Visualizar estados de cuenta</li>
-                        <li>Crear pdf de estado de cuenta</li>
-                        <li>Ingresos</li>
-                        <li>Egresos</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card__side card__side--back card__side--back-2">
-                <div class="card__cta">
-                    <div class="card__back-box">
-                        <p class="card__back_title">Estado de cuenta</p>
-                    </div>
-                    <div class="bt_container">
-                        <a href="/exits/hospital_account" class="bt bt--white">Ver</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+ </body> 
+ 
+</html>

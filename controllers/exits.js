@@ -4,6 +4,8 @@ const Exit = require('../models/exit');
 const Point = require('../models/refillPoint');
 const Payment = require('../models/payment');
 const { date } = require('joi');
+const puppeteer = require('puppeteer'); 
+
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -269,17 +271,68 @@ module.exports.servicesPayments = async (req, res) => {
     return res.json({"transactions":transactions,'exits':exits,'currentUser':req.user, ...arguments})
 }
 
-
-module.exports.renderNewForm = async (req, res) => {
-    let setPoint = await Point.findOne();
-    let transactions =  await Transaction.find({consumtionDate:{$gte:setPoint}}).populate("service");
-    res.render(`exits/new`);
+// render list of products to be refilled.
+module.exports.refillForm = async (req, res) => {
+    let timePoint = await Point.findOne({name:"datePoint"});
+    let transactions =  await Transaction.find({consumtionDate:{$gte:timePoint.setPoint}}).populate("service").populate("addedBy");
+    res.render(`exits/refill_form`,{transactions});
 }
 
-// render list of products to be refilled.
-module.exports.renderNewForm = (req, res) => {
+//reset time point for resupply
+module.exports.editDatePoint = async (req, res) => {
+    let timePoint = await Point.findOne({name:"datePoint"});
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
+    timePoint.setPoint = nDate
+    await timePoint.save()
+    console.log("inside DatePoint")
+    res.render(`exits`);
+}
 
-    res.render(`exits/refill_form`);
+module.exports.refillFormPDF = async (req,res) =>{ 
+    // const browser = await puppeteer.launch();       // run browser
+    const chromeOptions = {
+        headless: true,
+        defaultViewport: null,
+        args: [
+            "--incognito",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote"
+        ],
+    };
+    const browser = await puppeteer.launch(chromeOptions);
+    const page = await browser.newPage();           // open new tab
+    
+    // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'}); 
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/exits/refill`,{
+          waitUntil: 'networkidle0'});
+
+    const dom = await page.$eval('.toPDF', (element) => {
+        return element.innerHTML
+    }) // Get DOM HTML
+    await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
+    await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
+    await page.addStyleTag({content: `.image_print{
+        position:absolute;
+        top:50px;
+        left:20px;
+        width:250px;
+        height: 120px;
+      }`})
+    const pdf = await page.pdf({landscape: false})
+    await browser.close(); 
+    res.contentType("application/pdf");
+    res.send(pdf);
+}
+
+//render create payment form
+module.exports.renderNewForm = (req, res) => {
+    res.render(`exits/new`);
 }
 
 module.exports.createPayment = async (req, res, next) => {

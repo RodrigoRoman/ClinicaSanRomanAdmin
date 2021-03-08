@@ -59,6 +59,8 @@ module.exports.patientSchema = Joi.object({
     patient: Joi.object({
         name: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
         phone: Joi.number().required(),
+        cuarto: Joi.string().required(),
+        edad: Joi.number().required(),
         email: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').email({tlds: { allow: false } }).escapeHTML(),
         address: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
         rfc: Joi.number().required(),

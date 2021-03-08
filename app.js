@@ -13,11 +13,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-// const {Service,Supply,Hospital} = require('./models/service');
-// const Transaction = require("./models/transaction");
-// const Patient = require("./models/patient");
-// const Exit = require("./models/exit");
-// const Payment = require("./models/payment");
+const Refill = require("./models/refillPoint");
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const userRoutes = require('./routes/users');
@@ -126,6 +122,21 @@ app.use(
         },
     })
 );
+
+//Seed date point from which start to count supplies to be resupplied
+Refill.countDocuments(function (err, count) {
+    if (!err && count === 0) {
+        const nDate = new Date;
+        nDate.setHours(nDate.getHours() - 6);
+        let point = new Refill({
+            name:"datePoint",
+            setPoint:nDate,
+        });
+        point.save(function (err,saved) {
+            if (err) return handleError(err);
+        });
+    }
+});
 
 
 app.use(passport.initialize());

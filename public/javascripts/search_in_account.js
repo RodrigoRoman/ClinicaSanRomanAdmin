@@ -137,13 +137,23 @@ function populateTable(event) {
         tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.doctor + '</small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
+        tableContent += '<td><small class="text-muted">  </small></td>';
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
-
-        }
+        tableContent += `<td><select class="btn btn-outline-secondary btn-sm custom-select custom-select-sm mt-1" >
+        <option selected id= "central" value="Central">Central</option>
+        <option id= "urgencias" value="Doctor">Urgencias</option>
+        <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
+        <option id= "cpre" value="CPRE">CPRE</option>
+        <option id= "quirofano" value="Quirofano">Quirofano</option>
+        <option id= "parto" value="parto">Parto</option>
+    </select>
+      </td>
+      `;
+      }
       tableContent += '<td><div class="number-input"><button class="minus" ></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
       tableContent += '<td class="art"><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
       tableContent += '</tr>';
@@ -171,12 +181,23 @@ function populateTableModal(event) {
         tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.doctor + '</small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
-
+        tableContent += '<td><small class="text-muted">  </small></td>';
       }else{
         tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
+        tableContent += `<td>
+        <select class="btn btn-outline-secondary custom-select btn-sm custom-select-sm mt-1" >
+        <option selected id= "central" value="Central">Central</option>
+        <option id= "urgencias" value="Doctor">Urgencias</option>
+        <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
+        <option id= "cpre" value="cpre">CPRE</option>
+        <option id= "quirofano" value="Quirofano">Quirofano</option>
+        <option id= "parto" value="Parto">Parto</option>
+    </select>
+             </td>
+                          `;
       };
       tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
       tableContent += '<td><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
@@ -193,6 +214,7 @@ function addService(event) {
     const service_amount = {
         'service':$(this).parent().parent().find("small").attr("alt"),
         'addAmount': parseInt($(this).parent().parent().find(".quantity").val()),
+        'location':$(this).parent().parent().find(".custom-select").val()
     }
     const self = this;
     // Use AJAX to post the object to our adduser service

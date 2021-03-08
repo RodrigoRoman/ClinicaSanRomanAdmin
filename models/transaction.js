@@ -8,6 +8,9 @@ const TransactionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Patient"
 	},
+	location:{
+		type: String
+	},
 	service:{
 		type: Schema.Types.ObjectId,
 		ref: "Service"
