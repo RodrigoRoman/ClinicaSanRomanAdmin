@@ -316,13 +316,13 @@ module.exports.refillFormPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
-    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
+        waitUntil: 'networkidle0'});          // go to site
     // await page.goto(
     //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //       waitUntil: 'networkidle0'});
-    await page.goto(`http://localhost:3000/exits/refill`,{
-                waitUntil: 'networkidle0'});
+    // await page.goto(`http://localhost:3000/exits/refill`,{
+    //             waitUntil: 'networkidle0'});
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
     }) // Get DOM HTML
