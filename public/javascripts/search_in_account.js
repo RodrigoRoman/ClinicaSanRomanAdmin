@@ -145,11 +145,12 @@ function populateTable(event) {
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
         tableContent += `<td><select class="btn btn-outline-secondary btn-sm custom-select custom-select-sm mt-1" >
         <option selected id= "central" value="Central">Central</option>
-        <option id= "urgencias" value="Doctor">Urgencias</option>
+        <option id= "urgencias" value="Urgencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="CPRE">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>
         <option id= "parto" value="parto">Parto</option>
+        <option id= "bodega" value="Bodega">Bodega</option>
     </select>
       </td>
       `;
@@ -190,11 +191,12 @@ function populateTableModal(event) {
         tableContent += `<td>
         <select class="btn btn-outline-secondary custom-select btn-sm custom-select-sm mt-1" >
         <option selected id= "central" value="Central">Central</option>
-        <option id= "urgencias" value="Doctor">Urgencias</option>
+        <option id= "urgencias" value="Ugencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="cpre">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>
         <option id= "parto" value="Parto">Parto</option>
+        <option id= "bodega" value="Bodega">Bodega</option>
     </select>
              </td>
                           `;

@@ -17,10 +17,10 @@ router.route('/')
 
 router.get('/new', isLoggedIn, isDinamicDirectAdmin, exits.renderNewForm)
 
-router.get('/refill',exits.refillForm)
-    .put('/refill', exits.editDatePoint)
-
-router.get('/refillPDF', exits.refillFormPDF)
+router.route('/refill')
+    .get(exits.refillForm)
+    .post(exits.refillFormPDF)
+    .put( exits.editDatePoint)
 
 
 

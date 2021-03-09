@@ -271,12 +271,6 @@ module.exports.servicesPayments = async (req, res) => {
     return res.json({"transactions":transactions,'exits':exits,'currentUser':req.user, ...arguments})
 }
 
-// render list of products to be refilled.
-module.exports.refillForm = async (req, res) => {
-    let timePoint = await Point.findOne({name:"datePoint"});
-    let transactions =  await Transaction.find({consumtionDate:{$gte:timePoint.setPoint}}).populate("service").populate("addedBy");
-    res.render(`exits/refill_form`,{transactions});
-}
 
 //reset time point for resupply
 module.exports.editDatePoint = async (req, res) => {
@@ -296,11 +290,21 @@ module.exports.renderNewForm = (req, res) => {
     res.render(`exits/new`);
 }
 
+// render list of products to be refilled.
+module.exports.refillForm = async (req, res) => {
+    let entrega = req.query.entrega;
+    let recibe = req.query.recibe;
+    let timePoint = await Point.findOne({name:"datePoint"});
+    let transactions =  await Transaction.find({consumtionDate:{$gte:timePoint.setPoint}}).populate("service").populate("addedBy");
+    res.render(`exits/refill_form`,{transactions,entrega,recibe});
+}
 
 
 module.exports.refillFormPDF = async (req,res) =>{ 
     // let {begin,end,name} = req.query;               
     // const browser = await puppeteer.launch();       // run browser
+    let entrega = req.body.refill.entrega;
+    let recibe = req.body.refill.recibe;
     const chromeOptions = {
         headless: true,
         defaultViewport: null,
@@ -316,12 +320,14 @@ module.exports.refillFormPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
-        waitUntil: 'networkidle0'});          // go to site
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
+    //     waitUntil: 'networkidle0'});          // go to site
     // await page.goto(
     //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //       waitUntil: 'networkidle0'});
-    // await page.goto(`http://localhost:3000/exits/refill`,{
+    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill?entrega=${entrega}&recibe=${recibe}`,{
+                waitUntil: 'networkidle0'});
+    // await page.goto(`http://localhost:3000/exits/refill?entrega=${entrega}&recibe=${recibe}`,{
     //             waitUntil: 'networkidle0'});
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML

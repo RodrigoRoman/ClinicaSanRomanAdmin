@@ -47,63 +47,76 @@ console.log(refill_location);
     <body>
         <div class = "toPDF">
             <div class="jumbotron">
-            <div class = "m-4 p-4">
-              <%  for (const property in refill_location) {%>
-
-                <table class="table table-borderless" id="simple_table">
-                    <thead class="thead-dark">
-                        <tr class="border-bottom border-dark">  
-                            <th scope ="col"><h3></h3></th>
-                            <th scope="col"><h3></h3></th> 
-                            <th scope="col"><h3><%=property%></h3></th>  
-                            <th scope="col"><h3></h3></th>
-                            <th scope="col"><h3></h3></th>
-                            <th scope="col"><h3></h3></th>
-                        </tr>  
-                    </thead>
-                    <tbody>
-                        <tr>  
-                            <th>Nombre</th> 
-                            <th>Clase</th> 
-                            <th>Cantidad</th>  
-                            <th>Caducidad</th>
-                            <th>Agregado</th>
-                            <th>Usuario</th>
-                        </tr>
-                    <%
-                    refill_location[property].forEach(function(item,index){%>
-                        <tr>  
-                            <td><%=item.name%></td> 
-                            <td><%=item.class%></td>  
-                            <td><%=item.amount%></td>  
-                            <td><%=makeDMY(item.expiration)%></td>
-                            <td><%=makeDMYHour(item.consumtionDate)%></td>  
-                            <td><%=item.author%></td> 
-                        </tr> 
-                    <%})%>
-                    </tbody> 
-                </table> 
-            <%}%>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-6">
-                    <textarea id="notes" name="story" rows="5" cols="33">Recibe: <%=currentUser.username%>
-                     </textarea> 
+                <div class = "m-4 p-4">
+                    <%  for (const property in refill_location) {%>
+                        <table class="table table-borderless" id="simple_table">
+                            <thead class="thead-dark">
+                                <tr class="border-bottom border-dark">  
+                                    <th scope ="col"><h3></h3></th>
+                                    <th scope="col"><h3></h3></th> 
+                                    <th scope="col"><h3><%=property%></h3></th>  
+                                    <th scope="col"><h3></h3></th>
+                                    <th scope="col"><h3></h3></th>
+                                    <th scope="col"><h3></h3></th>
+                                </tr>  
+                            </thead>
+                            <tbody>
+                                <tr>  
+                                    <th>Nombre</th> 
+                                    <th>Clase</th> 
+                                    <th>Cantidad</th>  
+                                    <th>Caducidad</th>
+                                    <th>Agregado</th>
+                                    <th>Usuario</th>
+                                </tr>
+                            <%
+                            refill_location[property].forEach(function(item,index){%>
+                                <tr>  
+                                    <td><%=item.name%></td> 
+                                    <td><%=item.class%></td>  
+                                    <td><%=item.amount%></td>  
+                                    <td><%=makeDMY(item.expiration)%></td>
+                                    <td><%=makeDMYHour(item.consumtionDate)%></td>  
+                                    <td><%=item.author%></td> 
+                                </tr> 
+                            <%})%>
+                            </tbody> 
+                        </table> 
+                    <%}%>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-6">
+                                <%if(entrega || recibe){%>
+                                    <h2>Entrega: <%=entrega%><h2>
+                                    <h2>Recibe: <%=recibe%><h2></h2>
+                                <%}else{%>
+                                <form action="/exits/refill" method="POST" novalidate class="validated-form">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="entrega">Entrega:</label>
+                                        <input class="form-control" type="text" id="entrega" name="refill[entrega]" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="recibe">Recibe:</label>
+                                        <input class="form-control" type="text" id="recibe" name="refill[recibe]" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <button type = "submit" class="btn btn-outline-secondary">Crear PDF</button>
+                                    </div>
+                                </form>
+                                <%}%>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
         </div> 
-        </div> 
-        <div class="container"><a href = "/exits/refillPDF">
-                <button type="button" class="btn btn-outline-secondary">Crear PDF</button>
-            </a>
+        <div class="container mx-3 ">
             <form action="/exits/refill?_method=PUT" method="POST" novalidate class="validated-form">
-                <div class="float-right">
+                <div class="float-right mb-4">
                     <button type = "submit" class="btn btn-danger">Reiniciar lista</button>
                 </div>
             </form>  
-            </div>    
+        </div>    
 
  </body> 
  
