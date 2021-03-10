@@ -26,6 +26,7 @@ function makeDMYHour(date){
 //Array with supplies to be refilled
 let refill_location = {};
 transactions.forEach(element => {
+    if(element.service.service_type == "supply"){
     let trans = { 
             name: element.service.name,
             class: element.service.class,
@@ -39,6 +40,7 @@ transactions.forEach(element => {
     }else{
         refill_location[element.location] = [trans]
     }
+}
 });
 console.log("inside refill form")
 console.log(refill_location);
@@ -71,6 +73,7 @@ console.log(refill_location);
                                 </tr>
                             <%
                             refill_location[property].forEach(function(item,index){%>
+                                <%console.log(item)%>
                                 <tr>  
                                     <td><%=item.name%></td> 
                                     <td><%=item.class%></td>  
