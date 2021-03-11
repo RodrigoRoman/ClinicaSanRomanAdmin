@@ -317,7 +317,15 @@ module.exports.searchAllPatients = async (req, res) => {
     res.json({'patients':patients,'begin':begin,'end':end})
 }
 
-
+function getDaysInMonthUTC(month, year) {
+    var date = new Date(Date.UTC(year, month, 1));
+    var days = [];
+    while (date.getUTCMonth() === month) {
+      days.push(new Date(date));
+      date.setUTCDate(date.getUTCDate() + 1);
+    }
+    return days;
+  }
 module.exports.searchAll = async (req, res) => {
     let {search,exp} = req.query;
         search = new RegExp(escapeRegExp(search), 'gi');
@@ -331,10 +339,15 @@ module.exports.searchAll = async (req, res) => {
         let supplies = [];
         if(exp){
             console.log("insidesssss")
+            expirations = [];
             exp = new Date(exp);
-            supplies = await Service.find({$or:dbQueries,deleted:false,expiration:exp});
+            console.log(exp);
+            expirations = getDaysInMonthUTC(exp.getUTCMonth(),exp.getUTCFullYear());
+            console.log(expirations)
+            supplies = await Service.find({$or:dbQueries,deleted:false,expiration:{$in:expirations}});
         }else{
             supplies = await Service.find({$or:dbQueries,deleted:false});
+            console.log(supplies[0].expiration)
         }
 		if (!supplies) {
 			res.locals.error = 'Ningun producto corresponde a la busqueda';
