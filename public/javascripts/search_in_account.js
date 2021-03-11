@@ -150,7 +150,7 @@ function populateTable(event) {
         <option id= "cpre" value="CPRE">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>
         <option id= "parto" value="parto">Parto</option>
-        <option id= "bodega" value="Bodega">Bodega</option>
+        <option id= "bodega" value="bodega">Bodega</option>
     </select>
       </td>
       `;
@@ -174,7 +174,9 @@ function populateTableModal(event) {
   let tableContent = '';
   // jQuery AJAX call for JSON
   let search = $("#search_val").val();
-  $.getJSON( `/patients/${patient_id}/search`,{search}, function( data ) {
+  let exp = $("#expirDate").val();
+
+  $.getJSON( `/patients/${patient_id}/search`,{search,exp}, function( data ) {
     // For each item in our JSON, add a table row and cells to the content string
     $.each(data, function(){
       tableContent += '<tr>';
@@ -195,8 +197,8 @@ function populateTableModal(event) {
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="cpre">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>
-        <option id= "parto" value="Parto">Parto</option>
-        <option id= "bodega" value="Bodega">Bodega</option>
+        <option id= "parto" value="parto">Parto</option>
+        <option id= "bodega" value="bodega">Bodega</option>
     </select>
              </td>
                           `;
@@ -216,7 +218,7 @@ function addService(event) {
     const service_amount = {
         'service':$(this).parent().parent().find("small").attr("alt"),
         'addAmount': parseInt($(this).parent().parent().find(".quantity").val()),
-        'location':$(this).parent().parent().find(".custom-select").val()
+        'location':$(this).parent().parent().find(".custom-select").val(),
     }
     const self = this;
     // Use AJAX to post the object to our adduser service

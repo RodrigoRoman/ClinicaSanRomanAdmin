@@ -7,12 +7,12 @@
   const currentUser = '<%-JSON.stringify(currentUser)%>';
   const beginD = '<%-JSON.stringify(begin)%>';
   const endD = '<%-JSON.stringify(end)%>';
-  console.log("in script");
 
 </script>
 <div class = "container">
   <div class = "btn-group mr-2" id = "search_group">
     <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Search" aria-label="Search">
+    <input type="date" id="expirDate" name="expiration">
     <button class="btn btn-outline-primary" id = "search" type="submit" data-toggle="modal" data-target="#exampleModalCenter">Search</button>
   </div>
   <!-- //search preview table -->

@@ -319,7 +319,7 @@ module.exports.searchAllPatients = async (req, res) => {
 
 
 module.exports.searchAll = async (req, res) => {
-    let {search} = req.query;
+    let {search,exp} = req.query;
         search = new RegExp(escapeRegExp(search), 'gi');
         const dbQueries =  [
             { name: search },
@@ -328,7 +328,14 @@ module.exports.searchAll = async (req, res) => {
             { description: search },
             { doctor: search}
         ];
-        let supplies = await Service.find({$or:dbQueries,deleted:false});
+        let supplies = [];
+        if(exp){
+            console.log("insidesssss")
+            exp = new Date(exp);
+            supplies = await Service.find({$or:dbQueries,deleted:false,expiration:exp});
+        }else{
+            supplies = await Service.find({$or:dbQueries,deleted:false});
+        }
 		if (!supplies) {
 			res.locals.error = 'Ningun producto corresponde a la busqueda';
         }
@@ -408,6 +415,8 @@ module.exports.updateServiceFromAccount = async (req, res) => {
       });
     const req_amount = req.body.amount;
     let new_car = patient.servicesCar.filter(el => el.service.name == service.name);
+    let location = new_car[0].location;
+    console.log(location)
     let total_amount = new_car.reduce((total,curr)=> total += curr.amount,0);
     const difference = total_amount - req_amount;
     if(difference<0){
@@ -422,7 +431,7 @@ module.exports.updateServiceFromAccount = async (req, res) => {
         service.stock = service.stock + Math.abs(difference);
     }
     await Transaction.deleteMany({patient:patient,service:service,$and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]});
-    const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,consumtionDate:nDate,addedBy:req.user});
+    const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,location:location,consumtionDate:nDate,addedBy:req.user});
     patient.servicesCar.push(new_trans);
     await new_trans.save();
     //Remove supply from the inventory
