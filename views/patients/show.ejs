@@ -24,28 +24,28 @@
   </div>
 </div>
 <%
-
-function makeDMY(date){
+function makeDMYHour(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
-  y : date.getUTCFullYear()};
-  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+  y : date.getUTCFullYear(),h:date.getUTCHours(), min:date.getMinutes() };
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
+
 let patientCar = []
 let total = 0;
       // Make a new object with amount to the same level as price, name and the other fields of servie
       if(patient.servicesCar){
        let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
       serviceCar = serviceCar.filter(el => el!= undefined);
-      patientCar = serviceCar.reduce(function(acc,serv) {
-        let index = acc.map(e => e.name+e.class+e.expiration).indexOf(serv.name+serv.class+serv.expiration);
-        if(index != -1){
-          acc[index].amount += serv.amount;
-        }else{
-          acc.push(serv);
-        }
-        return acc;
-      },[]);
-      patientCar = patientCar.sort((a, b) => b.date - a.date);
+      // patientCar = serviceCar.reduce(function(acc,serv) {
+      //   let index = acc.map(e => e.name+e.class+e.expiration).indexOf(serv.name+serv.class+serv.expiration);
+      //   if(index != -1){
+      //     acc[index].amount += serv.amount;
+      //   }else{
+      //     acc.push(serv);
+      //   }
+      //   return acc;
+      // },[]);
+      patientCar = serviceCar.sort((a, b) => b.consumtionDate - a.consumtionDate);
     }
 %> 
 
@@ -88,9 +88,8 @@ let total = 0;
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
               <td class = "item-price">$ <%= price%></td>
             <%}%>
-            <% const date = {month:item.consumtionDate.getUTCMonth() + 1,
-           day:item.consumtionDate.getUTCDate(),  year:item.consumtionDate.getUTCFullYear()};%>
-            <td class = "item-price"><%=date.day%>/<%=date.month%>/<%=date.year%></td>
+            
+            <td class = "item-price"><%=makeDMYHour(new Date(item.consumtionDate))%></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
             <td ><small class = "text-muted"><%=item.author%></small></td>
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
