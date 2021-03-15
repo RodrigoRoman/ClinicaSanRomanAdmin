@@ -34,7 +34,7 @@ let patientCar = []
 let total = 0;
       // Make a new object with amount to the same level as price, name and the other fields of servie
       if(patient.servicesCar){
-       let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
+       let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{trans_id:el._id,amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
       serviceCar = serviceCar.filter(el => el!= undefined);
       // patientCar = serviceCar.reduce(function(acc,serv) {
       //   let index = acc.map(e => e.name+e.class+e.expiration).indexOf(serv.name+serv.class+serv.expiration);
@@ -82,7 +82,7 @@ let total = 0;
         <%for(let item of patientCar){%>
           <tr>
             <td class= "item-name" alt = "<%=item._id%>"><%=item.name%></td>
-            <td ><small class = "text-muted"><%=item.class%></small></td>
+            <td ><small class = "text-muted" id="transID" alt = "<%=item.trans_id%>"><%=item.class%></small></td>
             <td>X <span class = "item-amount"><%=item.amount%></span></td>
             <%let price = (item.service_type == "supply")?item.sell_price:item.price %>
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>

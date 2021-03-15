@@ -390,48 +390,36 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const begin = new Date(req.body.begin+"T00:00:01.000Z");
     const end = new Date(req.body.end+"T23:59:01.000Z");
-    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
+    console.log("inside delete");
+    console.log(req.body.trans_id);
+    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
         populate: {
           path: 'service',
         },
       });
-    let trans = await Transaction.find({patient:patient,service:service,$and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]});
-    for(let t of trans){
-        console.log("inn")
-        await Transaction.findByIdAndDelete(t._id, function (err, docs) { 
-            if (err){ 
-                console.log(err) 
-            } 
-            else{ 
-                console.log("Deleted : ", docs); 
-            } 
-        });
-    }
+    let trans =  await Transaction.findByIdAndDelete(req.body.trans_id);
     if(service.service_type=="supply"){service.stock += parseInt(req.body.amount)};
     await service.save()
+    await patient.save();
     return res.send({msg:"True"});
 }
 
 module.exports.updateServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
-    const begin = new Date(req.body.begin+"T00:00:01.000Z");
-    const end = new Date(req.body.end+"T23:59:01.000Z");
-    //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
-    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{service:service._id, $and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]}}}).populate({
+    const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
         populate: {
           path: 'service',
         },
       });
     const req_amount = req.body.amount;
-    let new_car = patient.servicesCar.filter(el => el.service.name == service.name);
-    let location = new_car[0].location;
+    let transact = await Transaction.findById(req.body.trans_id);
+    let location = transact.location;
     console.log(location)
-    let total_amount = new_car.reduce((total,curr)=> total += curr.amount,0);
-    const difference = total_amount - req_amount;
+    const difference = transact.amount - req_amount;
     if(difference<0){
         if(service.service_type == "supply"){
             if((service.stock - Math.abs(difference)) < 0 ){
@@ -443,7 +431,7 @@ module.exports.updateServiceFromAccount = async (req, res) => {
     }else{
         service.stock = service.stock + Math.abs(difference);
     }
-    await Transaction.deleteMany({patient:patient,service:service,$and:[{consumtionDate:{$gte:begin}},{consumtionDate:{$lte:end}}]});
+    await Transaction.deleteMany({_id:req.body.trans_id});
     const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,location:location,consumtionDate:nDate,addedBy:req.user});
     patient.servicesCar.push(new_trans);
     await new_trans.save();

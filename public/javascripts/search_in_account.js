@@ -279,6 +279,7 @@ function removeService(event) {
         url: `/patients/${patient_id}/accountCart`,
         data: {
             'serviceID': $(this).parent().parent().parent().find(".item-name").attr("alt"),
+            'trans_id': $(this).parent().parent().parent().find("#transID").attr("alt"),
             'amount': parseInt($(this).parent().parent().parent().find(".item-amount").text()),
             'begin':makeYMD(new Date(JSON.parse(beginD))),
             'end':makeYMD(new Date(JSON.parse(endD))) 
@@ -315,6 +316,7 @@ function submitEditService(event) {
         url: `/patients/${patient_id}/accountCart`,
         data: {
           'serviceID': $(this).parent().parent().parent().find(".item-name").attr("alt"),
+          'trans_id': $(this).parent().parent().parent().find("#transID").attr("alt"),
           'amount': parseInt($(this).parent().parent().parent().find(".amountEdit").val()),
           'begin':makeYMD(new Date(JSON.parse(beginD))),
           'end':makeYMD(new Date(JSON.parse(endD))) 
