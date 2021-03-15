@@ -20,7 +20,7 @@ function makeDMY(date){
 }
 function makeDMYHour(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
-  y : date.getUTCFullYear(),h:date.getUTCHours(), min:date.getMinutes() };
+  y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
 //Array with supplies to be refilled
