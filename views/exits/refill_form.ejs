@@ -31,6 +31,7 @@ transactions.forEach(element => {
             name: element.service.name,
             class: element.service.class,
             consumtionDate: element.consumtionDate,
+            principle: element.service.principle,
             expiration: element.service.expiration,
             amount: element.amount,
             author:element.addedBy.username
@@ -43,7 +44,7 @@ transactions.forEach(element => {
 }
 });
 console.log("inside refill form")
-console.log(refill_location);
+console.log(refill_location[0]);
 %>
  <%- include('../partials/navbar')%>
     <body>
@@ -65,7 +66,7 @@ console.log(refill_location);
                             <tbody>
                                 <tr>  
                                     <th>Nombre</th> 
-                                    <th>Clase</th> 
+                                    <th>Principio</th> 
                                     <th>Cantidad</th>  
                                     <th>Caducidad</th>
                                     <th>Agregado</th>
@@ -76,7 +77,7 @@ console.log(refill_location);
                                 <%console.log(item)%>
                                 <tr>  
                                     <td><%=item.name%></td> 
-                                    <td><%=item.class%></td>  
+                                    <td><%=item.principle%></td>  
                                     <td><%=item.amount%></td>  
                                     <td><%=makeDMY(item.expiration)%></td>
                                     <td><%=makeDMYHour(item.consumtionDate)%></td>  
