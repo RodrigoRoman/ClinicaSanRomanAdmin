@@ -56,12 +56,26 @@ module.exports.updatePatient = async (req, res) => {
 
 module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
-    const patient = await Patient.findById(id);
+    const patient = await Patient.findById(id).populate({
+        path: 'servicesCar',
+        populate: {
+          path: 'service',
+        },
+      });
+    let freeze_elements = patient.servicesCar.map(el => {
+        let prov = el.toJSON();
+        console.log("=======================================");
+        console.log(prov);
+        delete prov._id;
+        return prov
+    });
+    patient.servicesCar = freeze_elements;
     //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
     patient.discharged = true
-    patient.dischargedDate =nDate;
+    patient.dischargedDate = nDate;
+    // const patie = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{}}});
     await patient.save();
     req.flash('success', 'Paciente dado de alta!');
     res.redirect(`/patients`)
@@ -239,11 +253,11 @@ module.exports.accountToPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-        waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+          waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
