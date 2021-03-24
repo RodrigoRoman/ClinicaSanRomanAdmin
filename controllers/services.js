@@ -87,11 +87,12 @@ module.exports.updateService = async (req, res) => {
     if(found.service_type==="supply"){
         service = await Supply.findByIdAndUpdate(id,{ ...req.body.service});
         let name = new RegExp(escapeRegExp(service.name), 'gi');
-        let nameShared = await Supply.find({name:name});
+        // let nameShared = await Supply.find({name:name});
+        let nameShared = await Supply.find({});
         for (const el of nameShared) {
-            el.buy_price = req.body.service.buy_price;
-            el.sell_price = req.body.service.sell_price;
-            el.optimum = req.body.service.optimum;
+            // el.buy_price = req.body.service.buy_price;
+            // el.sell_price = req.body.service.sell_price;
+            // el.optimum = req.body.service.optimum;
             el.outside = req.body.service.outside;
             await el.save();
         }
