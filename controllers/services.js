@@ -43,21 +43,6 @@ module.exports.createSupply = async (req, res, next) => {
     }
     for (let step = 0; step < 150; step++) {
         // Runs 5 times, with values of step 0 through 4.
-        let supp  = {
-            name: Math.random().toString(36).substring(7),
-        service_type: "supply",
-    principle: Math.random().toString(36).substring(7),
-    buy_price: Math.floor(Math.random() * Math.floor(1000)),
-    sell_price: Math.floor(Math.random() * Math.floor(1000)),
-    expiration:  randomDate(new Date(2020, 0, 1), new Date(2024, 0, 1)),
-    supplier : Math.random().toString(36).substring(7),
-    optimum : Math.floor(Math.random() * Math.floor(1000)),
-    outside : Math.floor(Math.random() * Math.floor(1000)),
-    hospitalEntry : true,
-    description: " ",
-    claveSat: Math.floor(Math.random() * Math.floor(1000)),
-    stock : Math.floor(Math.random() * Math.floor(1000))
-        }
         let prov_sup = new Supply(supp);
         await prov_sup.save();
         console.log('Walking east one step');
