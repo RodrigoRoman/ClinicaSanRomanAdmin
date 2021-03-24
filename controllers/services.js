@@ -41,12 +41,6 @@ module.exports.createSupply = async (req, res, next) => {
         el.outside = req.body.service.outside;
         await el.save();
     }
-    for (let step = 0; step < 150; step++) {
-        // Runs 5 times, with values of step 0 through 4.
-        let prov_sup = new Supply(supp);
-        await prov_sup.save();
-        console.log('Walking east one step');
-      }
     const supply = new Supply(req.body.service);
     supply.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     supply.author = req.user._id;
@@ -123,11 +117,11 @@ module.exports.deleteService = async (req, res) => {
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
     let service = await Service.findById(id);
-    let toDelete = await Service.find({$or: [ {stock:0}, {expiration:{$lte:nDate}}]});
-    for(let el of toDelete){
-        el.deleted = true;
-        await el.save();
-    }
+    // let toDelete = await Service.find({$or: [ {stock:0}, {expiration:{$lte:nDate}}]});
+    // for(let el of toDelete){
+    //     el.deleted = true;
+    //     await el.save();
+    // }
     service.deleted = true;
     service.save()
     req.flash('success', 'Servicio eliminado')
