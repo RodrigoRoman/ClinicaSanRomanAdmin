@@ -26,11 +26,12 @@ module.exports.renderNewForm = (req, res) => {
     const {service_type} = req.query
     res.render(`services/new_${service_type}`);
 }
+function randomDate(start, end) {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
 
 module.exports.createSupply = async (req, res, next) => {
     let name = req.body.service.name;
-    console.log("--==--==--==--");
-    console.log(req.body.service);
     name = new RegExp(escapeRegExp(name), 'gi')
     let nameShared = await Supply.find({name:name});
     for (const el of nameShared) {
@@ -40,6 +41,27 @@ module.exports.createSupply = async (req, res, next) => {
         el.outside = req.body.service.outside;
         await el.save();
     }
+    for (let step = 0; step < 150; step++) {
+        // Runs 5 times, with values of step 0 through 4.
+        let supp  = {
+            name: Math.random().toString(36).substring(7),
+        service_type: "supply",
+    principle: Math.random().toString(36).substring(7),
+    buy_price: Math.floor(Math.random() * Math.floor(1000)),
+    sell_price: Math.floor(Math.random() * Math.floor(1000)),
+    expiration:  randomDate(new Date(2020, 0, 1), new Date(2024, 0, 1)),
+    supplier : Math.random().toString(36).substring(7),
+    optimum : Math.floor(Math.random() * Math.floor(1000)),
+    outside : Math.floor(Math.random() * Math.floor(1000)),
+    hospitalEntry : true,
+    description: " ",
+    claveSat: Math.floor(Math.random() * Math.floor(1000)),
+    stock : Math.floor(Math.random() * Math.floor(1000))
+        }
+        let prov_sup = new Supply(supp);
+        await prov_sup.save();
+        console.log('Walking east one step');
+      }
     const supply = new Supply(req.body.service);
     supply.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     supply.author = req.user._id;
@@ -113,7 +135,14 @@ module.exports.updateService = async (req, res) => {
 
 module.exports.deleteService = async (req, res) => {
     const { id } = req.params;
+    const nDate = new Date;
+    nDate.setHours(nDate.getHours() - 6);
     let service = await Service.findById(id);
+    let toDelete = await Service.find({$or: [ {stock:0}, {expiration:{$lte:nDate}}]});
+    for(let el of toDelete){
+        el.deleted = true;
+        await el.save();
+    }
     service.deleted = true;
     service.save()
     req.flash('success', 'Servicio eliminado')

@@ -66,6 +66,8 @@ let total = 0;
           <%}%>
           <th>Fecha cargo 
           </th>
+          <th>Caducidad
+          </th>
           <th><small class = "text-muted">Agregado por</small>
           </th>
           <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
@@ -90,6 +92,7 @@ let total = 0;
             <%}%>
             
             <td class = "item-price"><%=makeDMYHour(new Date(item.consumtionDate))%></td>
+            <td class = "item-price"><%=makeDMYHour(new Date(item.expiration))%></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
             <td ><small class = "text-muted"><%=item.author%></small></td>
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
@@ -128,6 +131,8 @@ let total = 0;
             </th>
           <%}%>
           <th>Fecha cargo 
+          </th>
+          <th>Caducidad 
           </th>
           <th><small class = "text-muted">Agregado por</small>
           </th>
