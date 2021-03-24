@@ -56,26 +56,12 @@ module.exports.updatePatient = async (req, res) => {
 
 module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
-    const patient = await Patient.findById(id).populate({
-        path: 'servicesCar',
-        populate: {
-          path: 'service',
-        },
-      });
-    let freeze_elements = patient.servicesCar.map(el => {
-        let prov = el.toJSON();
-        console.log("=======================================");
-        console.log(prov);
-        delete prov._id;
-        return prov
-    });
-    patient.servicesCar = freeze_elements;
+    const patient = await Patient.findById(id);
     //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
     patient.discharged = true
-    patient.dischargedDate = nDate;
-    // const patie = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{}}});
+    patient.dischargedDate =nDate;
     await patient.save();
     req.flash('success', 'Paciente dado de alta!');
     res.redirect(`/patients`)

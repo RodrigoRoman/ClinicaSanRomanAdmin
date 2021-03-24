@@ -35,6 +35,7 @@ module.exports.supplySchema = Joi.object({
         expiration: Joi.date().required(),
         supplier: Joi.string().required().escapeHTML(),
         optimum: Joi.number().required().min(1),
+        outside: Joi.number().required(),
         stock: Joi.number().required().min(0),
         hospitalEntry: Joi.string().required(),
     }).required(),

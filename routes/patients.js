@@ -51,4 +51,5 @@ router.route('/:id/makePDF')
         .get(catchAsync(patients.accountToPDF))
 
 
+
 module.exports = router;

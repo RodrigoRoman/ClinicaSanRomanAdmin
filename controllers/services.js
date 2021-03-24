@@ -28,6 +28,18 @@ module.exports.renderNewForm = (req, res) => {
 }
 
 module.exports.createSupply = async (req, res, next) => {
+    let name = req.body.service.name;
+    console.log("--==--==--==--");
+    console.log(req.body.service);
+    name = new RegExp(escapeRegExp(name), 'gi')
+    let nameShared = await Supply.find({name:name});
+    for (const el of nameShared) {
+        el.buy_price = req.body.service.buy_price;
+        el.sell_price = req.body.service.sell_price;
+        el.optimum = req.body.service.optimum;
+        el.outside = req.body.service.outside;
+        await el.save();
+    }
     const supply = new Supply(req.body.service);
     supply.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     supply.author = req.user._id;
@@ -70,9 +82,19 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateService = async (req, res) => {
     const { id } = req.params;
     const found = await Service.findById({_id:id});
+
     console.log(found.service_type);
     if(found.service_type==="supply"){
         service = await Supply.findByIdAndUpdate(id,{ ...req.body.service});
+        let name = new RegExp(escapeRegExp(service.name), 'gi');
+        let nameShared = await Supply.find({name:name});
+        for (const el of nameShared) {
+            el.buy_price = req.body.service.buy_price;
+            el.sell_price = req.body.service.sell_price;
+            el.optimum = req.body.service.optimum;
+            el.outside = req.body.service.outside;
+            await el.save();
+        }
     }else{
         service = await Hospital.findByIdAndUpdate(id,{ ...req.body.service});
     }
@@ -129,6 +151,7 @@ module.exports.searchAllSupplies = async (req, res) => {
                     buy_price: { $last: "$buy_price" },
                     stock:{ $push: "$stock" },                
                     optimum:{$avg: "$optimum"},
+                    outside:{$last: "$outside"},
                     images:{$last:"$images"} }},
                 {$addFields:{totalStock : { $sum: "$stock" }}},
                 //porportion of total stock and optimum

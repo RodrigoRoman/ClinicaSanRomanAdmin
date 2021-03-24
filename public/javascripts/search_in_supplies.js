@@ -121,7 +121,11 @@ function foundSupplies(event) {
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item border border-`+dateColor+`">Caducidad: `+new Date(this.expiration).toLocaleDateString('es-ES', options)+`</li>
-                            <li class="list-group-item">Existencias: `+this.stock+`</li>
+                            <li class="list-group-item">Existencias: `+this.stock+`</li>`);
+                    if(this.outside){
+                        suppliesContent+=(`<li class="list-group-item">En Bodega: `+(this.stock-this.outside)+`</li>`)
+                    }
+                    suppliesContent+=(` 
                             <li class="list-group-item">Proveedor: `+this.supplier+`</li>
                             <div class="clearfix split-items">
                                 <li class="list-group-item left-side">Compra: $`+ this.buy_price+` /cu</li>
@@ -211,8 +215,11 @@ function foundSupplies(event) {
                                         <div class="clearfix split-items ">
                                         <li class="list-group-item left-side "><span class = "border border-`+stockColor+` rounded-circle px-3 py-2 d-inline-block ">Total <br>`+ this.totalStock+` </span></li>
                                         <li class="list-group-item right-side ">Optimo<br> `+Math.round(this.optimum)+` </li>
-                                        </div>
-                            </ul>
+                                     </div>`);
+                if(this.outside){
+                    suppliesContent+=(`<li class="list-group-item">En Bodega: `+(this.totalStock-this.outside)+`</li>`)
+                }
+                 suppliesContent+=(`  </ul>
                             <table class="table mb-0">
                                 <thead>
                                     <tr>

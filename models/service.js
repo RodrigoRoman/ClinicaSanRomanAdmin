@@ -37,6 +37,7 @@ const SupplySchema = new Schema({
     expiration:  { type: Date, required: true},
     supplier : { type: String, required: true},
     optimum : {type: Number, required: true},
+    outside : {type: Number, required: true},
     stock : {type: Number, required: true}
   });
   
