@@ -375,7 +375,7 @@ module.exports.index_payments = async (req, res) => {
     nDate.setHours(nDate.getHours() - 6);
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
-    const payments = await Payment.find({dueDate:{$gte:dateLimit}}).populate("exits");
+    const payments = await Payment.find({}).populate("exits");
     res.render('exits/index_exits',{payments})
 }
 
@@ -392,21 +392,7 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.deletePayment = async (req, res) => {
     const { id } = req.params;
-    let curr_payment = await Payment.findById(id).populate('exits');
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
-    let dateLimit = nDate;
-    dateLimit.setDate(dateLimit.getDate()-1);
-    let delete_exits = curr_payment.exits.filter(el => el.clearDate >= dateLimit);
-    let size_equal =  delete_exits.length == curr_payment.exits.length
-    const new_payment = await Payment.findByIdAndUpdate(id,{$pull:{exits:{$and:[{clearDate:{$gte:nDate}}]}}}).populate('exits');
-    let after = await Payment.findById(id).populate('exits');
-    for(let t of delete_exits){
-        await Exit.findByIdAndDelete(t._id);
-    }
-    if(size_equal){
-        await Payment.remove({_id:curr_payment._id})
-    }
+    await Payment.remove({_id:id})
     res.redirect(`payments`);
 }
 
