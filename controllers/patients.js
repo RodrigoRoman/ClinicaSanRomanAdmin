@@ -326,6 +326,7 @@ function getDaysInMonthUTC(month, year) {
     }
     return days;
   }
+  
 module.exports.searchAll = async (req, res) => {
     let {search,exp} = req.query;
         search = new RegExp(escapeRegExp(search), 'gi');

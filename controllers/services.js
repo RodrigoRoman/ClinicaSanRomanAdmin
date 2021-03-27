@@ -14,7 +14,7 @@ module.exports.index = async (req, res) => {
 module.exports.index_supplies = async (req, res) => {
     // classify by name (case and symbol insensitive, up to a space)
     let supplies = await Supply.find({deleted:false}).populate("author");
-    res.render('services/index_supplies', { supplies})
+    res.render('services/index_supplies', {supplies})
 }
 
 module.exports.index_hospital = async (req, res) => {
@@ -26,6 +26,17 @@ module.exports.renderNewForm = (req, res) => {
     const {service_type} = req.query
     res.render(`services/new_${service_type}`);
 }
+
+module.exports.renderNewFrom = async (req, res) => {
+    const { id } = req.params;
+    const service = await Service.findById(id);
+    if (!service) {
+        req.flash('error', 'Error al buscar servicio!');
+        return res.redirect('/services');
+    }
+    res.render(`services/supply_from`,{service});
+}
+
 function randomDate(start, end) {
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
@@ -49,16 +60,16 @@ module.exports.createSupply = async (req, res, next) => {
     res.redirect(`/services`)///services/${service._id} direction
 }
 
-module.exports.showSupply = async (req, res) => {
-    let {name} = req.params;
-    name = name.split(" ")[0]
-    const supplies = await Supply.find({name:{$regex:name, $options:"mi"}}).populate('author');
-    if (!supplies) {
-        req.flash('error', 'No se encontro insumo!');
-        return res.redirect('/services');
-    }
-    res.render('services/show_supply', { supplies });
-}
+// module.exports.showSupply = async (req, res) => {
+//     let {name} = req.params;
+//     name = name.split(" ")[0]
+//     const supplies = await Supply.find({name:{$regex:name, $options:"mi"}}).populate('author');
+//     if (!supplies) {
+//         req.flash('error', 'No se encontro insumo!');
+//         return res.redirect('/services');
+//     }
+//     res.render('services/show_supply', { supplies });
+// }
 
 
 module.exports.createHospital = async (req, res, next) => {

@@ -40,6 +40,7 @@ router.route('/:id')
 
 
 router.route('/:id/supply')
+    .get(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), catchAsync(services.renderNewFrom))
     .put(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), validateSupply, catchAsync(services.updateService))
 
 router.route('/:id/hospital')

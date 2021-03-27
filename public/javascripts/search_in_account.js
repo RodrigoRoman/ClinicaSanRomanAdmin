@@ -135,11 +135,11 @@ function populateTable(event) {
       tableContent += '<tr>';
       if(this.doctor){
         tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
-        tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.doctor + '</small></td>';
+        tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.price + '</small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
       }else{
-        tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
+        tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
         tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
@@ -182,11 +182,11 @@ function populateTableModal(event) {
       tableContent += '<tr>';
       if(this.doctor){
         tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
-        tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.doctor + '</small></td>';
+        tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.price + '</small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
       }else{
-        tableContent += '<td><a class = "text-dark" href="/services/supply/'+this.name+'">' + this.name + '</a></td>';
+        tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'edit">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
