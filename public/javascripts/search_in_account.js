@@ -355,7 +355,9 @@ function submitEditService(event) {
 function updateDate(){
   window.location.href = window.location.pathname+"?"+$.param({
     'begin': $("#beginDate").val(),
-    'end': $("#endDate").val()
+    'bH':$("#beginHour").val(),
+    'end': $("#endDate").val(),
+    'eH':$("#endHour").val()
   })
 }
 

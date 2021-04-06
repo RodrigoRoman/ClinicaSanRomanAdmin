@@ -7,7 +7,6 @@ const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 
 
-
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
@@ -77,7 +76,7 @@ module.exports.deletePatient = async (req, res) => {
 
 
 module.exports.showPatient = async (req, res) => {
-    let {begin,end} = req.query;
+    let {begin,bH,end,eH} = req.query;
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
     const nDate = new Date;
@@ -85,12 +84,12 @@ module.exports.showPatient = async (req, res) => {
     if(!begin){
         begin = pat.admissionDate;
     }else{
-        begin = new Date(begin+"T00:00:01.000Z");
+        begin = new Date(begin+"T"+bH+"Z");
     };
     if(!end){
         end= nDate;
     }else{
-        end = new Date(end+"T23:59:01.000Z");
+        end = new Date(end+"T"+eH+"Z");
     };
     const patient = await Patient.findById(req.params.id).populate({
         path: 'servicesCar',
@@ -103,7 +102,7 @@ module.exports.showPatient = async (req, res) => {
         req.flash('error', 'No se encontro paciente!');
         return res.redirect('/patients');
     }
-    res.render(`patients/show`, { patient, str_id,begin,end});
+    res.render(`patients/show`, { patient, str_id,begin,end,eH,bH});
 }
 
 module.exports.patientAccount = async (req, res) => {
@@ -239,11 +238,11 @@ module.exports.accountToPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-        waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+          waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML

@@ -7,6 +7,11 @@ const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript mon
 y : date.getUTCFullYear()};
 return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
 }
+function makeHour(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
+  return  (newDate.h+":"+newDate.min);
+}
 patients.sort((a, b) => (a.discharged) ? 1 : -1)
 %>
 <div class="container">
@@ -21,7 +26,7 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
             </div>
         </div>
     </div>
-    <div class="row justify-content-around mb-4"">
+    <div class="row justify-content-around mb-4">
         <div class = "container col-2">
             <a class="btn btn-info " href="/patients/new">Registrar paciente</a>
         </div>
@@ -73,9 +78,9 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     <%}%>
                                     </div>
                                   </div>
-                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options) %> </h4>
+                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.admissionDate) %> </h4>
                                 <%if(patient.discharged){%>
-                                    <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-ES', options) %> </h4>
+                                    <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.dischargedDate) %> </h4>
                                 <%}%>
                                 <ul class="list-group list-group-flush mb-4">
                                     <li class="list-group-item">Email: <%= patient.email%></li>

@@ -204,12 +204,16 @@ let total = 0;
         <div class="col-12 mt-4">
           <div class="row offset-md-2">
             <div class="col-5">
+              <label class = "font-weight-bold">De</label>
               <input type="date" name="beginDay" id = "beginDate" class="form-control">
-              <label class = "ml-4">De</label>
+              <label class = "ml-5">Hora</label>
+              <input type="string" name="beginHour"  value = <%=(bH)?bH:"00:01:00"%> id = "beginHour" class="form-control">
             </div>
             <div class="col-5">
+              <label class = "font-weight-bold">Hasta</label>
               <input type="date" name="endDay"  id = "endDate" class="form-control">
-              <label class = "ml-3">Hasta</label>
+              <label class = "ml-5">Hora</label>
+              <input type="string" name="endHour"  value = <%=(eH)?eH:"23:59:00"%> id = "endHour" class="form-control">
             </div>
           </div>
         </div>
