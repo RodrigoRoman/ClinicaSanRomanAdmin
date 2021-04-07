@@ -81,6 +81,7 @@ module.exports.showPatient = async (req, res) => {
     //variable for local time 
     const nDate = new Date;
     nDate.setHours(nDate.getHours() - 6);
+    console.log(bH);
     if(!begin){
         begin = pat.admissionDate;
     }else{
