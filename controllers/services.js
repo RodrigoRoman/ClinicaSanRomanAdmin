@@ -125,8 +125,7 @@ module.exports.updateService = async (req, res) => {
 
 module.exports.deleteService = async (req, res) => {
     const { id } = req.params;
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date));
     let service = await Service.findById(id);
     //Delete products up to Date
     // let toDelete = await Service.find({$or: [ {stock:0}, {expiration:{$lte:nDate}}]});

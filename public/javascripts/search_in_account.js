@@ -1,6 +1,20 @@
 const userListData = [];
-const nDate = new Date;
-nDate.setHours(nDate.getHours() - 6);
+function convertUTCDateToLocalDate(date) {
+
+  date = new Date(date);
+
+  var localOffset = date.getTimezoneOffset() * 60000;
+
+  var localTime = date.getTime();
+
+  date = localTime - localOffset;
+
+  //date = new Date(date);
+
+  return date;
+
+  }
+const nDate = new Date(convertUTCDateToLocalDate(new Date));
 // DOM Ready =============================================================
 $(document).ready(function() {
   //set dates with default values
@@ -186,14 +200,14 @@ function populateTableModal(event) {
         tableContent += '<td><small class="text-muted">  </small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
       }else{
-        tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'edit">' + this.name + '</a></td>';
+        tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
         tableContent += '<td><small alt ='+this._id+' class="text-muted">' + this.class + '</small></td>';
         let dateColor = defineBorder(diff_months(new Date(this.expiration) , nDate)/12);
         tableContent += '<td><small alt ='+this._id+' class="text-muted border border-'+dateColor+' px-1 py-1 d-inline-block"> Cad: ' + makeDMY(new Date(this.expiration))+ '</small></td>';
         tableContent += `<td>
         <select class="btn btn-outline-secondary custom-select btn-sm custom-select-sm mt-1" >
         <option selected id= "central" value="Central">Central</option>
-        <option id= "urgencias" value="Ugencias">Urgencias</option>
+        <option id= "urgencias" value="Urgencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="cpre">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>

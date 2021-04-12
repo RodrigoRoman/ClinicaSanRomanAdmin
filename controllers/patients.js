@@ -6,6 +6,21 @@ const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 
+function convertUTCDateToLocalDate(date) {
+
+    date = new Date(date);
+
+    var localOffset = date.getTimezoneOffset() * 60000;
+
+    var localTime = date.getTime();
+
+    date = localTime - localOffset;
+
+    //date = new Date(date);
+
+    return date;
+
+    }
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -23,9 +38,8 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    console.log(req.body.patient)
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    console.log("this is the local time");
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -57,8 +71,7 @@ module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
     const patient = await Patient.findById(id);
     //variable for local time 
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date));
     patient.discharged = true
     patient.dischargedDate =nDate;
     await patient.save();
@@ -79,8 +92,7 @@ module.exports.showPatient = async (req, res) => {
     let {begin,bH,end,eH} = req.query;
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date));
     console.log(bH);
     if(!begin){
         begin = pat.admissionDate;
@@ -110,8 +122,7 @@ module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date));
     if(!begin){
         begin = pat.admissionDate
     }else{
@@ -360,9 +371,7 @@ module.exports.addToCart = async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     const service = await Service.findById(req.body.service);
     //variable for local time 
-    const nDate = new Date;
-    console.log(req.body.location)
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     console.log("transaction hour registered",nDate);
     const transaction = new Transaction({
         patient: patient,
@@ -408,8 +417,7 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
 
 module.exports.updateServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
         populate: {

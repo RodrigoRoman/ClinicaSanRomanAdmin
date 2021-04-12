@@ -5,7 +5,21 @@ const Point = require('../models/refillPoint');
 const Payment = require('../models/payment');
 const { date } = require('joi');
 const puppeteer = require('puppeteer'); 
+function convertUTCDateToLocalDate(date) {
 
+    date = new Date(date);
+  
+    var localOffset = date.getTimezoneOffset() * 60000;
+  
+    var localTime = date.getTime();
+  
+    date = localTime - localOffset;
+  
+    //date = new Date(date);
+  
+    return date;
+  
+    }
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -54,9 +68,7 @@ module.exports.index = async (req, res) => {
 }
 
 module.exports.hospital_account = async (req, res) => {
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
-
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     const exits = await Exit.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
@@ -275,8 +287,7 @@ module.exports.servicesPayments = async (req, res) => {
 //reset time point for resupply
 module.exports.editDatePoint = async (req, res) => {
     let timePoint = await Point.findOne({name:"datePoint"});
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     timePoint.setPoint = nDate
     await timePoint.save()
     console.log("inside DatePoint")
@@ -352,8 +363,7 @@ module.exports.createPayment = async (req, res, next) => {
     let payment =  new Payment(req.body.payment);
     let terms = parseInt(req.body.payment.terms);
     let exitAmount = (moneyAmount/terms);
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let datesArray = getDates(nDate, dueDate,terms);
     exitAmount = +(exitAmount).toFixed(3);
     //create exits from range of Dates and then push them to the pyments array
@@ -371,8 +381,7 @@ module.exports.createPayment = async (req, res, next) => {
 
 
 module.exports.index_payments = async (req, res) => {
-    const nDate = new Date;
-    nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     const payments = await Payment.find({}).populate("exits");
