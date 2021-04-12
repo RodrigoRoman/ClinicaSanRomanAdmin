@@ -32,7 +32,21 @@ mongoose.connect(dbUrl, {
     useUnifiedTopology: true,
     useFindAndModify: false
 });
+function convertUTCDateToLocalDate(date) {
 
+    date = new Date(date);
+
+    var localOffset = date.getTimezoneOffset() * 60000;
+
+    var localTime = date.getTime();
+
+    date = localTime - localOffset;
+
+    //date = new Date(date);
+
+    return date;
+
+    }
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
@@ -126,8 +140,7 @@ app.use(
 //Seed date point from which start to count supplies to be resupplied
 Refill.countDocuments(function (err, count) {
     if (!err && count === 0) {
-        const nDate = new Date;
-        nDate.setHours(nDate.getHours() - 6);
+        const nDate = new Date(convertUTCDateToLocalDate(new Date))
         let point = new Refill({
             name:"datePoint",
             setPoint:nDate,

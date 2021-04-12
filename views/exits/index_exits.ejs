@@ -1,12 +1,26 @@
 <% layout('layouts/boilerplate')%>
 <%
+function convertUTCDateToLocalDate(date) {
+
+date = new Date(date);
+
+var localOffset = date.getTimezoneOffset() * 60000;
+
+var localTime = date.getTime();
+
+date = localTime - localOffset;
+
+//date = new Date(date);
+
+return date;
+
+}
 function makeYMD(date){
     const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
     y : date.getUTCFullYear()};
     return  newDate.y+ "-" + newDate.m+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
     }
-const nDate = new Date;
-nDate.setHours(nDate.getHours() - 6);
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     %>
 <div class="container">
     
