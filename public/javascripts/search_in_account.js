@@ -145,6 +145,8 @@ function makeDMY(date){
 // Fill table with data
 function populateTable(event) {
    event.preventDefault();
+   const timeUnits =  ["Hora", "Dia"];
+
   // Empty content string
   let tableContent = '';
   // jQuery AJAX call for JSON
@@ -175,7 +177,11 @@ function populateTable(event) {
       </td>
       `;
       }
-      tableContent += '<td><div class="number-input"><button class="minus" ></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
+      if(timeUnits.includes(this.unit)){
+        tableContent += '<td></td>';
+      }else{
+        tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
+      }
       tableContent += '<td class="art"><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
       tableContent += '</tr>';
     });
@@ -195,7 +201,7 @@ function populateTableModal(event) {
   // jQuery AJAX call for JSON
   let search = $("#search_val").val();
   let exp = $("#expirDate").val();
-
+  const timeUnits =  ["Hora", "Dia"];
   $.getJSON( `/patients/${patient_id}/search`,{search,exp}, function( data ) {
     // For each item in our JSON, add a table row and cells to the content string
     $.each(data, function(){
@@ -223,7 +229,11 @@ function populateTableModal(event) {
              </td>
                           `;
       };
+      if(timeUnits.includes(this.unit)){
+        tableContent += '<td></td>';
+      }else{
       tableContent += '<td><div class="number-input"><button class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button class="plus"></button></div></td>';
+      }
       tableContent += '<td><button type="button" class="addToCart btn btn-sm btn-info">Agregar</button></td>';
       tableContent += '</tr>';
     });

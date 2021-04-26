@@ -383,10 +383,14 @@ module.exports.addToCart = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     console.log("transaction hour registered",nDate);
     let termDate = nDate;
+    let amnt = 0;
+    if(!timeUnits.includes(service.unit)){
+        amnt = req.body.addAmount;
+    }
     const transaction = new Transaction({
         patient: patient,
         service:service,
-        amount:req.body.addAmount,
+        amount:amnt,
         consumtionDate:nDate,
         addedBy:req.user,
         location:req.body.location,
@@ -477,6 +481,7 @@ module.exports.updateTimeService = async (req, res) => {
     let miliUnit = (service.unit == "Day")?(86400*1000):(3600*1000);
     //divide the difference between start and end batween the miliseconds unit
     let new_amount = (end.getTime() - start.getTime())/miliUnit;
+    new_amount = Math.round(new_amount * 100) / 100;
     await Transaction.deleteMany({_id:req.body.trans_id});
     console.log("about to create a new transaction")
     const transaction = new Transaction({
