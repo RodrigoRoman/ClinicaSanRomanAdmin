@@ -455,8 +455,6 @@ module.exports.updateServiceFromAccount = async (req, res) => {
         service.stock = service.stock + Math.abs(difference);
     }
     await Transaction.deleteMany({_id:req.body.trans_id});
-
-
     const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,location:location,consumtionDate:nDate,addedBy:req.user});
     patient.servicesCar.push(new_trans);
     await new_trans.save();
@@ -478,9 +476,12 @@ module.exports.updateTimeService = async (req, res) => {
         end = new Date(convertUTCDateToLocalDate(new Date(req.body.until))),
         toggle = req.body.toggle == "true";
     //calculate the unit time in miliseconds
-    let miliUnit = (service.unit == "Day")?(86400*1000):(3600*1000);
+    let miliUnit = (service.unit == "Dia")?(86400*1000):(3600*1000);
     //divide the difference between start and end batween the miliseconds unit
     let new_amount = (end.getTime() - start.getTime())/miliUnit;
+    console.log(miliUnit);
+    console.log(service.unit);
+    console.log(new_amount);
     new_amount = Math.round(new_amount * 100) / 100;
     await Transaction.deleteMany({_id:req.body.trans_id});
     console.log("about to create a new transaction")
