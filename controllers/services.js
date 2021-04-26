@@ -4,6 +4,21 @@ const Transaction = require('../models/transaction');
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
+function convertUTCDateToLocalDate(date) {
+
+    date = new Date(date);
+
+    var localOffset = date.getTimezoneOffset() * 60000;
+
+    var localTime = date.getTime();
+
+    date = localTime - localOffset;
+
+    //date = new Date(date);
+
+    return date;
+
+}
 
 
 module.exports.index = async (req, res) => {
