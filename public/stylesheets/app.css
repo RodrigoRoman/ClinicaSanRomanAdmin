@@ -6,6 +6,7 @@
   margin: 0px 0px 0px 0px !important;
 }
 
+
 .image_print{
   position:absolute;
   top:80px;
@@ -14,32 +15,123 @@
   height: 120px;
 }
 
-/* Table with fixed header */
-.fixed_header{
+#searchTableModal  td:nth-child(1) {
+  width: 20%;
+}
+#searchTableModal td:nth-child(2) {
+  width: 20%;
+}
+#searchTableModal td:nth-child(3) {
+  width: 20%;
+}
+#searchTableModal td:nth-child(4) {
+  width: 20%;
+}
+#searchTableModal td:nth-child(5) {
+  width: 20%;
+}
+
+.sticky1 table { min-width: 90%; }
+
+/*The next 3 sections make the magic happen*/
+.sticky1 thead, tbody tr {
+    display: table;
     width: 100%;
     table-layout: fixed;
+}
+
+.sticky1 tbody {
+    display: block;
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.sticky1 td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*Use the following to make sure cols align correctly*/
+.sticky1 table, tr, th, td {
     border-collapse: collapse;
 }
 
-.fixed_header tbody{
-  display:block;
-  overflow:auto;
-  height:400px;
-  width:100%;
+
+/*Set your columns to where you want them to be, skip the one that you can have resize to any width*/
+.sticky1 th:nth-child(1), .sticky1 td:nth-child(1) {
+    width: 10%;
 }
-.fixed_header thead tr{
-  display:block;
-  width:100%;
+.sticky1 th:nth-child(2), .sticky1 td:nth-child(2) {
+    width: 10%;
+}
+.sticky1 th:nth-child(3), .sticky1 td:nth-child(3) {
+    width: 20%;
+}
+.sticky1 th:nth-child(4),.sticky1 td:nth-child(4) {
+    width: 10%;
+}
+.sticky1 th:nth-child(5),.sticky1 td:nth-child(5) {
+    width: 20%;
+}
+.sticky1 th:nth-child(6),.sticky1 td:nth-child(6) {
+  width: 15%;
+}
+.sticky1 th:nth-child(7), .sticky1 td:nth-child(7) {
+  width: 25%;
 }
 
-.fixed_header th, .fixed_header td {
-  text-align: center;
-  width: 200px;
+
+
+
+.sticky2 table { min-width: 600px; }
+
+/*The next 3 sections make the magic happen*/
+.sticky2 thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.sticky2 tbody {
+    display: block;
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.sticky2 td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*Use the following to make sure cols align correctly*/
+.sticky2 table, tr, th, td {
+    border-collapse: collapse;
 }
 
 
+/*Set your columns to where you want them to be, skip the one that you can have resize to any width*/
+.sticky2 th:nth-child(1),td:nth-child(1) {
+  width: 10%;
+}
+.sticky2 th:nth-child(2),td:nth-child(2) {
+  width: 30%;
+}
+.sticky2 th:nth-child(3),td:nth-child(3) {
+  width: 30%;
+}
+.sticky2 th:nth-child(4),td:nth-child(4) {
+  width: 13%;
+}
+.sticky2 th:nth-child(5),td:nth-child(5) {
+width: 12%;
+}
+.sticky2 th:nth-child(6),td:nth-child(6) {
+  width: 17%;
+}
 
-
+  /* index card */
 .border {
     border-width:3px !important;
   }
@@ -539,3 +631,119 @@ a.closeAlert.disabled {
 .bt-text:active {
   box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.15);
   transform: translateY(0); }
+
+
+
+/* Button Toggle */
+.df-switch {
+  margin-top: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+.btn-toggle {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.btn-toggle {
+  margin: 0 0rem;
+  padding: 0;
+  position: relative;
+  border: none;
+  height: 1.5rem;
+  width: 3.5rem;
+  border-radius: 1.5rem;
+  color: #6b7381;
+  background: #0885da;
+}
+.btn-toggle:focus,
+.btn-toggle.focus,
+.btn-toggle:focus.active,
+.btn-toggle.focus.active {
+  outline: none;
+}
+.btn-toggle:before,
+.btn-toggle:after {
+  line-height: 1.5rem;
+  width: 4rem;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: absolute;
+  bottom: 0;
+  transition: opacity 0.25s;
+}
+.btn-toggle:before {
+  font-family: "Font Awesome 5 Free";  
+  font-weight: 1.5rem;
+  font-size: 1.5rem;
+
+	content: "\f2f2";
+  left: -4rem;
+  color: #109fff;
+}
+.btn-toggle:after {
+  font-family: "Font Awesome 5 Free";  
+  content: '\f28b';
+  font-weight: 1.5rem;
+  font-size: 1.5rem;
+  right: -4.5rem;
+  opacity: 0.5;
+  color: #808080;
+}
+.btn-toggle > .inner-handle {
+  border-radius: 13px;
+  width: 40px;
+  height: 13px;
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  background-color: #0f71bd;
+  box-shadow: inset 1px 1px 2px -1px black;
+}
+.btn-toggle.active > .inner-handle {
+  background-color: #808080;
+}
+.btn-toggle > .handle:before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  top: 35%;
+  left: 11px;
+  background-image: radial-gradient(circle at center, #0785da 5px, transparent 5px);
+  background-size: 10px 10px;
+  background-repeat: no-repeat;
+}
+.btn-toggle.active > .handle:before {
+  background-image: radial-gradient(circle at center, #808080 5px, transparent 5px);
+}
+.btn-toggle > .handle {
+  position: absolute;
+  top: -0.2875rem;
+  left: 0.3875rem;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 1.125rem;
+  background: #fff;
+  transition: left 0.25s;
+  border: 1px solid #ccc;
+}
+.btn-toggle.active {
+  transition: background-color 0.25s;
+}
+.btn-toggle.active > .handle {
+  left: 2.4175rem;
+  transition: left 0.25s;
+}
+.btn-toggle.active:before {
+  opacity: 0.5;
+}
+.btn-toggle.active:after {
+  opacity: 1;
+  color: #808080;
+}
+.btn-toggle.active {
+  background-color: #808080;
+}

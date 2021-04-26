@@ -20,6 +20,14 @@ const TransactionSchema = new Schema({
 	addedBy: { 
 		type: Schema.Types.ObjectId,
 		ref: 'User'
+	},
+	terminalDate:{ 
+		type: Date, 
+		default: null
+	},
+	toggle:{
+		type:Boolean,
+		default:true
 	}
 });
 module.exports = mongoose.model("Transaction", TransactionSchema)

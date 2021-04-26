@@ -79,6 +79,13 @@ $("#account-table").on('click',".edit-item",editService);
 //edit item from patients account
 $("#account-table").on('click',".accept-item",submitEditService);
 
+//edit time service
+$("#account-table").on('click',".btn-toggle",submitEditTimeService);
+
+// through datetime change
+$("#account-table").on('change',"#start",submitTimeServ)
+$("#account-table").on('change',"#until",submitTimeServ)
+
 
 //======= date range     =====
 let patient  = JSON.parse(pat);
@@ -103,7 +110,6 @@ $('.otherDate').click(function(){
   $("#endDate").val("");
   $("#beginDate").val("");
 })
-// $(".tillToday").click();
 
 //Button 
 $(".apply_dates").on("click",updateDate);
@@ -346,7 +352,7 @@ function submitEditService(event) {
           </button>
           </div> `;
           $("main").prepend(flashMessage);
-          $("#account-table"). load(" #account-table > *")
+          $("#account-table").fadeOut("fast").load(" #account-table > *").fadeIn('slow');
           setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
       }
       else {
@@ -358,7 +364,96 @@ function submitEditService(event) {
           </button>
           </div> `;
           $("main").prepend(flashMessage);
-          $("#account-table"). load(" #account-table > *");
+          $("#account-table").fadeOut("fast").load(" #account-table > *").fadeIn('slow');
+          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+      }
+
+      });
+};
+
+function submitEditTimeService(event) {
+  event.preventDefault();
+        // send update request
+      let tog = !($(this).parent().parent().parent().find("#until").attr("alt") =="true")
+      $.ajax({
+        type: 'PUT',
+        url: `/patients/${patient_id}/serviceTime`,
+        data: {
+          'serviceID': $(this).parent().parent().parent().find(".item-name").attr("alt"),
+          'trans_id': $(this).parent().parent().parent().find("#transID").attr("alt"),
+          'amount': parseInt($(this).parent().parent().parent().find(".item-amount").val()),
+          'start':$(this).parent().parent().parent().find("#start").val(),
+          'until':$(this).parent().parent().parent().find("#until").val(),
+          'toggle': tog
+        },
+        dataType: 'JSON',
+      }).done(function(response){
+        const uniqueStr = Math.random().toString(36).substring(7);
+        if (response.msg === 'True') {
+          let flashMessage = `<div class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
+          ${response.serviceName} fijado
+          <button type="button" id = flashMessage${uniqueStr} class="closeAlert" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div> `;
+          $("main").prepend(flashMessage);
+          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
+          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+      }
+      else {
+          // If something goes wrong, alert the error message that our service returned
+          let flashMessage = `<div class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
+          Error: ${response.serviceName} no se pudo fijar
+          <button type="button" id = "flashMessage${uniqueStr}" class="closeAlert" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div> `;
+          $("main").prepend(flashMessage);
+          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
+          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+      }
+
+      });
+};
+
+
+function submitTimeServ(event) {
+  event.preventDefault();  
+      $.ajax({
+        type: 'PUT',
+        url: `/patients/${patient_id}/serviceTime`,
+        data: {
+          'serviceID': $(this).parent().parent().find(".item-name").attr("alt"),
+          'trans_id': $(this).parent().parent().find("#transID").attr("alt"),
+          'amount': parseInt($(this).parent().parent().find(".item-amount").val()),
+          'start':$(this).parent().parent().find("#start").val(),
+          'until':$(this).parent().parent().find("#until").val(),
+          'toggle':$(this).parent().parent().find("#until").attr("alt")
+        },
+        dataType: 'JSON',
+      }).done(function(response){
+        const uniqueStr = Math.random().toString(36).substring(7);
+        if (response.msg === 'True') {
+          let flashMessage = `<div class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
+          ${response.serviceName} editado en cuenta de ${response.patientName}
+          <button type="button" id = flashMessage${uniqueStr} class="closeAlert" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div> `;
+          $("main").prepend(flashMessage);
+          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
+          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+      }
+      else {
+          // If something goes wrong, alert the error message that our service returned
+          let flashMessage = `<div class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
+          Error: No hay suficientes unidades de ${response.serviceName} en almacen
+          <button type="button" id = "flashMessage${uniqueStr}" class="closeAlert" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div> `;
+          $("main").prepend(flashMessage);
+          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
           setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
       }
 

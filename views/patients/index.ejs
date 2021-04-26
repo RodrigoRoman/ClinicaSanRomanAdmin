@@ -97,7 +97,7 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
                                         <form class="d-inline" action="/patients/<%=patient._id%>?_method=DELETE" method="POST">
                                             <button type="button" class="float-right btn btn-outline-danger mx-1 my-1 btn-sm" data-toggle="modal" data-target="#a<%=patient._id%>">
-                                                Borrar
+                                                <i class="fas fa-trash"></i>
                                               </button>
                                               <div class="modal fade" id="a<%=patient._id%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
@@ -112,15 +112,15 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                                         Los cambios no son reversibles.
                                                     </div>
                                                     <div class="modal-footer">
-                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                                      <button class="btn btn-danger">Borrar</button>
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-edit"></i></button>
+                                                      <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                                     </div>
                                                   </div>
                                                 </div>
                                               </div>
                                         </form>
  
-                                        <a class="float-right btn btn-outline-secondary mx-1 my-1 btn-sm" href="/patients/<%=patient._id%>/edit">Editar</a>
+                                        <a class="float-right btn btn-outline-secondary mx-1 my-1 btn-sm" href="/patients/<%=patient._id%>/edit"><i class="fas fa-edit"></i></a>
                                     <%}%>
                                 <%}else{%>
                                     <%

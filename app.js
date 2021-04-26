@@ -106,6 +106,7 @@ const scriptSrcUrls = [
     "http://www.shieldui.com/",
     "https://rawgit.com/",
     "https://warm-forest-49475.herokuapp.com",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome",
     "https://pure-brushlands-42473.herokuapp.com"
 ];
 const styleSrcUrls = [
@@ -114,6 +115,7 @@ const styleSrcUrls = [
     "https://kit-free.fontawesome.com/",
     "https://stackpath.bootstrapcdn.com/",
     "https://fonts.googleapis.com/",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/",
     "https://use.fontawesome.com/",
 ];
 const fontSrcUrls = [];
@@ -131,8 +133,9 @@ app.use(
                 "data:",
                 "https://res.cloudinary.com/dhfz9ryy4/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
                 "https://images.unsplash.com/",
+                "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
             ],
-            fontSrc: ["'self'", ...fontSrcUrls],
+            fontSrc: [ ...styleSrcUrls],
         },
     })
 );
@@ -181,12 +184,12 @@ app.get('/', (req, res) => {
 
 
 app.all('*', (req, res, next) => {
-    next(new ExpressError('Page Not Found', 404))
+    next(new ExpressError('Pagina no encontrada', 404))
 })
 
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+    if (!err.message) err.message = 'Algo ha salido mal!'
     res.status(statusCode).render('error', { err })
 })
 

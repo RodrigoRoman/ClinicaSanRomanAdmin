@@ -44,6 +44,9 @@ router.route('/:id/accountCart')
       .put(isLoggedIn,catchAsync(patients.updateServiceFromAccount))
       .delete(isLoggedIn,catchAsync(patients.deleteServiceFromAccount))
 
+router.route('/:id/serviceTime')
+      .put(isLoggedIn,catchAsync(patients.updateTimeService))
+
 router.route('/:id/showAccount')
         .get(catchAsync(patients.patientAccount))
 

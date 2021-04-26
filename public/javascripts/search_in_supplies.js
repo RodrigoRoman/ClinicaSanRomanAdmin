@@ -134,10 +134,10 @@ function foundSupplies(event) {
                         </ul>`);
                     if(true){
                 suppliesContent+= (`<div class="d-flex justify-content-around mx-1 my-1">
-                            <a class="card-link btn btn-info" href="/services/`+this._id+`/edit?service_type=supply">Editar</a>
-                            <a class="card-link btn btn-secondary" href="/services/`+this._id+`/supply">CC</a>
+                            <a class="card-link btn btn-info" href="/services/`+this._id+`/edit?service_type=supply"><i class="fas fa-edit"></i></a>
+                            <a class="card-link btn btn-secondary" href="/services/`+this._id+`/supply"><i class="fas fa-copy"></i></a>
                             <form class="d-inline" action="/services/`+this._id+`?_method=DELETE" method="POST">
-                                <button class="btn btn-danger">Borrar</button>
+                                <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
                             </form>
                         </div>`);
                          }
@@ -258,10 +258,10 @@ function foundSupplies(event) {
                         if(true){
                     suppliesContent+= (`
                             <div class="d-flex justify-content-around mx-1 my-1">
-                                <a class="card-link btn btn-info" href="/services/`+this.suppID+`/edit?service_type=supply">Editar</a>
-                                <a class="card-link btn btn-secondary" href="/services/`+this.suppID+`/supply">CC</a>
+                                <a class="card-link btn btn-info" href="/services/`+this.suppID+`/edit?service_type=supply"><i class="fas fa-edit"></i></a>
+                                <a class="card-link btn btn-secondary" href="/services/`+this.suppID+`/supply"><i class="fas fa-copy"></i></a>
                                 <form class="d-inline" action="/services/`+this.suppID+`?_method=DELETE" method="POST">
-                                    <button class="btn btn-danger">Borrar</button>
+                                    <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                 </form>
                             </div>`);
                             }

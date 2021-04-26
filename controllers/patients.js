@@ -38,7 +38,6 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    console.log("this is the local time");
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     patient.author = req.user._id;
     patient.admissionDate = nDate;
@@ -93,7 +92,6 @@ module.exports.showPatient = async (req, res) => {
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
-    console.log(bH);
     if(!begin){
         begin = pat.admissionDate;
     }else{
@@ -110,6 +108,16 @@ module.exports.showPatient = async (req, res) => {
           path: 'service addedBy',
         },
       })
+    let new_car = patient.servicesCar.map(el=>{
+        if(el.toggle){
+            el.terminalDate = nDate;
+            return el;
+        }else{
+            return el
+            }
+    })
+    patient.servicesCar=new_car;
+    await patient.save();
     const str_id = JSON.stringify(patient._id); 
     if (!patient) {
         req.flash('error', 'No se encontro paciente!');
@@ -121,6 +129,7 @@ module.exports.showPatient = async (req, res) => {
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
+    console.log("aaaaa cabron")
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
     if(!begin){
@@ -350,7 +359,6 @@ module.exports.searchAll = async (req, res) => {
         ];
         let supplies = [];
         if(exp){
-            console.log("insidesssss")
             expirations = [];
             exp = new Date(exp);
             console.log(exp);
@@ -370,16 +378,19 @@ module.exports.searchAll = async (req, res) => {
 module.exports.addToCart = async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     const service = await Service.findById(req.body.service);
+    const timeUnits =  ["Hora", "Dia"];
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     console.log("transaction hour registered",nDate);
+    let termDate = nDate;
     const transaction = new Transaction({
         patient: patient,
         service:service,
         amount:req.body.addAmount,
         consumtionDate:nDate,
         addedBy:req.user,
-        location:req.body.location
+        location:req.body.location,
+        terminalDate:termDate
     });
     if(service.service_type == "supply"){
         if((service.stock - req.body.addAmount) < 0 ){
@@ -400,7 +411,6 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const begin = new Date(req.body.begin+"T00:00:01.000Z");
     const end = new Date(req.body.end+"T23:59:01.000Z");
-    console.log("inside delete");
     console.log(req.body.trans_id);
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
@@ -441,12 +451,48 @@ module.exports.updateServiceFromAccount = async (req, res) => {
         service.stock = service.stock + Math.abs(difference);
     }
     await Transaction.deleteMany({_id:req.body.trans_id});
+
+
     const new_trans = new Transaction({patient: patient,service:service,amount:req_amount,location:location,consumtionDate:nDate,addedBy:req.user});
     patient.servicesCar.push(new_trans);
     await new_trans.save();
     //Remove supply from the inventory
     await service.save();
     await patient.save();
+    //update transactions (delete all transactions with that service and create a new one with new amount)
+    return res.send({ msg: "True",serviceName:`${service.name}`,patientName:`${patient.name}`});
+}
+
+
+
+module.exports.updateTimeService = async (req, res) => {
+    const service = await Service.findById(req.body.serviceID);
+    const patient = await Patient.findById(req.params.id);
+
+    // let transact = await Transaction.findById(req.body.trans_id);
+    let start = new Date(convertUTCDateToLocalDate(new Date(req.body.start))),
+        end = new Date(convertUTCDateToLocalDate(new Date(req.body.until))),
+        toggle = req.body.toggle == "true";
+    //calculate the unit time in miliseconds
+    let miliUnit = (service.unit == "Day")?(86400*1000):(3600*1000);
+    //divide the difference between start and end batween the miliseconds unit
+    let new_amount = (end.getTime() - start.getTime())/miliUnit;
+    await Transaction.deleteMany({_id:req.body.trans_id});
+    console.log("about to create a new transaction")
+    const transaction = new Transaction({
+        patient: patient,
+        service:service,
+        amount:new_amount,
+        consumtionDate:start,
+        addedBy:req.user,
+        terminalDate:end,
+        toggle:toggle
+    });
+    patient.servicesCar.push(transaction);
+    await transaction.save()
+    //Remove supply from the inventory
+    await patient.save();
+    console.log("at the end")
     //update transactions (delete all transactions with that service and create a new one with new amount)
     return res.send({ msg: "True",serviceName:`${service.name}`,patientName:`${patient.name}`});
 }

@@ -1,19 +1,18 @@
 
 <% layout('layouts/boilerplate')%>
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script>
   const patient_id = <%-str_id%>;  
   const pat = '<%-JSON.stringify(patient)%>';
   const currentUser = '<%-JSON.stringify(currentUser)%>';
   const beginD = '<%-JSON.stringify(begin)%>';
   const endD = '<%-JSON.stringify(end)%>';
-
 </script>
 <div class = "container">
   <div class = "btn-group mr-2" id = "search_group">
     <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Search" aria-label="Search">
     <input type="date" id="expirDate" name="expiration">
-    <button class="btn btn-outline-primary" id = "search" type="submit" data-toggle="modal" data-target="#exampleModalCenter">Search</button>
+    <button class="btn btn-outline-primary" id = "search" type="submit" data-toggle="modal" data-target="#exampleModalCenter"><i class="fas fa-search"></i></button>
   </div>
   <!-- //search preview table -->
   <div id = "searchList">
@@ -30,28 +29,22 @@ function makeDMYHour(date){
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
 
-let patientCar = []
+let patientCar = [];
+let timeUnits = ["Hora","Dia"];
 let total = 0;
       // Make a new object with amount to the same level as price, name and the other fields of servie
       if(patient.servicesCar){
-       let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{trans_id:el._id,amount:el.amount,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
+       let serviceCar = (patient.servicesCar).map((el) =>{if((el.consumtionDate>=begin) && (el.consumtionDate<=end)){return Object.assign(Object.assign({},el.service._doc),{trans_id:el._id,terminalDate:el.terminalDate,amount:el.amount,toggle:el.toggle,consumtionDate:el.consumtionDate,author:el.addedBy.username})}});
       serviceCar = serviceCar.filter(el => el!= undefined);
-      // patientCar = serviceCar.reduce(function(acc,serv) {
-      //   let index = acc.map(e => e.name+e.class+e.expiration).indexOf(serv.name+serv.class+serv.expiration);
-      //   if(index != -1){
-      //     acc[index].amount += serv.amount;
-      //   }else{
-      //     acc.push(serv);
-      //   }
-      //   return acc;
-      // },[]);
       patientCar = serviceCar.sort((a, b) => b.consumtionDate - a.consumtionDate);
     }
+let nonTimeElements = patientCar.filter(el=>!(timeUnits.includes(el.unit)));
+let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
 %> 
 <div><h1 class="text-center display-4"><%=patient.name%></h1></div>
 <div class="row justify-content-center" id = "account-table">
-  <div class="col-12 overflow-auto">
-    <table id="accountrStatus" class="table table-striped table-bordered table-responsive-sm ">
+  <div class="col-12 overflow-auto ">
+    <table id="accountrStatus" class="table table-responsive-sm sticky1">
       <thead>
         <tr>
           <th>Nombre
@@ -78,8 +71,8 @@ let total = 0;
         </tr>
       </thead>
 
-      <tbody>
-        <%for(let item of patientCar){%>
+      <tbody >
+        <%for(let item of nonTimeElements){%>
           <tr>
             <td class= "item-name" alt = "<%=item._id%>"><%=item.name%></td>
             <td ><small class = "text-muted" id="transID" alt = "<%=item.trans_id%>"><%=item.class%></small></td>
@@ -96,16 +89,16 @@ let total = 0;
               <td>$ <%=subtotal%> 
                 <%total+=subtotal%>
                 <span class = "float-right buttons">
-                  <button type="button"  class="delete-item btn btn-sm btn-outline-danger">Borrar</button>
-                  <button type="button"  class="edit-item btn btn-sm btn-outline-info">Editar</button>
+                  <button type="button"  class="delete-item btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                  <button type="button"  class="edit-item btn btn-sm btn-outline-info"><i class="fas fa-edit"></i></button>
                 </span>
               </td>
             <%}else{%>
             <%if(currentUser.username == (item.author)){%>
               <td>
                 <span class = "float-right buttons">
-                <button type="button"  class="delete-item btn btn-sm btn-outline-danger">Borrar</button>
-                <button type="button"  class="edit-item btn btn-sm btn-outline-info">Editar</button>
+                <button type="button"  class="delete-item btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                <button type="button"  class="edit-item btn btn-sm btn-outline-info"><i class="fas fa-edit"></i></button>
                 </span>
               </td>
             <%}else{%>
@@ -115,21 +108,21 @@ let total = 0;
           </tr>
         <%}%>
       </tbody>
-      <tfoot>
+    </table>
+    <br>
+    <br>
+    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+    <h1 class="text-center display-5"><i class="fas fa-hourglass-start"></i></h1>
+    <table id="accountStatus" class="table table-responsive-sm sticky2">
+      <thead>
         <tr>
           <th>Nombre
           </th>
-          <th><small class = "text-muted">Clase<small>
+          <th>Inicio
+          </th>
+          <th>Hasta
           </th>
           <th>Cantidad
-          </th>
-          <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
-            <th>Precio Unit
-            </th>
-          <%}%>
-          <th>Fecha cargo 
-          </th>
-          <th><small class = "text-muted">Agregado por</small>
           </th>
           <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
             <th>Subtotal
@@ -138,10 +131,43 @@ let total = 0;
             <th>Corregir
             </th>
           <%}%>
+          <th>Modo
+          </th>
         </tr>
-      </tfoot>
+      </thead>
+
+
+      <tbody class = "timeBody">
+        <%for(let item of timeElements){%>
+          <%let act = (item.toggle == true)?"":"active";
+          let dis = (item.toggle == true)?"":"disabled"
+          %>
+          <tr>
+            <td class= "item-name" alt = "<%=item._id%>"><%=item.name%></td>
+            <%let price = (item.service_type == "supply")?item.sell_price:item.price %>
+              <td><input type="datetime-local" id="start"
+                name="meeting-time" value = "<%=item.consumtionDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
+            <td><input type="datetime-local" id="until"
+              name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"<%=dis%>></td>
+            <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
+            <%let subtotal = +(item.amount*price).toFixed(3);%>
+            <td>$ <%=subtotal%><%total+=subtotal%>
+            </td>
+            <td>
+              <div class="df-switch">
+                <button type="button" class="btn btn-lg btn-toggle <%=act%>"  role = "button" data-toggle="button" aria-pressed="true" autocomplete="on">
+                  <div class="inner-handle"></div>
+                  <div class="handle"></div>
+                </button>
+              </div>
+              <div class = " buttons">
+                <button type="button"  class="delete-item btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+              </div>
+            </td> 
+          </tr>
+        <%}%>
+      </tbody>
     </table>
-    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
       <div class="container ">
         <%total = +(total).toFixed(3)%>
         <h2 class = "float-right font-italic border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=total%></span></h2>
@@ -154,7 +180,7 @@ let total = 0;
       %>
       <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
         <a href = "/patients/<%=patient._id%>/makePDF?begin=<%=b%>&end=<%=e%>&name=<%=patient.name%>">
-          <button type="button" class="btn btn-outline-secondary">Crear PDF</button>
+          <button type="button" class="btn btn-outline-secondary"><i class="fas fa-file-pdf"></i></button>
         </a>
         <form class="d-inline" action="/patients/<%=patient._id%>/discharge?_method=PUT" method="POST">
           <button class="btn btn-outline-warning ml-1">Dar de alta</button>
@@ -163,6 +189,7 @@ let total = 0;
     </div>
   </div>
 </div>
+
 
 
 <!-- Modal for complete display of services by search query -->
@@ -187,9 +214,6 @@ let total = 0;
       </div>
     </div>
   </div>
-
-
-  
 
   <div class="col-12 my-4 d-flex justify-content-center">
     <div class="col-6">
@@ -223,7 +247,9 @@ let total = 0;
       </div>
     </div>
   </div>
-   
 
+  
+   
 <script src="/javascripts/search_in_account.js" ></script>
+
 
