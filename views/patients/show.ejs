@@ -148,7 +148,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
               <td><input type="datetime-local" id="start"
                 name="meeting-time" value = "<%=item.consumtionDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td><input type="datetime-local" id="until"
-              name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"<%=dis%>></td>
+              name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
             <td>$ <%=subtotal%><%total+=subtotal%>

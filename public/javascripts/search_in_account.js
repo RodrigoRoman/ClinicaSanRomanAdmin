@@ -146,7 +146,6 @@ function makeDMY(date){
 function populateTable(event) {
    event.preventDefault();
    const timeUnits =  ["Hora", "Dia"];
-
   // Empty content string
   let tableContent = '';
   // jQuery AJAX call for JSON
