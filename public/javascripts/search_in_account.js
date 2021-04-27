@@ -220,7 +220,7 @@ function populateTableModal(event) {
         <option selected id= "central" value="Central">Central</option>
         <option id= "urgencias" value="Urgencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
-        <option id= "cpre" value="cpre">CPRE</option>
+        <option id= "cpre" value="CPRE">CPRE</option>
         <option id= "quirofano" value="Quirofano">Quirofano</option>
         <option id= "parto" value="parto">Parto</option>
         <option id= "bodega" value="bodega">Bodega</option>
