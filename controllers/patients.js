@@ -111,12 +111,21 @@ module.exports.showPatient = async (req, res) => {
     let new_car = patient.servicesCar.map(el=>{
         if(el.toggle){
             el.terminalDate = nDate;
+            let start = new Date(el.consumtionDate);
+            end = nDate;
+            //calculate the unit time in miliseconds
+            let miliUnit = (el.service.unit == "Dia")?(86400*1000):(3600*1000);
+        //divide the difference between start and end batween the miliseconds unit
+            let new_amount = (end.getTime() - start.getTime())/miliUnit;
+            new_amount = Math.round(new_amount * 100) / 100;
+            el.amount = new_amount;
             return el;
         }else{
             return el
             }
     })
     patient.servicesCar=new_car;
+    console.log(patient.servicesCar)
     await patient.save();
     const str_id = JSON.stringify(patient._id); 
     if (!patient) {
@@ -259,11 +268,11 @@ module.exports.accountToPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-        waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+          waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
@@ -470,21 +479,20 @@ module.exports.updateServiceFromAccount = async (req, res) => {
 module.exports.updateTimeService = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const patient = await Patient.findById(req.params.id);
-
+    const nDate = new Date(convertUTCDateToLocalDate(new Date))
     // let transact = await Transaction.findById(req.body.trans_id);
+    let toggle = req.body.toggle == "true";
     let start = new Date(convertUTCDateToLocalDate(new Date(req.body.start))),
-        end = new Date(convertUTCDateToLocalDate(new Date(req.body.until))),
-        toggle = req.body.toggle == "true";
+        end = (toggle)?nDate:new Date(convertUTCDateToLocalDate(new Date(req.body.until)));
     //calculate the unit time in miliseconds
     let miliUnit = (service.unit == "Dia")?(86400*1000):(3600*1000);
+    console.log("new amount")
+    console.log(start,end)
     //divide the difference between start and end batween the miliseconds unit
     let new_amount = (end.getTime() - start.getTime())/miliUnit;
-    console.log(miliUnit);
-    console.log(service.unit);
-    console.log(new_amount);
+    console.log(new_amount)
     new_amount = Math.round(new_amount * 100) / 100;
     await Transaction.deleteMany({_id:req.body.trans_id});
-    console.log("about to create a new transaction")
     const transaction = new Transaction({
         patient: patient,
         service:service,
@@ -498,7 +506,6 @@ module.exports.updateTimeService = async (req, res) => {
     await transaction.save()
     //Remove supply from the inventory
     await patient.save();
-    console.log("at the end")
     //update transactions (delete all transactions with that service and create a new one with new amount)
     return res.send({ msg: "True",serviceName:`${service.name}`,patientName:`${patient.name}`});
 }
