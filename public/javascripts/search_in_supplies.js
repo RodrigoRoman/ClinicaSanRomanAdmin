@@ -221,7 +221,7 @@ function foundSupplies(event) {
                     suppliesContent+=(`<li class="list-group-item">En Bodega: `+(this.totalStock-this.outside)+`</li>`)
                 }
                  suppliesContent+=(`  </ul>
-                            <table class="table mb-0">
+                            <table class="table mb-0 equalTable">
                                 <thead>
                                     <tr>
                                     <th class="table-dark" scope="col">Caducidad</th>
