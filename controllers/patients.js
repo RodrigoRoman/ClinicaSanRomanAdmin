@@ -109,7 +109,7 @@ module.exports.showPatient = async (req, res) => {
         },
       })
     let new_car = patient.servicesCar.map(el=>{
-        if(el.toggle){
+        if(["Dia","Hora"].includes(el.service.unit)){
             el.terminalDate = nDate;
             let start = new Date(el.consumtionDate);
             end = nDate;
@@ -125,7 +125,6 @@ module.exports.showPatient = async (req, res) => {
             }
     })
     patient.servicesCar=new_car;
-    console.log(patient.servicesCar)
     await patient.save();
     const str_id = JSON.stringify(patient._id); 
     if (!patient) {

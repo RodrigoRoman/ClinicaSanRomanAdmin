@@ -72,7 +72,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
       </thead>
 
       <tbody >
-        <%for(let item of nonTimeElements){%>
+        <%for(let item of nonTimeElements){console.log(item.amount)%>
           <tr>
             <td class= "item-name" alt = "<%=item._id%>"><%=item.name%></td>
             <td ><small class = "text-muted" id="transID" alt = "<%=item.trans_id%>"><%=item.class%></small></td>
