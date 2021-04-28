@@ -109,7 +109,7 @@ module.exports.showPatient = async (req, res) => {
         },
       })
     let new_car = patient.servicesCar.map(el=>{
-        if(["Dia","Hora"].includes(el.service.unit)){
+        if(["Dia","Hora"].includes(el.service.unit) && el.toggle){
             el.terminalDate = nDate;
             let start = new Date(el.consumtionDate);
             end = nDate;
@@ -137,7 +137,6 @@ module.exports.showPatient = async (req, res) => {
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
-    console.log("aaaaa cabron")
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
     if(!begin){
