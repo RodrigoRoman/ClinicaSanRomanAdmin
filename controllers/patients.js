@@ -108,7 +108,7 @@ module.exports.showPatient = async (req, res) => {
           path: 'service addedBy',
         },
       })
-    let new_car = patient.servicesCar.map(el=>{
+    let new_car = patient.servicesCar.map((el)=>{
         if(["Dia","Hora"].includes(el.service.unit) && el.toggle){
             el.terminalDate = nDate;
             let start = new Date(el.consumtionDate);
@@ -119,6 +119,7 @@ module.exports.showPatient = async (req, res) => {
             let new_amount = (end.getTime() - start.getTime())/miliUnit;
             new_amount = Math.round(new_amount * 100) / 100;
             el.amount = new_amount;
+            el.save()
             return el;
         }else{
             return el
@@ -488,7 +489,6 @@ module.exports.updateTimeService = async (req, res) => {
     console.log(start,end)
     //divide the difference between start and end batween the miliseconds unit
     let new_amount = (end.getTime() - start.getTime())/miliUnit;
-    console.log(new_amount)
     new_amount = Math.round(new_amount * 100) / 100;
     await Transaction.deleteMany({_id:req.body.trans_id});
     const transaction = new Transaction({

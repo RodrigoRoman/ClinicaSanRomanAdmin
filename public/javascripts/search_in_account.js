@@ -427,7 +427,6 @@ function submitEditTimeService(event) {
 
 
 function submitTimeServ(event) {
-  // alert($(this).parent().parent().find("#transID").attr("alt"));
   event.preventDefault();  
       $.ajax({
         type: 'PUT',
