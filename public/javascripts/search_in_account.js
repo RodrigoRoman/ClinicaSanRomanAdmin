@@ -384,6 +384,8 @@ function submitEditTimeService(event) {
   event.preventDefault();
         // send update request
       let tog = !($(this).parent().parent().parent().find("#until").attr("alt") =="true")
+      let st = $(this).parent().parent().parent().find("#start").val(),
+          en = $(this).parent().parent().parent().find("#until").val();
       $.ajax({
         type: 'PUT',
         url: `/patients/${patient_id}/serviceTime`,
@@ -391,8 +393,8 @@ function submitEditTimeService(event) {
           'serviceID': $(this).parent().parent().parent().find(".item-name").attr("alt"),
           'trans_id': $(this).parent().parent().parent().find("#transID").attr("alt"),
           'amount': parseInt($(this).parent().parent().parent().find(".item-amount").val()),
-          'start':$(this).parent().parent().parent().find("#start").val(),
-          'until':$(this).parent().parent().parent().find("#until").val(),
+          'start':st,
+          'until':en,
           'toggle': tog
         },
         dataType: 'JSON',
@@ -427,46 +429,61 @@ function submitEditTimeService(event) {
 
 
 function submitTimeServ(event) {
-  event.preventDefault();  
-      $.ajax({
-        type: 'PUT',
-        url: `/patients/${patient_id}/serviceTime`,
-        data: {
-          'serviceID': $(this).parent().parent().find(".item-name").attr("alt"),
-          'trans_id': $(this).parent().parent().find("#transID").attr("alt"),
-          'amount': parseInt($(this).parent().parent().find(".item-amount").val()),
-          'start':$(this).parent().parent().find("#start").val(),
-          'until':$(this).parent().parent().find("#until").val(),
-          'toggle':$(this).parent().parent().find("#until").attr("alt")
-        },
-        dataType: 'JSON',
-      }).done(function(response){
-        const uniqueStr = Math.random().toString(36).substring(7);
-        if (response.msg === 'True') {
-          let flashMessage = `<div class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
-          ${response.serviceName} editado en cuenta de ${response.patientName}
-          <button type="button" id = flashMessage${uniqueStr} class="closeAlert" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-          </div> `;
-          $("main").prepend(flashMessage);
-          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
-          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
-      }
-      else {
-          // If something goes wrong, alert the error message that our service returned
-          let flashMessage = `<div class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
-          Error: No hay suficientes unidades de ${response.serviceName} en almacen
-          <button type="button" id = "flashMessage${uniqueStr}" class="closeAlert" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-          </div> `;
-          $("main").prepend(flashMessage);
-          $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
-          setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
-      }
+  let st = new Date($(this).parent().parent().find("#start").val()),
+      en = new Date($(this).parent().parent().find("#until").val());
+  if(st<en){
+    event.preventDefault();  
+        $.ajax({
+          type: 'PUT',
+          url: `/patients/${patient_id}/serviceTime`,
+          data: {
+            'serviceID': $(this).parent().parent().find(".item-name").attr("alt"),
+            'trans_id': $(this).parent().parent().find("#transID").attr("alt"),
+            'amount': parseInt($(this).parent().parent().find(".item-amount").val()),
+            'start':$(this).parent().parent().find("#start").val(),
+            'until':$(this).parent().parent().find("#until").val(),
+            'toggle':$(this).parent().parent().find("#until").attr("alt")
+          },
+          dataType: 'JSON',
+        }).done(function(response){
+          const uniqueStr = Math.random().toString(36).substring(7);
+          if (response.msg === 'True') {
+            let flashMessage = `<div class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
+            ${response.serviceName} editado en cuenta de ${response.patientName}
+            <button type="button" id = flashMessage${uniqueStr} class="closeAlert" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div> `;
+            $("main").prepend(flashMessage);
+            $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
+            setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+        }
+        else {
+            // If something goes wrong, alert the error message that our service returned
+            let flashMessage = `<div class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
+            Error: No hay suficientes unidades de ${response.serviceName} en almacen
+            <button type="button" id = "flashMessage${uniqueStr}" class="closeAlert" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div> `;
+            $("main").prepend(flashMessage);
+            $(".timeBody").fadeOut("fast").load(" .timeBody > *").fadeIn('slow');
+            setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+        }
 
-      });
+        });
+  }else{
+    const uniqueStr = Math.random().toString(36).substring(7);
+    let flashMessage = `<div class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
+            Las fecha de inicio es menor que la fecha de termino
+            <button type="button" id = "flashMessage${uniqueStr}" class="closeAlert" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div> `;
+            $("main").prepend(flashMessage);
+            setInterval(function(){$(`#flashMessage${uniqueStr}`).click()},3000);
+
+  }
 };
 
 //refresh page with new query values

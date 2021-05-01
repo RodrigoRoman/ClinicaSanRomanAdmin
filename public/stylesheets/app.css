@@ -38,6 +38,22 @@
 #searchTableModal td:nth-child(5) {
   width: 20%;
 }
+/* ------- search group */
+#searchTable  td:nth-child(1) {
+  width: 20%;
+}
+#searchTable td:nth-child(2) {
+  width: 20%;
+}
+#searchTable td:nth-child(3) {
+  width: 20%;
+}
+#searchTable td:nth-child(4) {
+  width: 20%;
+}
+#searchTable td:nth-child(5) {
+  width: 20%;
+}
 
 .sticky1 table { min-width: 90%; }
 

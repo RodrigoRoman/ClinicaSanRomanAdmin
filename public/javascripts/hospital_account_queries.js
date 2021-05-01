@@ -75,7 +75,7 @@ function foundServicePayment(event) {
         if((response.sorted == "name") || (response.sorted == "Ordenar por:")){
             if(Object.keys(response.transactions ).length != 0){
             accountContent+=`<h1 class = "ml-2">Ingresos</h1>
-            <table class="table table-borderless fixed_header">
+            <table class="table table-borderless sticky1">
              <thead class="thead-dark ">
                 <tr>  
                     <th scope="col"><h6 class="pad">Servicio</h6></th>
@@ -133,7 +133,7 @@ function foundServicePayment(event) {
             }
             if(response.sorted == "class"){
                 accountContent+=`<h1 class = "ml-2">Ingresos</h1>
-                <table class="table table-borderless fixed_header">
+                <table class="table table-borderless sticky1">
                  <thead class="thead-dark ">
                     <tr>  
                         <th scope="col"><h6 class="pad">Clase</h6></th>
@@ -173,7 +173,7 @@ function foundServicePayment(event) {
                 }
                 if(response.sorted == "patient"){
                     accountContent+=`<h1 class = "ml-2">Ingresos</h1>
-                    <table class="table table-borderless fixed_header">
+                    <table class="table table-borderless sticky1">
                      <thead class="thead-dark ">
                         <tr>  
                             <th scope="col"><h6 class="pad">Patient</h6></th>
@@ -207,7 +207,7 @@ function foundServicePayment(event) {
                     }
                 if(response.exit =="exit"){
                     accountContent+=`<h1 class = "text-danger">Egresos</h1>
-                    <table class="table table-borderless fixed_header">
+                    <table class="table table-borderless sticky1">
                         <thead class="table-danger">
                             <tr>  
                                 <th scope ="col"><h6 class="pad">Nombre</h6></th>
