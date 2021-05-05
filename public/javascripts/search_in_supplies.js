@@ -2,14 +2,31 @@
 $(document).ready(function() {
 });
   
+
+function delay(callback, ms) {
+    let timer = 0;
+    return function() {
+      let context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        callback.apply(context, args);
+      }, ms || 0);
+    };
+  }
+  
+  
+  // Example usage:
+  
+  $('#input').keyup(delay(function (e) {
+    console.log('Time elapsed!', this.value);
+  }, 500));
 // populate body with found elements
 $('#search_val').keyup(function(event){
     const id = $('.custom-select').find("option:selected").attr("id");
-    // alert(id)
     if(id == "byStock"){
-        foundSupplies_existence(event);
+        delay(foundSupplies_existence(event),1000);
     }else{
-        foundSupplies(event);
+        delay(foundSupplies(event),1000);
     }
   });
 
@@ -63,15 +80,12 @@ function defineBorder(proportion){
     return border
 }
 
-let jqxhr1 = {abort: function () {}};
-
 // Fill table with data
 function foundSupplies(event) {
     let currentRequest = null;
     const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'page':$(event).attr("alt")};
     let suppliesContent = '';
-    jqxhr1.abort();
-    jqxhr1 = $.ajax({
+   $.ajax({
     type: 'GET',
     url: '/services/searchSupplies',
     data: dat,
@@ -179,15 +193,12 @@ function foundSupplies(event) {
 
 
  //give the existence format
- let jqxhr = {abort: function () {}};
-
+ 
  function foundSupplies_existence(event){
     const dat = {'search':$("#search_val").val(),
     'sorted':$(".custom-select").val(),'json':true,'page':$(event).attr("alt")};
     let suppliesContent = "";
-    jqxhr.abort();
-
-    jqxhr =  $.ajax({
+   $.ajax({
     counter:0,
     type: 'GET',
     url: '/services/searchSupplies',
