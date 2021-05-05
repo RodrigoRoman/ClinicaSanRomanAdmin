@@ -14,21 +14,23 @@ function delay(callback, ms) {
     };
   }
   
-  
-  // Example usage:
-  
-  $('#input').keyup(delay(function (e) {
-    console.log('Time elapsed!', this.value);
-  }, 500));
+function debounce( callback, delay ) {
+    let timeout;
+    return function() {
+        clearTimeout( timeout );
+        timeout = setTimeout( callback, delay );
+    }
+}
+
 // populate body with found elements
-$('#search_val').keyup(function(event){
+$('#search_val').keyup(debounce( function(event){
     const id = $('.custom-select').find("option:selected").attr("id");
     if(id == "byStock"){
-        delay(foundSupplies_existence(event),1000);
+        foundSupplies_existence(event);
     }else{
-        delay(foundSupplies(event),1000);
+        foundSupplies(event);
     }
-  });
+  },300));
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())
