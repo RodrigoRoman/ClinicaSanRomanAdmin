@@ -46,7 +46,6 @@ module.exports.createPatient = async (req, res, next) => {
     res.redirect("/patients")
 }
 
-
 module.exports.renderEditForm = async (req, res) => {
     const { id } = req.params;
     const patient = await Patient.findById(id);

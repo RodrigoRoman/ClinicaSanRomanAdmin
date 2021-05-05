@@ -173,6 +173,7 @@ module.exports.searchAllSupplies = async (req, res) => {
     search = new RegExp(escapeRegExp(search), 'gi');
     const page = parseInt(req.query.page) || 1;
     const resPerPage = 40;
+    console.log(req.query)
     let dbQueries =  [
             { name: search },
             { class: search },
@@ -206,8 +207,6 @@ module.exports.searchAllSupplies = async (req, res) => {
                  ]
         ).collation({locale:"en", strength: 1});
         numOfProducts = numOfProducts.length;
-        console.log("number of products")
-        console.log(numOfProducts);
         let supplies = await Supply.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
@@ -233,38 +232,35 @@ module.exports.searchAllSupplies = async (req, res) => {
                 { $skip: (resPerPage * page) - resPerPage  }
                  ]
         ).collation({locale:"en", strength: 1});
-        console.log("limited")
-        console.log(supplies.length)
-        console.log((resPerPage * page) - resPerPage )
         //return supplies and the sorted argument for reincluding it
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     }else{
         //other cases for the select element (other sorting options)
-        let supplies = await Supply.find({$or:dbQueries,deleted:false})
-            .skip((resPerPage * page) - resPerPage)
-            .limit(resPerPage);
+        let supplies;
         let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
             numOfProducts = numOfProducts.length;
         if(sorted == "name"){
         //sort in alphabetical order
-        supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
+        supplies = await Supply.find({$or:dbQueries,deleted:false});
+        supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
         };
         if(sorted == "class"){
             //sort in alphabetical order
-            supplies.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
+            supplies = await Supply.find({$or:dbQueries,deleted:false})
+            supplies = supplies.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
     
         };
         if(sorted == "expiration"){
             //sort in increasing order based on the expiration of the product 
-            supplies.sort((a, b) =>a.expiration-b.expiration);
+            supplies= await Supply.find({$or:dbQueries,deleted:false})
+            supplies = supplies.sort((a, b) =>a.expiration-b.expiration)
+            supplies = supplies.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
         };
         if (!supplies) {
             res.locals.error = 'Ningun producto corresponde a la busqueda';
             res.json({})
         }
         //return supplies and the sorted argument for reincluding it
-        console.log("----pages----")
-        console.log(Math.ceil(numOfProducts / resPerPage))
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     };
 }
