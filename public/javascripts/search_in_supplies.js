@@ -63,12 +63,15 @@ function defineBorder(proportion){
     return border
 }
 
+let jqxhr1 = {abort: function () {}};
+
 // Fill table with data
 function foundSupplies(event) {
     let currentRequest = null;
     const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'page':$(event).attr("alt")};
     let suppliesContent = '';
-   $.ajax({
+    jqxhr1.abort();
+    jqxhr1 = $.ajax({
     type: 'GET',
     url: '/services/searchSupplies',
     data: dat,
@@ -176,21 +179,20 @@ function foundSupplies(event) {
 
 
  //give the existence format
+ let jqxhr = {abort: function () {}};
+
  function foundSupplies_existence(event){
-    let beforeSend = null;
     const dat = {'search':$("#search_val").val(),
     'sorted':$(".custom-select").val(),'json':true,'page':$(event).attr("alt")};
     let suppliesContent = "";
-   $.ajax({
+    jqxhr.abort();
+
+    jqxhr =  $.ajax({
+    counter:0,
     type: 'GET',
     url: '/services/searchSupplies',
     data: dat,
     dataType: 'JSON',
-    beforeSend : function()    {          
-        if(currentRequest != null) {
-            currentRequest.abort();
-        }
-    },
     processData: true,
     }).done(function(response){    
         suppliesContent+=`<div class="row supplies scrollDiv">`
