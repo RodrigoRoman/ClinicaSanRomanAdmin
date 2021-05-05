@@ -3,25 +3,18 @@ $(document).ready(function() {
 });
   
 
-function delay(callback, ms) {
-    let timer = 0;
-    return function() {
-      let context = this, args = arguments;
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        callback.apply(context, args);
-      }, ms || 0);
+function debounce(f, delay){
+    var timer = null;
+    return function(){
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = window.setTimeout(function(){
+            f.apply(context, args);
+        },
+        delay || 500);
     };
-  }
-  
-function debounce( callback, delay ) {
-    let timeout;
-    return function() {
-        clearTimeout( timeout );
-        timeout = setTimeout( callback, delay );
-    }
 }
-
+  
 // populate body with found elements
 $('#search_val').keyup(debounce( function(event){
     const id = $('.custom-select').find("option:selected").attr("id");
