@@ -103,21 +103,24 @@ function defineBorder(proportion){
         <% } %>
         
 </div>
-<div class="row my-3 pagination">
-    <div class="btn-group float-right" role="group" aria-label="First group">
-
-        <%if(page >1){%>
-            <a onclick="foundSupplies(this)" alt="<%=page-1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>
-        <%}%>
-        <%for(let step = 1; step < pages+1; step++) {
-            let act = (step == page)?"active":"";%>
-            <a onclick="foundSupplies(this)" alt="<%=step%>" class="btn btn-light <%=act%>" role="button" aria-pressed="true"><%=step%></a>
-        <%}%>
-        <%if(page+1 <= pages){%>
-            <a onclick="foundSupplies(this)" alt="<%=page+1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>
-        <%}%>
+<div class = "container">
+    <div class="row my-3 pagination">
+        <div class="btn-group float-right" role="group" aria-label="First group">
+    
+            <%if(page >1){%>
+                <a onclick="foundSupplies(this)" alt="<%=page-1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>
+            <%}%>
+            <%for(let step = 1; step < pages+1; step++) {
+                let act = (step == page)?"active":"";%>
+                <a onclick="foundSupplies(this)" alt="<%=step%>" class="btn btn-light <%=act%>" role="button" aria-pressed="true"><%=step%></a>
+            <%}%>
+            <%if(page+1 <= pages){%>
+                <a onclick="foundSupplies(this)" alt="<%=page+1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>
+            <%}%>
+        </div>
     </div>
 </div>
+
 <script src="/javascripts/search_in_supplies.js" ></script>
 
 

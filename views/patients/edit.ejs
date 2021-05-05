@@ -15,8 +15,8 @@ function makeDMYHour(date){
                 <input class="form-control" type="text" id="name" name="patient[name]" value = "<%=patient.name%>" required>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="admission">Fecha de Ingreso</label>
-                <input type="datetime-local"id="admission" name="patient[admissionDate]" value = "<%=patient.admissionDate.toISOString().substring(0, 16)%>">
+                <label class="form-label" for="admission">Fecha de Ingreso</label></br>
+                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=patient.admissionDate.toISOString().substring(0, 16)%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="phone">Telefono</label>
