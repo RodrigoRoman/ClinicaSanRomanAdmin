@@ -23,7 +23,7 @@ $('#search_val').keyup(debounce( function(event){
     }else{
         foundSupplies(event);
     }
-  },300));
+  },600));
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())
