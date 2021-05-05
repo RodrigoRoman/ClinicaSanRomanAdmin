@@ -65,6 +65,7 @@ function defineBorder(proportion){
 
 // Fill table with data
 function foundSupplies(event) {
+    let currentRequest = null;
     const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'page':$(event).attr("alt")};
     let suppliesContent = '';
    $.ajax({
@@ -73,6 +74,11 @@ function foundSupplies(event) {
     data: dat,
     dataType: 'JSON',
     processData: true,
+    beforeSend : function()    {          
+        if(currentRequest != null) {
+            currentRequest.abort();
+        }
+    },
     cache: false
     }).done(function( response ){
         suppliesContent+=`<div class="row supplies scrollDiv">`
@@ -171,6 +177,7 @@ function foundSupplies(event) {
 
  //give the existence format
  function foundSupplies_existence(event){
+    let beforeSend = null;
     const dat = {'search':$("#search_val").val(),
     'sorted':$(".custom-select").val(),'json':true,'page':$(event).attr("alt")};
     let suppliesContent = "";
@@ -179,6 +186,11 @@ function foundSupplies(event) {
     url: '/services/searchSupplies',
     data: dat,
     dataType: 'JSON',
+    beforeSend : function()    {          
+        if(currentRequest != null) {
+            currentRequest.abort();
+        }
+    },
     processData: true,
     }).done(function(response){    
         suppliesContent+=`<div class="row supplies scrollDiv">`
