@@ -145,7 +145,7 @@ function foundSupplies(event) {
             
                  });
                  suppliesContent+=`</div>`
-                 let pagination = `<div class="row my-3 pagination">
+                 let pagination = `<div class="row my-3 pagination customClass">
                  <div class="btn-group float-right" role="group" aria-label="First group">`;
                     if(response.page >1){
                         pagination += `<a onclick="foundSupplies(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
@@ -285,7 +285,7 @@ function foundSupplies(event) {
             
                  });
                  suppliesContent+=`</div>`
-                 let pagination = `<div class="row my-3 pagination">
+                 let pagination = `<div class="row my-3 pagination customClass">
                  <div class="btn-group float-right" role="group" aria-label="First group">`;
                     if(response.page >1){
                         pagination += `<a onclick="foundSupplies_existence(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
