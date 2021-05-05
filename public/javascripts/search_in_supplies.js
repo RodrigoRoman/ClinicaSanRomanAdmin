@@ -4,9 +4,9 @@ $(document).ready(function() {
   
 
 function debounce(f, delay){
-    var timer = null;
+    let timer = null;
     return function(){
-        var context = this, args = arguments;
+        let context = this, args = arguments;
         clearTimeout(timer);
         timer = window.setTimeout(function(){
             f.apply(context, args);
@@ -23,7 +23,7 @@ $('#search_val').keyup(debounce( function(event){
     }else{
         foundSupplies(event);
     }
-  },400));
+  },600));
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())
