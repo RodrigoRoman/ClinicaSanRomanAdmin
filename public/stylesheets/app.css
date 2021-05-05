@@ -20,6 +20,17 @@
 }
 
 
+div.row.customClass {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+div.row.customClass [class*="col-md"] {
+  display: inline-block;
+  float: none; /* Very important */
+}
+
+
 .equalTable  td:nth-child(1) {
   width: 70%;
 }
