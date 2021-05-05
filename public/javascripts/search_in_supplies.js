@@ -65,8 +65,7 @@ function defineBorder(proportion){
 
 // Fill table with data
 function foundSupplies(event) {
-    event.preventDefault();
-    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val()};
+    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'page':$(event).attr("alt")};
     let suppliesContent = '';
    $.ajax({
     type: 'GET',
@@ -76,7 +75,7 @@ function foundSupplies(event) {
     processData: true,
     cache: false
     }).done(function( response ){
-        suppliesContent+=`<div class="row supplies">`
+        suppliesContent+=`<div class="row supplies scrollDiv">`
         $.each(response.supplies, function(){
             //create a unique id. Add "a" as prefix so that avery string is acceptable
             let id_name = "a"+Math.random().toString(36).substring(7);
@@ -146,9 +145,24 @@ function foundSupplies(event) {
             
                  });
                  suppliesContent+=`</div>`
-                // Inject the whole content string into our existing HTML table
-                 $('.supplies').html( suppliesContent);
+                 let pagination = `<div class="row my-3 pagination">
+                 <div class="btn-group float-right" role="group" aria-label="First group">`;
+                    if(response.page >1){
+                        pagination += `<a onclick="foundSupplies(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
+                    }
+                    for(let step = 1; step < response.pages+1; step++) {
+                        let act = (step == response.page)?"active":"";
+                        pagination += `<a onclick="foundSupplies(this)" alt="${step}" class="btn btn-light ${act}" role="button" aria-pressed="true">${step}</a>`
+                    }
+                    if(response.page+1 <= response.pages){
+                        pagination += `<a onclick="foundSupplies(this)" alt="${response.page+1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>`
+                    }
+                     pagination += `</div>
+                     </div>`
+                 $('.supplies').html( suppliesContent);  
+                 $('.pagination').replaceWith( pagination); 
                  $("selector").find('option[value="'+response.sorted+'"]').attr('selected','selected')
+                 $("#search_val").val(response.search)
 
      
    });
@@ -157,8 +171,8 @@ function foundSupplies(event) {
 
  //give the existence format
  function foundSupplies_existence(event){
-    event.preventDefault();
-    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val()};
+    const dat = {'search':$("#search_val").val(),
+    'sorted':$(".custom-select").val(),'json':true,'page':$(event).attr("alt")};
     let suppliesContent = "";
    $.ajax({
     type: 'GET',
@@ -167,7 +181,7 @@ function foundSupplies(event) {
     dataType: 'JSON',
     processData: true,
     }).done(function(response){    
-        suppliesContent+=`<div class="row supplies">`
+        suppliesContent+=`<div class="row supplies scrollDiv">`
         $.each(response.supplies, function(){
             let array_len = this.expiration.length;
             //create a unique id. Add "a" as prefix so that avery string is acceptable
@@ -271,8 +285,24 @@ function foundSupplies(event) {
             
                  });
                  suppliesContent+=`</div>`
+                 let pagination = `<div class="row my-3 pagination">
+                 <div class="btn-group float-right" role="group" aria-label="First group">`;
+                    if(response.page >1){
+                        pagination += `<a onclick="foundSupplies_existence(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
+                    }
+                    for(let step = 1; step < response.pages+1; step++) {
+                        let act = (step == response.page)?"active":"";
+                        pagination += `<a onclick="foundSupplies_existence(this)" alt="${step}" class="btn btn-light ${act}" role="button" aria-pressed="true">${step}</a>`
+                    }
+                    if(response.page+1 <= response.pages){
+                        pagination += `<a onclick="foundSupplies_existence(this)" alt="${response.page+1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>`
+                    }
+                     pagination += `</div>
+                     </div>`
                  $('.supplies').html( suppliesContent);  
-                 $("selector").find('option[value="'+response.sorted+'"]').attr('selected','selected')
+                 $('.pagination').replaceWith( pagination); 
+                 $("selector").find('option[value="'+response.sorted+'"]').attr('selected','selected');
+                 $("#search_val").val(response.search)
                    
    });
  };

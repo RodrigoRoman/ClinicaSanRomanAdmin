@@ -3,7 +3,7 @@
     <div class = "row offset-sm-2 justify-content-md-center">
         <div class="col col-lg-10">
             <div class = "btn-group mr-2" id = "search_group">
-            <input class="input-group-text mr-2" id = "search_val" type="text" name="search" placeholder="Buscar" aria-label="Search">
+            <input class="input-group-text mr-2" id = "search_val" type="text" name="search" value = "<%=search%>" placeholder="Buscar" aria-label="Search">
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@ function defineBorder(proportion){
 }
  %>
     <!-- //search preview table -->
-<div class="row supplies">
+<div class="row supplies scrollDiv">
     <%for(let supply of supplies){%>
         <!--Create random string for carousel id use-->
         <%let id_name = "a"+Math.random().toString(36).substring(7); %>
@@ -101,6 +101,21 @@ function defineBorder(proportion){
         </div>
     </div>
         <% } %>
+        
+</div>
+<div class="row my-3 pagination">
+    <div class="btn-group float-right" role="group" aria-label="First group">
+
+        <%if(page >1){%>
+            <a onclick="foundSupplies(this)" alt="<%=page-1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>
+        <%}%>
+        <%for(let step = 1; step < pages+1; step++) {
+            let act = (step == page)?"active":"";%>
+            <a onclick="foundSupplies(this)" alt="<%=step%>" class="btn btn-light <%=act%>" role="button" aria-pressed="true"><%=step%></a>
+        <%}%>
+        <%if(page+1 <= pages){%>
+            <a onclick="foundSupplies(this)" alt="<%=page+1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>
+        <%}%>
     </div>
 </div>
 <script src="/javascripts/search_in_supplies.js" ></script>

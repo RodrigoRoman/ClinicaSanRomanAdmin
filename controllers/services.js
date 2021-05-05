@@ -28,8 +28,28 @@ module.exports.index = async (req, res) => {
 
 module.exports.index_supplies = async (req, res) => {
     // classify by name (case and symbol insensitive, up to a space)
-    let supplies = await Supply.find({deleted:false}).populate("author");
-    res.render('services/index_supplies', {supplies})
+    const resPerPage = 40;
+    const page = parseInt(req.params.page) || 1;
+    let {search,sorted} = req.query;
+    console.log(search)
+    if(!search){search = ''}
+    search = new RegExp(escapeRegExp(search), 'gi');
+    let dbQueries =  [
+            { name: search },
+            { class: search },
+            { description: search },
+            { principle: search },
+            { doctor: search}
+        ];  
+    console.log(typeof page);
+    
+    let supplies = await Supply.find({$or:dbQueries,deleted:false}).populate("author")
+        .skip((resPerPage * page) - resPerPage)
+        .limit(resPerPage);
+    let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
+    numOfProducts = numOfProducts.length;
+    res.render('services/index_supplies', {supplies,"page":page, pages: Math.ceil(numOfProducts / resPerPage),
+    numOfResults: numOfProducts,search:req.query.search,sorted:sorted})
 }
 
 module.exports.index_hospital = async (req, res) => {
@@ -52,9 +72,9 @@ module.exports.renderNewFrom = async (req, res) => {
     res.render(`services/supply_from`,{service});
 }
 
-function randomDate(start, end) {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
+// function randomDate(start, end) {
+//     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+// }
 
 module.exports.createSupply = async (req, res, next) => {
     let name = req.body.service.name;
@@ -75,16 +95,6 @@ module.exports.createSupply = async (req, res, next) => {
     res.redirect(`/services`)///services/${service._id} direction
 }
 
-// module.exports.showSupply = async (req, res) => {
-//     let {name} = req.params;
-//     name = name.split(" ")[0]
-//     const supplies = await Supply.find({name:{$regex:name, $options:"mi"}}).populate('author');
-//     if (!supplies) {
-//         req.flash('error', 'No se encontro insumo!');
-//         return res.redirect('/services');
-//     }
-//     res.render('services/show_supply', { supplies });
-// }
 
 
 module.exports.createHospital = async (req, res, next) => {
@@ -161,15 +171,43 @@ module.exports.deleteService = async (req, res) => {
 module.exports.searchAllSupplies = async (req, res) => {
     let {search,sorted} = req.query;
     search = new RegExp(escapeRegExp(search), 'gi');
+    const page = parseInt(req.query.page) || 1;
+    const resPerPage = 40;
     let dbQueries =  [
             { name: search },
             { class: search },
             { description: search },
             { principle: search },
             { doctor: search}
-        ];
+        ];        
     if(sorted == "stock"){
         //Case for storing based on stock need
+        let numOfProducts = await Supply.aggregate( 
+            //recreate supply element by compressing elements with same name. Now the fields are arrays
+            [   
+                {$match: {$or:dbQueries,deleted:false}},
+                {$group: {
+                    _id:"$name",
+                    class:{$last:"$class"},
+                    suppID:{$last:"$_id"},
+                    principle:{$last:"$principle"},
+                    name: { $last: "$name" },
+                    expiration:{ $push: "$expiration" },
+                    sell_price: { $last: "$sell_price" },
+                    buy_price: { $last: "$buy_price" },
+                    stock:{ $push: "$stock" },                
+                    optimum:{$avg: "$optimum"},
+                    outside:{$last: "$outside"},
+                    images:{$last:"$images"} }},
+                {$addFields:{totalStock : { $sum: "$stock" }}},
+                //porportion of total stock and optimum
+                {$addFields:{proportion :  { $divide: [ "$totalStock", "$optimum" ] }}},
+                {$sort: { proportion: 1 } },
+                 ]
+        ).collation({locale:"en", strength: 1});
+        numOfProducts = numOfProducts.length;
+        console.log("number of products")
+        console.log(numOfProducts);
         let supplies = await Supply.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
@@ -190,13 +228,23 @@ module.exports.searchAllSupplies = async (req, res) => {
                 {$addFields:{totalStock : { $sum: "$stock" }}},
                 //porportion of total stock and optimum
                 {$addFields:{proportion :  { $divide: [ "$totalStock", "$optimum" ] }}},
-                {$sort: { proportion: 1 } } ]
+                {$sort: { proportion: 1 } },
+                { $limit: resPerPage+(resPerPage * page) - resPerPage },
+                { $skip: (resPerPage * page) - resPerPage  }
+                 ]
         ).collation({locale:"en", strength: 1});
+        console.log("limited")
+        console.log(supplies.length)
+        console.log((resPerPage * page) - resPerPage )
         //return supplies and the sorted argument for reincluding it
-        return res.json({"supplies":supplies,"sorted":sorted});
+        return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     }else{
         //other cases for the select element (other sorting options)
-        let supplies = await Supply.find({$or:dbQueries,deleted:false});
+        let supplies = await Supply.find({$or:dbQueries,deleted:false})
+            .skip((resPerPage * page) - resPerPage)
+            .limit(resPerPage);
+        let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
+            numOfProducts = numOfProducts.length;
         if(sorted == "name"){
         //sort in alphabetical order
         supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
@@ -215,7 +263,9 @@ module.exports.searchAllSupplies = async (req, res) => {
             res.json({})
         }
         //return supplies and the sorted argument for reincluding it
-        return res.json({"supplies":supplies,"sorted":sorted});
+        console.log("----pages----")
+        console.log(Math.ceil(numOfProducts / resPerPage))
+        return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     };
 }
 
@@ -229,6 +279,7 @@ module.exports.searchAllServices = async (req, res) => {
             { description: search },
             { doctor: search}
         ];
+        
     let services = await Hospital.find({$or:dbQueries,deleted:false});
     if(sorted == "name"){
     //sort in alphabetical order

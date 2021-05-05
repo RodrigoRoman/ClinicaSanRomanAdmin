@@ -60,6 +60,7 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updatePatient = async (req, res) => {
     const { id } = req.params;
+    req.body.patient.admissionDate = new Date(convertUTCDateToLocalDate(req.body.patient.admissionDate));
     const patient = await Patient.findByIdAndUpdate(id, { ...req.body.patient });
     await patient.save();
     req.flash('success', 'Paciente actualizado correctamente!');

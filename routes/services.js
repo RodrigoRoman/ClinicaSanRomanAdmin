@@ -14,14 +14,15 @@ router.route('/')
     .get(isLoggedIn,isDinamicDirectAdmin,catchAsync(services.index))
     .post(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), validateService, catchAsync(services.createService))
 
-router.get('/searchSupplies',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllSupplies))
+router.get('/searchSupplies/:page?',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllSupplies))
 router.get('/searchServices',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllServices))
 
 
-router.route('/supply')
+router.route('/supply/:page?')
     .get(catchAsync(services.index_supplies))
     .post(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), validateSupply, catchAsync(services.createSupply))
-    
+  
+
 router.route('/hospital')
     .get(catchAsync(services.index_hospital))
     .post(isLoggedIn, isDinamicDirectAdmin,upload.array('image'), validateHospital, catchAsync(services.createHospital))
