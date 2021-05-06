@@ -384,7 +384,7 @@ module.exports.index_payments = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
-    const payments = await Payment.find({}).populate("exits");
+    const payments = await Payment.find({}).populate("exits").sort("-dueDate");
     res.render('exits/index_exits',{payments})
 }
 
