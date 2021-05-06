@@ -239,7 +239,7 @@ module.exports.searchAllSupplies = async (req, res) => {
         let supplies;
         let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
             numOfProducts = numOfProducts.length;
-        if(sorted == "name"){
+        if(sorted == "name" ||sorted == "name"){
         //sort in alphabetical order
         supplies = await Supply.find({$or:dbQueries,deleted:false});
         supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
