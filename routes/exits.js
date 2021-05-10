@@ -20,7 +20,7 @@ router.get('/new', isLoggedIn, isDinamicDirectAdmin, exits.renderNewForm)
 router.route('/refill')
     .get(exits.refillForm)
     .post(exits.refillFormPDF)
-    .put( exits.editDatePoint)
+    .put(exits.editDatePoint)
 
 
 
@@ -29,7 +29,11 @@ router.route('/:id')
     .delete(isLoggedIn, isLoggedIn, isDinamicDirectAdmin, catchAsync(exits.deletePayment))
 
 router.get('/payments', isLoggedIn,isDinamicDirectAdmin, catchAsync(exits.index_payments))
-router.get('/hospital_account', isLoggedIn,isDinamicDirectAdmin, catchAsync(exits.hospital_account))
+
+router.route('/hospital_account')
+    .get(exits.hospital_account)
+    .post(exits.accountReportPDF)
+
 router.get('/searchSP', isLoggedIn, isDinamicDirectAdmin, catchAsync(exits.servicesPayments))
 
 

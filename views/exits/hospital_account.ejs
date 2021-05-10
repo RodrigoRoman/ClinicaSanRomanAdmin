@@ -1,6 +1,11 @@
+
+
 <% layout('layouts/boilerplate')%>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <script src="/javascripts/jquery-3.2.1.min.js"></script>
 <%
 function convertUTCDateToLocalDate(date) {
 
@@ -29,7 +34,7 @@ function makeDMY(date){
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
 %>
-<div class="container">
+<div class="container mainCont">
 
     <h1 class= "display-3 font-weight-bold text-center">Cuenta Clinica San Roman</h1>
     <div class = "container mb-4">
@@ -101,7 +106,7 @@ function makeDMY(date){
     </div>
 
     
-    <div class="container account">
+    <div class="container account toPDF">
         <h1 class = "ml-2">Ingresos</h1>
         <table class="table table-borderless sticky1" >
             <thead class="thead-dark ">
@@ -212,7 +217,13 @@ function makeDMY(date){
             </table>
         <%}%>
     </div>
+    <form action="/exits/hospital_account" method="POST" novalidate class="validated-form">
+        <div class="mb-3">
+            <button type = "submit" class="btn btn-outline-secondary">Reporte en PDF</button>
+        </div>
+    </form>
 </div>
 
 
-<script src="/javascripts/hospital_account_queries.js" />
+<script src="/javascripts/hospital_account_queries.js"></script>
+
