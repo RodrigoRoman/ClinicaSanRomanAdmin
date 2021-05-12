@@ -71,9 +71,9 @@ module.exports.hospital_account = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let default_begin = new Date(convertUTCDateToLocalDate(new Date));
     default_begin.setDate( default_begin.getDate() - 6 );
-    console.log(req.query)
     let begin = req.query.begin || default_begin;
     let end =req.query.end || nDate;
+    hospital = (req.query.entry == "hospital")?"true":"false";
     begin =new Date(convertUTCDateToLocalDate( new Date(begin)))
     end = new Date(convertUTCDateToLocalDate(new Date(end)))
     const exits = await Exit.aggregate( 
@@ -100,7 +100,7 @@ module.exports.hospital_account = async (req, res) => {
         [   
             // put in a single document both transaction and service fields
             {$match: {consumtionDate:{$gte:begin,$lte:end}}},
-            {$match: {discharged_data:{$exists: true, $ne: null }}},
+            {$match: {discharged_data:{$exists: true, $ne: null },hospitalEntry:{$eq:hospital}}},
             {
                 $lookup: {
                     from: "disches",
@@ -169,7 +169,7 @@ module.exports.servicesPayments = async (req, res) => {
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
-                {$match: {discharged_data:{$exists: true, $ne: null }}},
+                {$match: {discharged_data:{$exists: true, $ne: null },hospitalEntry:{$in:[hospital,honorary]}}},
                 {
                     $lookup: {
                         from: "disches",
@@ -421,6 +421,7 @@ module.exports.deletePayment = async (req, res) => {
 
 module.exports.accountReportPDF = async (req,res) =>{ 
     let {begin,end} = req.body;
+    let honorarios = req.body.honorarios || "";
     const chromeOptions = {
         headless: true,
         defaultViewport: null,
@@ -442,7 +443,7 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}`,{
+    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
                 waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {

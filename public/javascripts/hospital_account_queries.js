@@ -9,7 +9,7 @@ $('.custom-select').change(foundServicePayment);
 
 $('#beginDay').click(foundServicePayment)
 $('#beginDay').click(foundServicePayment)
-$('.pdfReport').click(pdfReportReq)
+// $('.pdfReport').click(pdfReportReq)
 $('#endDay').click(foundServicePayment)
 $(".apply_dates").on("click",foundServicePayment);
 
@@ -54,15 +54,15 @@ function makeDMY(date){
   y : date.getUTCFullYear()};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
-function pdfReportReq(event){
-    // event.preventDefault();
-    dat = {begin:$('#beginDate').val(),end:$('#endDate').val()}
-    $.ajax({
-        type: 'POST',
-        url: '/exits/hospital_account',
-        data: dat,
-        })
-}
+// function pdfReportReq(event){
+//     // event.preventDefault();
+//     dat = {begin:$('#beginDate').val(),end:$('#endDate').val()}
+//     $.ajax({
+//         type: 'POST',
+//         url: '/exits/hospital_account',
+//         data: dat,
+//         })
+// }
 // Fill table with data
 function foundServicePayment(event) {
     event.preventDefault();

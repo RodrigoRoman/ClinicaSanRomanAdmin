@@ -162,7 +162,6 @@ module.exports.showPatient = async (req, res) => {
 
 
 module.exports.showDischargedPatient= async (req, res) => {
-    const { id } = req.params;
     const patient = await Patient.aggregate([  
         {$match: {_id:  mongoose.Types.ObjectId(req.params.id)}}, 
         {$group: {
@@ -184,7 +183,7 @@ module.exports.showDischargedPatient= async (req, res) => {
         {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromTransaction", 0 ] }, "$$ROOT" ] } }
         },
-        { $project: { fromTransaction: 0, servicesCar:0 } },
+        {$match: {discharged_data:{$exists: true, $ne: null }}},
         {
             $lookup: {
             from: "disches",
@@ -196,7 +195,6 @@ module.exports.showDischargedPatient= async (req, res) => {
         {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
         },
-        { $project: { fromDischarged: 0 } },
         {$group: {
             _id:"$name",
             patientName:{$last:"$patientName"},
@@ -207,18 +205,6 @@ module.exports.showDischargedPatient= async (req, res) => {
             admissionDate : {$last:"$admissionDate"},
             price: {$last:"$unitPrice"},
             amount: { $sum:"$amount"}}},
-        {
-            $lookup: {
-            from: "dischs",
-            localField: "discharged_data",    // field in the Trasaction collection
-            foreignField: "_id",  // field in the Service collection
-            as: "fromDischarged"
-            }
-        },
-        {
-            $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
-        },
-        { $project: { fromDischarged: 0 } },
         {$group: {
             _id:"$class",
             patientName:{$last:"$patientName"},
@@ -232,7 +218,6 @@ module.exports.showDischargedPatient= async (req, res) => {
         {$addFields:{totalPrice : { $sum: "$price" }}},
         {$addFields:{totalCost : { $sum: "$cost" }}},
     ]).collation({locale:"en", strength: 1});
-        
     res.render(`patients/dischargedPatient`, {patient});
 }
 
@@ -409,11 +394,11 @@ module.exports.dischAccountPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showDischarged`,{
-        waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showDischarged`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showDischarged`,{
+    //     waitUntil: 'networkidle0'});          // go to site
+    await page.goto(
+        `http://localhost:3000/patients/${req.params.id}/showDischarged`,{
+          waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
