@@ -71,8 +71,11 @@ module.exports.hospital_account = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let default_begin = new Date(convertUTCDateToLocalDate(new Date));
     default_begin.setDate( default_begin.getDate() - 6 );
-    begin = req.query.begin || default_begin;
-    end =req.query.end || nDate;
+    console.log(req.query)
+    let begin = req.query.begin || default_begin;
+    let end =req.query.end || nDate;
+    begin =new Date(convertUTCDateToLocalDate( new Date(begin)))
+    end = new Date(convertUTCDateToLocalDate(new Date(end)))
     const exits = await Exit.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
@@ -417,6 +420,7 @@ module.exports.deletePayment = async (req, res) => {
 }
 
 module.exports.accountReportPDF = async (req,res) =>{ 
+    let {begin,end} = req.body;
     const chromeOptions = {
         headless: true,
         defaultViewport: null,
@@ -434,9 +438,8 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(
-    //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
-    //       waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
     await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}`,{
