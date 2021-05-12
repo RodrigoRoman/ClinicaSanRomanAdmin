@@ -69,11 +69,15 @@ module.exports.index = async (req, res) => {
 
 module.exports.hospital_account = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    let default_begin = new Date(convertUTCDateToLocalDate(new Date));
+    default_begin.setDate( default_begin.getDate() - 6 );
+    begin = req.query.begin || default_begin;
+    end =req.query.end || nDate;
     const exits = await Exit.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
             //first we need to have access to the service fields. So we unwind all of them
-            {$match: {clearDate:{$lte:nDate}}},
+            {$match: {clearDate:{$gte:begin,$lte:end}}},
             {$group: {
                 //match the begining of the name field
                 _id:"$name",
@@ -92,29 +96,32 @@ module.exports.hospital_account = async (req, res) => {
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
             // put in a single document both transaction and service fields
+            {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+            {$match: {discharged_data:{$exists: true, $ne: null }}},
             {
                 $lookup: {
-                   from: "services",
-                   localField: "service",    // field in the Trasaction collection
-                   foreignField: "_id",  // field in the Service collection
-                   as: "fromService"
-                }
+                    from: "disches",
+                    localField: "discharged_data",    // field in the Trasaction collection
+                    foreignField: "_id",  // field in the disch collection
+                    as: "fromDischarged"
+                    }
              },
              {
-                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
+                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
              },
-             { $project: { fromService: 0 } },
+             { $project: { fromDischarged: 0 } },
              {$group: {
                 _id:"$name",
                 name:{$last:"$name"},
                 class:{$last:"$class"},
                 consumtionDate: {$last:"$consumtionDate"},
                 service_type:{$last:"$service_type"},
-                price: {$last:"$price"},
-                sell_price: { $last:"$sell_price"},
-                buy_price: { $last:"$buy_price"},
+                price: {$last:"$unitPrice"},
+                sell_price: {$last:"$unitPrice"},
+                buy_price: { $last:"$buyPrice"},
                 amount: { $sum:"$amount"}}},
-            {$addFields:{totalSell : { $multiply: ["$sell_price","$amount"] }}},
+            {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
+            {$addFields:{totalSell : { $multiply: ["$price","$amount"] }}},
             {$addFields:{totalPrice : { $multiply: ["$price","$amount"] }}},
              
         ]);
@@ -159,29 +166,29 @@ module.exports.servicesPayments = async (req, res) => {
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
+                {$match: {discharged_data:{$exists: true, $ne: null }}},
                 {
                     $lookup: {
-                    from: "services",
-                    localField: "service",    // field in the Trasaction collection
-                    foreignField: "_id",  // field in the Service collection
-                    as: "fromService"
-                    }
-                },
-                {
-                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
-                },
-                { $project: { fromService: 0 } },
-                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
-
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
+                 },
+                 {
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+                 },
+                 { $project: { fromDischarged: 0 } },
+                {$match: {processDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
                 {$group: {
                     _id:"$name",
                     name:{$last:"$name"},
                     class:{$last:"$class"},
-                    consumtionDate: {$last:"$consumtionDate"},
+                    consumtionDate: {$last:"$processDate"},
                     service_type:{$last:"$service_type"},
-                    price: { $last:"$price"},
-                    sell_price: { $last:"$sell_price"},
-                    buy_price: { $last:"$buy_price"},
+                    price: { $last:"$unitPrice"},
+                    sell_price: { $last:"$unitPrice"},
+                    buy_price: { $last:"$buyPrice"},
                     amount: { $sum:"$amount"}}},
                 {$addFields:{totalSell : { $multiply: ["$sell_price","$amount"] }}},
                 {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
@@ -193,31 +200,33 @@ module.exports.servicesPayments = async (req, res) => {
     };
     if(sorted == "class"){
         //Case for storing based on stock need
+
         transactions = await Transaction.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
+                {$match: {discharged_data:{$exists: true, $ne: null }}},
                 {
                     $lookup: {
-                       from: "services",
-                       localField: "service",    // field in the Trasaction collection
-                       foreignField: "_id",  // field in the Service collection
-                       as: "fromService"
-                    }
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
                  },
                  {
-                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
                  },
-                 { $project: { fromService: 0 } },
-                {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
+                 { $project: { fromDischarged: 0 ,service:0} },
+                {$match: {processDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
                 {$group: {
                     _id:"$class",
                     class:{$last:"$class"},
                     service_type : {$last:"$service_type"},
-                    price: {$push:{$multiply: [ "$price","$amount"] }},
+                    price: {$push:{$multiply: [ "$unitPrice","$amount"] }},
                     cost: {$push:0},
-                    sell_price: { $push:{$multiply: [ "$sell_price" ,"$amount"]}},
-                    buy_price: { $push: {$multiply: [ "$buy_price" ,"$amount"]}},
+                    sell_price: { $push:{$multiply: [ "$unitPrice" ,"$amount"]}},
+                    buy_price: { $push: {$multiply: [ "$buyPrice" ,"$amount"]}},
                     amount: { $sum:"$amount"}}},
                 {$addFields:{totalSell : { $sum: "$sell_price" }}},
                 {$addFields:{totalBuy : { $sum: "$buy_price" }}},
@@ -226,27 +235,29 @@ module.exports.servicesPayments = async (req, res) => {
             ]).collation({locale:"en", strength: 1});
         //return supplies and the sorted argument for reincluding it
         transactions.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
+
     }
     if(sorted == "patient"){
         //sort in alphabetical order
         transactions = await Transaction.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
-                
+                {$match: {discharged_data:{$exists: true, $ne: null }}},
                 {
                     $lookup: {
-                       from: "services",
-                       localField: "service",    // field in the Trasaction collection
-                       foreignField: "_id",  // field in the Service collection
-                       as: "fromService"
-                    }
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
                  },
                  {
-                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
                  },
-                 { $project: { fromService: 0 ,name:0} },
-                 {$match: {consumtionDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
+                 { $project: { fromDischarged: 0,name:0 } },
+                 {$match: {processDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
                  // put in a single document both transaction and service fields
+                //  {$unwind:"$patient"},
                 {
                     $lookup: {
                        from: "patients",
@@ -255,6 +266,8 @@ module.exports.servicesPayments = async (req, res) => {
                        as: "fromPatient"
                     }
                  },
+                 {$unwind:"$patient"},
+
                  {
                     $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromPatient", 0 ] }, "$$ROOT" ] } }
                  },
@@ -264,10 +277,10 @@ module.exports.servicesPayments = async (req, res) => {
                     patientId:{$last:"$patient"},
                     name:{$last:"$name"},
                     admissionDate: {$last:"$admissionDate"},
-                    price: {$push:{$multiply: [ "$price","$amount"] }},
+                    price: {$push:{$multiply: [ "$unitPrice","$amount"] }},
                     cost: {$push:0},
-                    sell_price: { $push:{$multiply: [ "$sell_price" ,"$amount"]}},
-                    buy_price: { $push: {$multiply: [ "$buy_price" ,"$amount"]}},
+                    sell_price: { $push:{$multiply: [ "$unitPrice" ,"$amount"]}},
+                    buy_price: { $push: {$multiply: [ "$buyPrice" ,"$amount"]}},
                     amount: { $sum:"$amount"}}},
                 {$addFields:{totalSell : { $sum: "$sell_price" }}},
                 {$addFields:{totalBuy : { $sum: "$buy_price" }}},
@@ -290,7 +303,6 @@ module.exports.editDatePoint = async (req, res) => {
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     timePoint.setPoint = nDate
     await timePoint.save()
-    console.log("inside DatePoint")
     res.render(`exits`);
 }
 
@@ -374,7 +386,6 @@ module.exports.createPayment = async (req, res, next) => {
         await exit.save();
     });
     await payment.save()
-    console.log(payment.exits)
     req.flash('success', 'Pago creado');
     res.redirect(`/exits`)
 }
@@ -428,10 +439,10 @@ module.exports.accountReportPDF = async (req,res) =>{
     //       waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    await page.goto(`http://localhost:3000/exits/hospital_account`,{
+    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}`,{
                 waitUntil: 'networkidle0'});
-    await page.waitForSelector('.container');
-    const dom = await page.$eval('.container', (element) => {
+    // await page.waitForSelector('tbody> .toPDF');
+    const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
     }) // Get DOM HTML
     await page.setContent(dom)   // HTML markup to assign to the page for generate pdf

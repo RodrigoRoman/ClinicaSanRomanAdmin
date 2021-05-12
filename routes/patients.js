@@ -50,6 +50,12 @@ router.route('/:id/serviceTime')
 router.route('/:id/showAccount')
         .get(catchAsync(patients.patientAccount))
 
+router.route('/:id/showDischarged')
+        .get(catchAsync(patients.showDischargedPatient))
+
+router.route('/:id/dischargedPDF')
+        .get(catchAsync(patients.dischAccountPDF))
+
 router.route('/:id/makePDF')
         .get(catchAsync(patients.accountToPDF))
 

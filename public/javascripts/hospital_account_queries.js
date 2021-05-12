@@ -8,6 +8,8 @@ $('#search_val').keyup(foundServicePayment);
 $('.custom-select').change(foundServicePayment);
 
 $('#beginDay').click(foundServicePayment)
+$('#beginDay').click(foundServicePayment)
+$('.pdfReport').click(pdfReportReq)
 $('#endDay').click(foundServicePayment)
 $(".apply_dates").on("click",foundServicePayment);
 
@@ -52,7 +54,15 @@ function makeDMY(date){
   y : date.getUTCFullYear()};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
-
+function pdfReportReq(event){
+    // event.preventDefault();
+    dat = {begin:$('#beginDate').val(),end:$('#endDate').val()}
+    $.ajax({
+        type: 'POST',
+        url: '/exits/hospital_account',
+        data: dat,
+        })
+}
 // Fill table with data
 function foundServicePayment(event) {
     event.preventDefault();
@@ -146,7 +156,7 @@ function foundServicePayment(event) {
                     accountContent+=`</tr>  
                 </thead><tbody>`;
                 (response.transactions).forEach(function(item,index){
-                    let entry_subtotal = +(item.totalSell+item.totalPrice).toFixed(3), spent_subtotal = +(item.totalCost + item.totalBuy).toFixed(3),item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3);
+                    let entry_subtotal = +(item.totalSell).toFixed(3), spent_subtotal = +(item.totalBuy).toFixed(3),item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3);
                     accountContent+=`
                     <tr>  
                         <td>${item.class}</td> 
@@ -185,7 +195,7 @@ function foundServicePayment(event) {
                     </thead>`
                     accountContent+=`<tbody>`;
                     (response.transactions).forEach(function(item,index){
-                        let entry_subtotal = +(item.totalSell+item.totalPrice).toFixed(3), spent_subtotal = +(item.totalCost + item.totalBuy).toFixed(3),item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3);
+                        let entry_subtotal = +(item.totalSell).toFixed(3), spent_subtotal = +(item.totalBuy).toFixed(3),item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3);
                         accountContent+=`  
                         <tr>
                             <td><a href = "/patients/${item.patientId}/showAccount">${item.name}</a></td> 

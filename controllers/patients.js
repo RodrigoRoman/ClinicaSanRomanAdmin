@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const {Service,Supply,Hospital} = require('../models/service');
+const Disch = require('../models/discharged_data');
 const Transaction = require('../models/transaction');
 const Patient = require('../models/patient');
 const { cloudinary } = require("../cloudinary");
 const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
+// const service = require('../models/services');
 
 function convertUTCDateToLocalDate(date) {
 
@@ -49,7 +51,6 @@ module.exports.createPatient = async (req, res, next) => {
 module.exports.renderEditForm = async (req, res) => {
     const { id } = req.params;
     const patient = await Patient.findById(id);
-    console.log(patient);
     if (!patient) {
         req.flash('error', 'Error al buscar paciente!');
         return res.redirect('/patients');
@@ -68,11 +69,35 @@ module.exports.updatePatient = async (req, res) => {
 
 module.exports.dischargePatient = async (req, res) => {
     const { id } = req.params;
-    const patient = await Patient.findById(id);
+    const patient = await Patient.findById(id).populate({
+        path: 'servicesCar',
+        populate: {
+          path: 'service',
+        },
+      });
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
     patient.discharged = true
-    patient.dischargedDate =nDate;
+    patient.dischargedDate = nDate;
+    //create discharged data
+    for(let trans of patient.servicesCar){
+        let dischargedData = {
+            patient:trans.patient,
+            class: trans.service.class,
+            amount: trans.amount,
+            name: trans.service.name,
+            service_type: trans.service.service_type,
+            processDate: nDate,
+            hospitalEntry:trans.service.hospitalEntry,
+            unitPrice: trans.service.sell_price||trans.service.price,
+            buyPrice: trans.service.buy_price||0
+
+        }
+        let dischargedField = new Disch(dischargedData);
+        trans.discharged_data = dischargedField;
+        await trans.save();
+        await dischargedField.save();
+    }
     await patient.save();
     req.flash('success', 'Paciente dado de alta!');
     res.redirect(`/patients`)
@@ -134,6 +159,83 @@ module.exports.showPatient = async (req, res) => {
     }
     res.render(`patients/show`, { patient, str_id,begin,end,eH,bH});
 }
+
+
+module.exports.showDischargedPatient= async (req, res) => {
+    const { id } = req.params;
+    const patient = await Patient.aggregate([  
+        {$match: {_id:  mongoose.Types.ObjectId(req.params.id)}}, 
+        {$group: {
+            _id:"$name",
+            patientName:{$last:"$name"},
+            treatingDoctor:{$last:"$treatingDoctor"},
+            servicesCar:{$last:"$servicesCar"},
+            diagnosis: {$last:"$diagnosis"},
+            admissionDate: { $last:"$admissionDate"}}},
+        {$unwind:"$servicesCar"},
+        {
+            $lookup: {
+            from: "transactions",
+            localField: "servicesCar",    
+            foreignField: "_id",  
+            as: "fromTransaction"
+            }
+        },
+        {
+            $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromTransaction", 0 ] }, "$$ROOT" ] } }
+        },
+        { $project: { fromTransaction: 0, servicesCar:0 } },
+        {
+            $lookup: {
+            from: "disches",
+            localField: "discharged_data",    // field in current collection
+            foreignField: "_id",  // field foreign
+            as: "fromDischarged"
+            }
+        },
+        {
+            $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+        },
+        { $project: { fromDischarged: 0 } },
+        {$group: {
+            _id:"$name",
+            patientName:{$last:"$patientName"},
+            class:{$last:"$class"},
+            name: {$last:"$name"},
+            treatingDoctor:{$last:"$treatingDoctor"},
+            diagnosis : {$last:"$diagnosis"},
+            admissionDate : {$last:"$admissionDate"},
+            price: {$last:"$unitPrice"},
+            amount: { $sum:"$amount"}}},
+        {
+            $lookup: {
+            from: "dischs",
+            localField: "discharged_data",    // field in the Trasaction collection
+            foreignField: "_id",  // field in the Service collection
+            as: "fromDischarged"
+            }
+        },
+        {
+            $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+        },
+        { $project: { fromDischarged: 0 } },
+        {$group: {
+            _id:"$class",
+            patientName:{$last:"$patientName"},
+            class:{$last:"$class"},
+            serviceName: {$push:"$name"},
+            treatingDoctor:{$last:"$treatingDoctor"},
+            diagnosis : {$last:"$diagnosis"},
+            admissionDate : {$last:"$admissionDate"},
+            price: {$push:"$price"},
+            amount: { $push:"$amount"}}},
+        {$addFields:{totalPrice : { $sum: "$price" }}},
+        {$addFields:{totalCost : { $sum: "$cost" }}},
+    ]).collation({locale:"en", strength: 1});
+        
+    res.render(`patients/dischargedPatient`, {patient});
+}
+
 
 module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
@@ -213,7 +315,6 @@ module.exports.patientAccount = async (req, res) => {
             $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromService", 0 ] }, "$$ROOT" ] } }
          },
          { $project: { fromService: 0 } },
-        
         {$group: {
             _id:"$class",
             patientName:{$last:"$patientName"},
@@ -230,7 +331,6 @@ module.exports.patientAccount = async (req, res) => {
             sell_price: { $push:"$sell_price"},
             buy_price: { $push: "$buy_price"},
             amount: { $push:"$amount"}}},
-
         {$addFields:{totalSell : { $sum: "$sell_price" }}},
         {$addFields:{totalBuy : { $sum: "$buy_price" }}},
         {$addFields:{totalPrice : { $sum: "$price" }}},
@@ -242,7 +342,6 @@ module.exports.patientAccount = async (req, res) => {
     }
     begin = req.query.begin;
     end = req.query.end;
-    // console.log(patient[0].consumtionDate)
     patient.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
     res.render(`patients/showAccount`, { patient,begin,end});
 }
@@ -271,6 +370,49 @@ module.exports.accountToPDF = async (req,res) =>{
         waitUntil: 'networkidle0'});          // go to site
     // await page.goto(
     //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //       waitUntil: 'networkidle0'});
+
+    const dom = await page.$eval('.toPDF', (element) => {
+        return element.innerHTML
+    }) // Get DOM HTML
+    await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
+    await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
+    await page.addStyleTag({content: `.image_print{
+        position:absolute;
+        top:50px;
+        left:20px;
+        width:250px;
+        height: 120px;
+      }`})
+    const pdf = await page.pdf({landscape: false})
+    await browser.close(); 
+    res.contentType("application/pdf");
+    res.send(pdf);
+}
+
+
+module.exports.dischAccountPDF = async (req,res) =>{ 
+    let {begin,end,name} = req.query;               
+    // const browser = await puppeteer.launch();       // run browser
+    const chromeOptions = {
+        headless: true,
+        defaultViewport: null,
+        args: [
+            "--incognito",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote"
+        ],
+    };
+    const browser = await puppeteer.launch(chromeOptions);
+    const page = await browser.newPage();           // open new tab
+    
+    // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'}); 
+    await page.goto(`https://warm-forest-49475.herokuapp.com/patients/${req.params.id}/showDischarged`,{
+        waitUntil: 'networkidle0'});          // go to site
+    // await page.goto(
+    //     `http://localhost:3000/patients/${req.params.id}/showDischarged`,{
     //       waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
@@ -369,13 +511,10 @@ module.exports.searchAll = async (req, res) => {
         if(exp){
             expirations = [];
             exp = new Date(exp);
-            console.log(exp);
             expirations = getDaysInMonthUTC(exp.getUTCMonth(),exp.getUTCFullYear());
-            console.log(expirations)
             supplies = await Service.find({$or:dbQueries,deleted:false,expiration:{$in:expirations}});
         }else{
             supplies = await Service.find({$or:dbQueries,deleted:false});
-            console.log(supplies[0].expiration)
         }
 		if (!supplies) {
 			res.locals.error = 'Ningun producto corresponde a la busqueda';
@@ -389,7 +528,6 @@ module.exports.addToCart = async (req, res) => {
     const timeUnits =  ["Hora", "Dia"];
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
-    console.log("transaction hour registered",nDate);
     let termDate = nDate;
     let amnt = 0;
     if(!timeUnits.includes(service.unit)){
@@ -423,7 +561,6 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const begin = new Date(req.body.begin+"T00:00:01.000Z");
     const end = new Date(req.body.end+"T23:59:01.000Z");
-    console.log(req.body.trans_id);
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
         populate: {
@@ -449,7 +586,6 @@ module.exports.updateServiceFromAccount = async (req, res) => {
     const req_amount = req.body.amount;
     let transact = await Transaction.findById(req.body.trans_id);
     let location = transact.location;
-    console.log(location)
     const difference = transact.amount - req_amount;
     if(difference<0){
         if(service.service_type == "supply"){
@@ -485,8 +621,6 @@ module.exports.updateTimeService = async (req, res) => {
         end = (toggle)?nDate:new Date(convertUTCDateToLocalDate(new Date(req.body.until)));
     //calculate the unit time in miliseconds
     let miliUnit = (service.unit == "Dia")?(86400*1000):(3600*1000);
-    console.log("new amount")
-    console.log(start,end)
     //divide the difference between start and end batween the miliseconds unit
     let new_amount = (end.getTime() - start.getTime())/miliUnit;
     new_amount = Math.round(new_amount * 100) / 100;

@@ -72,7 +72,7 @@ function foundPatients(event) {
                                     const b = new Date(this.admissionDate).toISOString().substr(0,10);
                                     const e = new Date(this.dischargedDate).toISOString().substr(0,10);
                     
-                                    patientsContent+=` <a href = "/patients/`+this._id+`/makePDF?begin=`+b+`&end=`+e+`&name=`+this.name+`">
+                                    patientsContent+=` <a href = "/patients/`+this._id+`/dischargedPDF">
                                         <button type="button" class="btn btn-outline-secondary">Ver cuenta</button>
                                     </a>`
                                 }

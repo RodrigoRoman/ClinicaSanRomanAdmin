@@ -80,7 +80,7 @@ function defineBorder(proportion){
                 <% const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };%>
                 <li class="list-group-item border border-<%=dateColor%>">Caducidad: <%=supply.expiration.toLocaleDateString('es-ES', options)%></li>
                 <%if(supply.outside){%>
-                    <li class="list-group-item">En Bodega: <%= supply.stock - supply.outside%></li>
+                    <li class="list-group-item">En Bodega:<%= supply.stock - supply.outside%></li>
                 <%}%>
                 <li class="list-group-item">Existencias: <%= supply.stock%></li>
                 <li class="list-group-item">Proveedor: <%= supply.supplier%></li>

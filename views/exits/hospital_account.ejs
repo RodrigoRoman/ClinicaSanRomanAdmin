@@ -66,7 +66,7 @@ function makeDMY(date){
             <div class="col-2">
                 <form>
                     <div class="custom-control custom-switch">
-                      <input type="checkbox" class="custom-control-input" name ="honorary" value = "honorary"" id="honorary" checked>
+                      <input type="checkbox" class="custom-control-input" name ="honorary" value = "honorary" id="honorary" checked>
                       <label class="custom-control-label" for="honorary">Honorarios</label>
                     </div>
                 </form>
@@ -76,9 +76,7 @@ function makeDMY(date){
                     <option selected>Ordenar por:</option>
                     <option id= "byName" value="name">Nombre</option>
                     <option id= "byClass" value="class">Clase</option>
-                    <%if(currentUser.role == "directAdmin"){%>     
                         <option id= "byPatient" value="patient">Cuentas de pacientes</option>
-                    <%}%>
                 </select>
             </div>
             
@@ -89,7 +87,7 @@ function makeDMY(date){
                 <div class="row"> 
                   <div class="col-5">
                     <label> De</label>
-                    <input type="date" name="beginDay" id = "beginDate" value = "2020-10-02" class="form-control">
+                    <input type="date" name="beginDay" id = "beginDate" value = "<%=makeYMD(nDate)%>" class="form-control">
                   </div>
                   <div class="col-5">
                     <label>Hasta</label>
@@ -114,13 +112,11 @@ function makeDMY(date){
                     <th scope="col"><h6 class="pad">Servicio</h6></th>
                     <th scope="col"><h6 class="pad">Clase</h6></th> 
                     <th scope="col"><h6 class="pad">Cantidad</h6></th>   
-                    <%if(currentUser.role == "directAdmin"){%>
                         <th scope="col"><h6 class="pad">Compra</h6></th>
                         <th scope="col"><h6 class="pad">Venta</h6></th>
                         <th scope="col"><h6 class="pad">Egreso</h6></th> 
                         <th scope="col"><h6 class="pad">Ingreso</h6></th>   
                         <th scope="col"><h6 class="pad">Ganancia</h6></th> 
-                    <%}%>
                 </tr>  
             </thead>
             <tbody >
@@ -129,12 +125,11 @@ function makeDMY(date){
             transactions.forEach(function(item,index){
                 let price = 0;
                 if(item.service_type == "supply"){price = item.sell_price;buy = item.buy_price}else{price = item.price;buy = 0}
-                let entry_subtotal = +(price * item.amount).toFixed(3);let spent_subtotal = +(buy * item.amount).toFixed(3); let item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3) %>
+                let entry_subtotal = +((item.totalSell).toFixed(3));let spent_subtotal = +((item.totalBuy).toFixed(3)); let item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3) %>
                 <tr>  
                     <td><%=item.name%></td>
                     <td><%=item.class%></td> 
                     <td><%=item.amount%></td> 
-                    <%if(currentUser.role == "directAdmin"){%>
                         <%if(item.service_type == "supply"){%>
                         <td>$<%=buy%></td>  
                         <%}else{%>
@@ -142,13 +137,12 @@ function makeDMY(date){
                         <%}%> 
                         <td>$<%=price%></td> 
                         <%if(item.service_type == "supply"){%>
-                        <td>$<%=spent_subtotal%></td>  
+                        <td>$<%=(item.totalBuy).toFixed(3)%></td>  
                         <%}else{%>
                         <td></td>
                         <%}%> 
-                        <td>$<%=entry_subtotal%></td>
+                        <td>$<%=(item.totalSell).toFixed(3)%></td>
                         <td>$<%=item_subtotal%></td> 
-                    <%}%> 
                 </tr> 
                 <%
                 total_income += entry_subtotal;
@@ -156,14 +150,12 @@ function makeDMY(date){
             })%>
             </tbody> 
         </table>  
-        <%if(currentUser.role == "directAdmin"){%>
 
             <div class = "container">
                 <%total_income = +(total_income).toFixed(3)%>
                 
                 <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $<%=total_income.toFixed(3)%></span></h2>
             </div>  
-        <%}%>   
          <br>  <br>
 
 
@@ -204,7 +196,6 @@ function makeDMY(date){
 
         <h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $<%=total_exit%></span></h2>
         <br>  <br>
-        <%if(currentUser.role == "directAdmin"){%>
 
             <table class="table table-borderless">
                 <thead class="table-dark">
@@ -215,13 +206,26 @@ function makeDMY(date){
                         </tr>  
                 </thead>
             </table>
-        <%}%>
     </div>
-    <form action="/exits/hospital_account" method="POST" novalidate class="validated-form">
-        <div class="mb-3">
-            <button type = "submit" class="btn btn-outline-secondary">Reporte en PDF</button>
-        </div>
-    </form>
+    <div class = "container">
+        <form action="/exits/hospital_account" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                    <div class="row"> 
+                        <div class="col-2">
+                            <label> De</label>
+                            <input type="date" name="begin" id = "beginDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                        </div>
+                        <div class="col-2">
+                            <label>Hasta</label>
+                            <input type="date" name="end"  id = "endDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                            <button type = "submit" class="btn btn-outline-secondary pdfReport">Reporte en PDF</button>
+                    </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 
