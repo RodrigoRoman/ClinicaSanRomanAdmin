@@ -245,7 +245,6 @@ function foundServicePayment(event) {
                     total_outcome = +(total_outcome).toFixed(3);
                     accountContent+=` </tbody> 
                     </table>`;
-        
                 }
                 if(response.exit == "exit"){
                 accountContent+=`<h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $${total_exit}</span></h2>

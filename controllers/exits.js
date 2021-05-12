@@ -169,7 +169,7 @@ module.exports.servicesPayments = async (req, res) => {
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
-                {$match: {discharged_data:{$exists: true, $ne: null },hospitalEntry:{$in:[hospital,honorary]}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},
                 {
                     $lookup: {
                         from: "disches",
@@ -439,12 +439,12 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}`,{
-    //     waitUntil: 'networkidle0'});
+    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
+        waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
-                waitUntil: 'networkidle0'});
+    // await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
+    //             waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
