@@ -73,7 +73,8 @@ module.exports.hospital_account = async (req, res) => {
     default_begin.setDate( default_begin.getDate() - 6 );
     let begin = req.query.begin || default_begin;
     let end =req.query.end || nDate;
-    hospital = (req.query.entry == "hospital")?"true":"false";
+    let hospital = (req.query.entry == "honorarios")?"false":"true";
+    let honorary = "true";
     begin =new Date(convertUTCDateToLocalDate( new Date(begin)))
     end = new Date(convertUTCDateToLocalDate(new Date(end)))
     const exits = await Exit.aggregate( 
@@ -100,7 +101,7 @@ module.exports.hospital_account = async (req, res) => {
         [   
             // put in a single document both transaction and service fields
             {$match: {consumtionDate:{$gte:begin,$lte:end}}},
-            {$match: {discharged_data:{$exists: true, $ne: null },hospitalEntry:{$eq:hospital}}},
+            {$match: {discharged_data:{$exists: true, $ne: null }}},
             {
                 $lookup: {
                     from: "disches",
@@ -113,6 +114,7 @@ module.exports.hospital_account = async (req, res) => {
                 $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
              },
              { $project: { fromDischarged: 0 } },
+             {$match: {hospitalEntry:{$in:[hospital,honorary]}}},
              {$group: {
                 _id:"$name",
                 name:{$last:"$name"},
@@ -439,12 +441,12 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
-        waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
+    //     waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    // await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&honorarios=${honorarios}`,{
-    //             waitUntil: 'networkidle0'});
+    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
+                waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
