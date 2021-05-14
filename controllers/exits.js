@@ -441,12 +441,12 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
-    //     waitUntil: 'networkidle0'});
+    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
+        waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
-                waitUntil: 'networkidle0'});
+    // await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
+    //             waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
