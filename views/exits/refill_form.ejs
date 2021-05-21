@@ -51,11 +51,12 @@ for(let zone in refill_location){
     for(let tr of refill_location[zone]){
         if(prev_c != tr.class){
             prev_c = tr.class;
-            zone_order_list.concat(class_sort_list.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})));
+            zone_order_list = zone_order_list.concat(class_sort_list.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})));
             class_sort_list = [];
         }
         class_sort_list.push(tr)
     }
+    zone_order_list = zone_order_list.concat(class_sort_list.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})));
     refill_location[zone] = zone_order_list;
 }
 %>
