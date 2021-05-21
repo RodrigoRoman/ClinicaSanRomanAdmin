@@ -57,8 +57,8 @@ for(let zone in refill_location){
         }
         count++;
     }
-    let fHalf = refill_location[zone].slice(low,up);
-    let sHalf = refill_location[zone].slice(up,refill_location[zone].lenght);
+    let fHalf = refill_location[zone].slice(low,up).sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}));
+    let sHalf = refill_location[zone].slice(up,refill_location[zone].lenght).sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}));
     console.log(fHalf.concat(sHalf))
     refill_location[zone] = fHalf.concat(sHalf);
 }
