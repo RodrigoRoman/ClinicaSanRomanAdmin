@@ -23,6 +23,9 @@
   </div>
 </div>
 <%
+function numberCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 function makeDMYHour(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
   y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
@@ -79,14 +82,14 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
             <td>X <span class = "item-amount"><%=item.amount%></span></td>
             <%let price = (item.service_type == "supply")?item.sell_price:item.price %>
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
-              <td class = "item-price">$ <%= price%></td>
+              <td class = "item-price">$ <%= numberCommas(price)%></td>
             <%}%>
             
             <td class = "item-price"><%=makeDMYHour(new Date(item.consumtionDate))%></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
             <td ><small class = "text-muted"><%=item.author%></small></td>
             <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
-              <td>$ <%=subtotal%> 
+              <td>$ <%=numberCommas(subtotal)%> 
                 <%total+=subtotal%>
                 <span class = "float-right buttons">
                   <button type="button"  class="delete-item btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
@@ -151,7 +154,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
               name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
-            <td>$ <%=subtotal%><%total+=subtotal%>
+            <td>$ <%=numberCommas(subtotal)%><%total+=subtotal%>
             </td>
             <td>
               <div class="df-switch">
@@ -170,7 +173,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
     </table>
       <div class="container ">
         <%total = +(total).toFixed(3)%>
-        <h2 class = "float-right font-italic border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=total%></span></h2>
+        <h2 class = "float-right font-italic border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=numberCommas(total)%></span></h2>
       </div>
     <%}%>
     <div class="container">

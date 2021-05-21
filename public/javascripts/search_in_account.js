@@ -14,6 +14,9 @@ function convertUTCDateToLocalDate(date) {
   return date;
 
   }
+  function numberCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 const nDate = new Date(convertUTCDateToLocalDate(new Date));
 // DOM Ready =============================================================
 $(document).ready(function() {
@@ -156,7 +159,7 @@ function populateTable(event) {
       tableContent += '<tr>';
       if(this.doctor){
         tableContent += '<td><a class = "text-dark" href="/services/'+this._id+'/edit">' + this.name + '</a></td>';
-        tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + this.price + '</small></td>';
+        tableContent += '<td><small alt ="'+this._id+'" class="text-muted">' + numberCommas(this.price) + '</small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
         tableContent += '<td><small class="text-muted">  </small></td>';
       }else{

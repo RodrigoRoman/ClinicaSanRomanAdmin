@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="/stylesheets/app.css">
 </head>
 <%
+function numberCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 function makeDMY(date){
   const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
   y : date.getUTCFullYear()};
@@ -80,8 +83,8 @@ function makeDMY(date){
                             <td></td>
                             <td><%=item.serviceName[i]%></td> 
                             <td><%=Math.round(amnt)%></td>  
-                            <td>$<%=price%></td>
-                            <td>$<%=item_subtotal%></td>  
+                            <td>$<%=numberCommas(price)%></td>
+                            <td>$<%=numberCommas(item_subtotal)%></td>  
                         </tr> 
                         <%
                         sub_amount += amnt;subtotal_class += item_subtotal;
@@ -93,14 +96,14 @@ function makeDMY(date){
                             <th scope="row">Subtotal</th>  
                             <th scope="row"><%=Math.round(sub_amount)%></th>  
                             <th scope="row"></th>  
-                            <th scope="row">$<%=subtotal_class%></th> 
+                            <th scope="row">$<%=numberCommas(subtotal_class)%></th> 
                         </tr>
                 <%})%>
                     </tbody> 
                 </table> 
                 <div>
                     <%total = +(total).toFixed(3)%>
-                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=total%></span></h2>
+                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=numberCommas(total)%></span></h2>
                 </div>
             </div>
         </div>        

@@ -7,6 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
     <script src="/javascripts/jquery-3.2.1.min.js"></script>
 <%
+function numberCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function convertUTCDateToLocalDate(date) {
 
 date = new Date(date);
@@ -131,18 +135,18 @@ function makeDMY(date){
                     <td><%=item.class%></td> 
                     <td><%=item.amount%></td> 
                         <%if(item.service_type == "supply"){%>
-                        <td>$<%=buy%></td>  
+                        <td>$<%=numberCommas(buy)%></td>  
                         <%}else{%>
                         <td></td>
                         <%}%> 
-                        <td>$<%=price%></td> 
+                        <td>$<%=numberCommas(price)%></td> 
                         <%if(item.service_type == "supply"){%>
-                        <td>$<%=(item.totalBuy).toFixed(3)%></td>  
+                        <td>$<%=numberCommas((item.totalBuy).toFixed(3))%></td>  
                         <%}else{%>
                         <td></td>
                         <%}%> 
-                        <td>$<%=(item.totalSell).toFixed(3)%></td>
-                        <td>$<%=item_subtotal%></td> 
+                        <td>$<%=numberCommas((item.totalSell).toFixed(3))%></td>
+                        <td>$<%=numberCommas(item_subtotal)%></td> 
                 </tr> 
                 <%
                 total_income += entry_subtotal;
@@ -154,7 +158,7 @@ function makeDMY(date){
             <div class = "container">
                 <%total_income = +(total_income).toFixed(3)%>
                 
-                <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $<%=total_income.toFixed(3)%></span></h2>
+                <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $<%=numberCommas(total_income.toFixed(3))%></span></h2>
             </div>  
          <br>  <br>
 
@@ -179,8 +183,8 @@ function makeDMY(date){
                     <td><%=item.name%></td>
                     <td><%=makeDMY(item.dueDate)%></td>
                     <td><%=item.totalAmount%></td> 
-                    <td>$<%=item.price%></td>  
-                    <td>$<%=item.totalCost%></td>  
+                    <td>$<%=numberCommas(item.price)%></td>  
+                    <td>$<%=numberCommas(item.totalCost)%></td>  
                 </tr> 
                 <%
                 total_exit += item.totalCost;
@@ -194,15 +198,15 @@ function makeDMY(date){
         total_outcome = +(total_outcome).toFixed(3);
         %>
 
-        <h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $<%=total_exit%></span></h2>
+        <h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $<%=numberCommas(total_exit)%></span></h2>
         <br>  <br>
 
             <table class="table table-borderless">
                 <thead class="table-dark">
                         <tr>  
-                            <th scope="col"><h2 class="pad"><span class = "text-danger">Salida:</span> $<%=total_outcome%></h2></th> 
-                            <th scope="col"><h2 class="pad">Entrada: $<%=total_income%></h2></th> 
-                            <th scope ="col"><h2 class="pad">Ganancia: $<%=+(total_income-total_outcome).toFixed(3)%></h2></th>
+                            <th scope="col"><h2 class="pad"><span class = "text-danger">Salida:</span> $<%=numberCommas(total_outcome)%></h2></th> 
+                            <th scope="col"><h2 class="pad">Entrada: $<%=numberCommas(total_income)%></h2></th> 
+                            <th scope ="col"><h2 class="pad">Ganancia: $<%=numberCommas(+(total_income-total_outcome).toFixed(3))%></h2></th>
                         </tr>  
                 </thead>
             </table>

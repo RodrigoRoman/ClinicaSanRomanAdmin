@@ -43,6 +43,25 @@ transactions.forEach(element => {
     }
 }
 });
+
+for(let zone in refill_location){
+    let low=0,up=0;
+    refill_location[zone]= refill_location[zone].sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}));
+    let prev_c = ''
+    let count = 0
+    for(let tr of refill_location[zone]){
+        // console.log(tr)
+        if(prev_c != tr.class){
+        prev_c = tr.class
+        up = count;
+        }
+        count++;
+    }
+    let fHalf = refill_location[zone].slice(low,up);
+    let sHalf = refill_location[zone].slice(up,refill_location[zone].lenght);
+    console.log(fHalf.concat(sHalf))
+    refill_location[zone] = fHalf.concat(sHalf);
+}
 %>
  <%- include('../partials/navbar')%>
     <body>
@@ -95,11 +114,11 @@ transactions.forEach(element => {
                                 <form action="/exits/refill" method="POST" novalidate class="validated-form">
                                     <div class="mb-3">
                                         <label class="form-label" for="entrega">Entrega:</label>
-                                        <input class="form-control" type="text" id="entrega" name="refill[entrega]" required>
+                                        <input class="form-control" value = " "type="text" id="entrega" name="refill[entrega]" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="recibe">Recibe:</label>
-                                        <input class="form-control" type="text" id="recibe" name="refill[recibe]" required>
+                                        <input class="form-control" value = " "type="text" id="recibe" name="refill[recibe]" required>
                                     </div>
                                     <div class="mb-3">
                                         <button type = "submit" class="btn btn-outline-secondary">Crear PDF</button>
