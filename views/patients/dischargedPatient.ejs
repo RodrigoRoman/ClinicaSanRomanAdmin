@@ -21,6 +21,15 @@ function makeDMY(date){
   y : date.getUTCFullYear()};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
+let patientNoHonorary = patient.filter((el)=>{
+    return (el.class != "Honorarios" || el.class != "Honorarios Medicos")
+});
+
+let honoraries = patient.filter((el)=>{
+    return (el.class == "Honorarios" || el.class == "Honorarios Medicos")
+});
+
+let newPatient = patientNoHonorary.concat(honoraries);
 %>
  <%- include('../partials/navbar')%>
     <body>
@@ -64,7 +73,7 @@ function makeDMY(date){
                     </thead>
                     <tbody>
                     <%let prev_class= "", subtotal_class = 0, sub_amount = 0,total = 0; 
-                    patient.forEach(function(item,index){%>
+                    newPatient.forEach(function(item,index){%>
                             <tr>  
                                 <th><%=item.class%></th> 
                                 <th></th> 
