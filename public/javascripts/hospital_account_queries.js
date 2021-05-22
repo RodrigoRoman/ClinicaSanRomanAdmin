@@ -198,7 +198,7 @@ function foundServicePayment(event) {
                         let entry_subtotal = +(item.totalSell).toFixed(3), spent_subtotal = +(item.totalBuy).toFixed(3),item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3);
                         accountContent+=`  
                         <tr>
-                            <td><a href = "/patients/${item.patientId}/showAccount">${item.name}</a></td> 
+                            <td><a href = "/patients/${item.patientId}/dischargedPDF">${item.name}</a></td> 
                             <td>${makeDMY(new Date(item.admissionDate))}</td>
                             <td>$${spent_subtotal}</td> 
                             <td>$${entry_subtotal}</td>  

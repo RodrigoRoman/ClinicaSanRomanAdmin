@@ -22,7 +22,7 @@ function makeDMY(date){
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
 let patientNoHonorary = patient.filter((el)=>{
-    return (el.class != "Honorarios" || el.class != "Honorarios Medicos")
+    return (el.class != "Honorarios" && el.class != "Honorarios Medicos")
 });
 
 let honoraries = patient.filter((el)=>{
