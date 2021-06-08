@@ -129,7 +129,9 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
     </table>
     <br>
     <br>
-    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
+    <%
+    let subtotal =0;
+    if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
     <h1 class="text-center display-5"><i class="fas fa-hourglass-start"></i></h1>
     <table id="accountStatus" class="table table-responsive-sm sticky2">
       <thead>
@@ -169,7 +171,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
               name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
-            <td>$ <%=numberCommas(subtotal)%><%total+=subtotal%>
+            <td>$ <%=numberCommas(subtotal)%>
             </td>
             <td>
               <div class="df-switch">
@@ -187,6 +189,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
       </tbody>
     </table>
     <%}
+    total+=subtotal;
     currDate =new Date();
     %>
     <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin" || (currDate.getHours()<6 || currDate.getHours()>19)){%>
