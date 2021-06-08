@@ -111,9 +111,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
                   <button type="button"  class="edit-item btn btn-sm btn-outline-info"><i class="fas fa-edit"></i></button>
                 </span>
               </td>
-            <%}else{
-                              total+=subtotal
-%>
+            <%}else{%>
             <%if(currentUser.username == (item.author)){%>
               <td>
                 <span class = "float-right buttons">
@@ -126,7 +124,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
             <%}
             }%>
           </tr>
-        <%}let subtotal = 0%>
+        <%}%>
       </tbody>
     </table>
     <br>
@@ -170,8 +168,8 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
             <td><input type="datetime-local" id="until"
               name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
-            <%subtotal = +(item.amount*price).toFixed(3);%>
-            <td>$ <%=numberCommas(subtotal)%>
+            <%let subtotal = +(item.amount*price).toFixed(3);%>
+            <td>$ <%=numberCommas(subtotal)%><%total+=subtotal%>
             </td>
             <td>
               <div class="df-switch">
@@ -189,7 +187,6 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
       </tbody>
     </table>
     <%}
-    total+=subtotal
     currDate =new Date();
     %>
     <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin" || (currDate.getHours()<6 || currDate.getHours()>19)){%>
