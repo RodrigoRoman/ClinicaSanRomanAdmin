@@ -157,7 +157,8 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
 
 
       <tbody class = "timeBody">
-        <%for(let item of timeElements){%>
+        <%for(let item of timeElements){
+          if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
           <%let act = (item.toggle == true)?"":"active";
           let dis = (item.toggle == true)?"":"disabled"
           %>
@@ -170,7 +171,7 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
               name="meeting-time" value = "<%=item.terminalDate.toISOString().substring(0, 16)%>" alt= "<%=item.toggle%>"></td>
             <td>X <span class = "item-amount" id="transID" alt = "<%=item.trans_id%>"><%=item.amount%></span></td>
             <%let subtotal = +(item.amount*price).toFixed(3);%>
-            <td>$ <%=numberCommas(subtotal)%><%total+=subtotal%>
+            <td>$ <%=numberCommas(subtotal)%>
             </td>
             <td>
               <div class="df-switch">
@@ -184,7 +185,8 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
               </div>
             </td> 
           </tr>
-        <%}%>
+        <%}
+      total+=subtotal}%>
       </tbody>
     </table>
     <%}
