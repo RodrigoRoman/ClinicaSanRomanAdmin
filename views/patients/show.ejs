@@ -46,6 +46,7 @@ function makeDMYHour(date){
   y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
+let currDate =new Date();
 
 let patientCar = [];
 let timeUnits = ["Hora","Dia"];
@@ -188,7 +189,6 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
       </tbody>
     </table>
     <%}
-    currDate =new Date();
     %>
     <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin" || (currDate.getHours()<6 || currDate.getHours()>19)){%>
       <div class="container ">
