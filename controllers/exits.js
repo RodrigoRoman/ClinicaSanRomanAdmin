@@ -73,8 +73,10 @@ module.exports.hospital_account = async (req, res) => {
     default_begin.setDate( default_begin.getDate() - 6 );
     let begin = req.query.begin || default_begin;
     let end =req.query.end || nDate;
+    let sorted =  req.query.sorted || 'name';
     let hospital = (req.query.entry == "honorarios")?"false":"true";
     let honorary = "true";
+    let transactions = {};
     begin =new Date(convertUTCDateToLocalDate( new Date(begin)))
     end = new Date(convertUTCDateToLocalDate(new Date(end)))
     const exits = await Exit.aggregate( 
@@ -96,40 +98,138 @@ module.exports.hospital_account = async (req, res) => {
           //specify language-specific rules for string comparison
     ).collation({locale:"en", strength: 1});
 
-    const transactions = await Transaction.aggregate( 
-        //recreate supply element by compressing elements with same name. Now the fields are arrays
-        [   
-            // put in a single document both transaction and service fields
-            {$match: {consumtionDate:{$gte:begin,$lte:end}}},
-            {$match: {discharged_data:{$exists: true, $ne: null }}},
-            {
-                $lookup: {
-                    from: "disches",
-                    localField: "discharged_data",    // field in the Trasaction collection
-                    foreignField: "_id",  // field in the disch collection
-                    as: "fromDischarged"
+    if((sorted == "name") || (sorted == "Ordenar por:")){
+        //sort in alphabetical order
+        transactions = await Transaction.aggregate( 
+            //recreate supply element by compressing elements with same name. Now the fields are arrays
+            [   
+                // put in a single document both transaction and service fields
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},
+                {
+                    $lookup: {
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
+                 },
+                 {
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+                 },
+                 { $project: { fromDischarged: 0 } },
+                 {$match: {hospitalEntry:{$in:[hospital,honorary]}}},
+                 {$group: {
+                    _id:"$name",
+                    name:{$last:"$name"},
+                    class:{$last:"$class"},
+                    // consumtionDate: {$last:"$consumtionDate"},
+                    service_type:{$last:"$service_type"},
+                    price: {$last:"$unitPrice"},
+                    sell_price: {$last:"$unitPrice"},
+                    buy_price: { $last:"$buyPrice"},
+                    amount: { $sum:"$amount"}}},
+                {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
+                {$addFields:{totalSell : { $multiply: ["$price","$amount"] }}},
+                {$addFields:{totalPrice : { $multiply: ["$price","$amount"] }}},
+                 
+            ]);
+            transactions.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
+    };
+    if(sorted == "class"){
+        //Case for storing based on stock need
+
+        transactions = await Transaction.aggregate( 
+            //recreate supply element by compressing elements with same name. Now the fields are arrays
+            [   
+                // put in a single document both transaction and service fields
+                
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},                {
+                    $lookup: {
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
+                 },
+                 {
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+                 },
+                 { $project: { fromDischarged: 0 ,service:0} },
+                {$match: {processDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
+                {$group: {
+                    _id:"$class",
+                    class:{$last:"$class"},
+                    service_type : {$last:"$service_type"},
+                    price: {$push:{$multiply: [ "$unitPrice","$amount"] }},
+                    cost: {$push:0},
+                    sell_price: { $push:{$multiply: [ "$unitPrice" ,"$amount"]}},
+                    buy_price: { $push: {$multiply: [ "$buyPrice" ,"$amount"]}},
+                    amount: { $sum:"$amount"}}},
+                {$addFields:{totalSell : { $sum: "$sell_price" }}},
+                {$addFields:{totalBuy : { $sum: "$buy_price" }}},
+                {$addFields:{totalPrice : { $sum: "$price" }}},
+                {$addFields:{totalCost : { $sum: "$cost" }}},
+            ]).collation({locale:"en", strength: 1});
+        //return supplies and the sorted argument for reincluding it
+        transactions.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
+
+    }
+    if(sorted == "patient"){
+        //sort in alphabetical order
+        transactions = await Transaction.aggregate( 
+            //recreate supply element by compressing elements with same name. Now the fields are arrays
+            [   
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},                {
+                    $lookup: {
+                        from: "disches",
+                        localField: "discharged_data",    // field in the Trasaction collection
+                        foreignField: "_id",  // field in the disch collection
+                        as: "fromDischarged"
+                        }
+                 },
+                 {
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
+                 },
+                 { $project: { fromDischarged: 0,name:0 } },
+                 {$match: {processDate:{$gte:begin,$lte:end},hospitalEntry:{$in:[hospital,honorary]}}},
+                 // put in a single document both transaction and service fields
+                //  {$unwind:"$patient"},
+                {
+                    $lookup: {
+                       from: "patients",
+                       localField: "patient",    // field in the Trasaction collection
+                       foreignField: "_id",  // field in the Service collection
+                       as: "fromPatient"
                     }
-             },
-             {
-                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromDischarged", 0 ] }, "$$ROOT" ] } }
-             },
-             { $project: { fromDischarged: 0 } },
-             {$match: {hospitalEntry:{$in:[hospital,honorary]}}},
-             {$group: {
-                _id:"$name",
-                name:{$last:"$name"},
-                class:{$last:"$class"},
-                consumtionDate: {$last:"$consumtionDate"},
-                service_type:{$last:"$service_type"},
-                price: {$last:"$unitPrice"},
-                sell_price: {$last:"$unitPrice"},
-                buy_price: { $last:"$buyPrice"},
-                amount: { $sum:"$amount"}}},
-            {$addFields:{totalBuy : { $multiply: ["$buy_price","$amount"] }}},
-            {$addFields:{totalSell : { $multiply: ["$price","$amount"] }}},
-            {$addFields:{totalPrice : { $multiply: ["$price","$amount"] }}},
-             
-        ]);
+                 },
+                 {$unwind:"$patient"},
+
+                 {
+                    $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromPatient", 0 ] }, "$$ROOT" ] } }
+                 },
+                 { $project: { fromPatient: 0 } },
+                 {$group: {
+                    _id:"$name",
+                    patientId:{$last:"$patient"},
+                    name:{$last:"$name"},
+                    admissionDate: {$last:"$admissionDate"},
+                    price: {$push:{$multiply: [ "$unitPrice","$amount"] }},
+                    cost: {$push:0},
+                    sell_price: { $push:{$multiply: [ "$unitPrice" ,"$amount"]}},
+                    buy_price: { $push: {$multiply: [ "$buyPrice" ,"$amount"]}},
+                    amount: { $sum:"$amount"}}},
+                {$addFields:{totalSell : { $sum: "$sell_price" }}},
+                {$addFields:{totalBuy : { $sum: "$buy_price" }}},
+                {$addFields:{totalPrice : { $sum: "$price" }}},
+                {$addFields:{totalCost : { $sum: "$cost" }}},
+            ]).collation({locale:"en", strength: 1});
+        //return supplies and the sorted argument for reincluding it
+        transactions.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
+    };
+    // transactions = await Transaction.find({consumtionDate:{$gte:begin,$lte:end},service:{hospitalEntry:$or[honorary,hospital]}}).populate('service')
     res.render('exits/hospital_account',{transactions,exits})
 }
 
@@ -171,6 +271,7 @@ module.exports.servicesPayments = async (req, res) => {
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
                 {$match: {discharged_data:{$exists: true, $ne: null }}},
                 {
                     $lookup: {
@@ -210,8 +311,8 @@ module.exports.servicesPayments = async (req, res) => {
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
                 // put in a single document both transaction and service fields
-                {$match: {discharged_data:{$exists: true, $ne: null }}},
-                {
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},                {
                     $lookup: {
                         from: "disches",
                         localField: "discharged_data",    // field in the Trasaction collection
@@ -247,8 +348,8 @@ module.exports.servicesPayments = async (req, res) => {
         transactions = await Transaction.aggregate( 
             //recreate supply element by compressing elements with same name. Now the fields are arrays
             [   
-                {$match: {discharged_data:{$exists: true, $ne: null }}},
-                {
+                {$match: {consumtionDate:{$gte:begin,$lte:end}}},
+                {$match: {discharged_data:{$exists: true, $ne: null }}},                {
                     $lookup: {
                         from: "disches",
                         localField: "discharged_data",    // field in the Trasaction collection
@@ -424,6 +525,7 @@ module.exports.deletePayment = async (req, res) => {
 module.exports.accountReportPDF = async (req,res) =>{ 
     let {begin,end} = req.body;
     let honorarios = req.body.honorarios || "";
+    let sorted = req.body.sorted;
     const chromeOptions = {
         headless: true,
         defaultViewport: null,
@@ -441,12 +543,12 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
-        waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
+    //     waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    // await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}`,{
-    //             waitUntil: 'networkidle0'});
+    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
+                waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
