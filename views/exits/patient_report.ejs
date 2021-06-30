@@ -1,0 +1,270 @@
+<% layout('layouts/boilerplate')%>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <script src="/javascripts/jquery-3.2.1.min.js"></script>
+<%
+function numberCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function convertUTCDateToLocalDate(date) {
+
+date = new Date(date);
+
+var localOffset = date.getTimezoneOffset() * 60000;
+
+var localTime = date.getTime();
+
+date = localTime - localOffset;
+
+//date = new Date(date);
+
+return date;
+
+}
+const nDate = new Date(convertUTCDateToLocalDate(new Date))
+function makeYMD(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+y : date.getUTCFullYear()};
+  return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.m)+ "-" + ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d);
+}
+function makeDMY(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear()};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
+}
+%>
+<div class="container mainCont">
+
+    <h1 class= "display-3 font-weight-bold text-center">Cuenta Clinica San Roman</h1>
+    <div class = "container mb-4">
+        <div class = "row justify-content-md-center mt-4">
+            <div class="offset-sm-1 col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "entry" value = "entry" id="income" checked>
+                      <label class="custom-control-label" for="income">Ingresos</label>
+                    </div>
+                  </form>
+            </div>
+            <div class="col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "exit" value = "exit"  id="outcome" checked>
+                      <label class="custom-control-label" for="outcome">Egresos</label>
+                    </div>
+                  </form>
+            </div>
+            <div class="col-2 offset-sm-1 ">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name = "hospital" value = "hospital" id="hospital" checked>
+                      <label class="custom-control-label" for="hospital">Hospital</label>
+                    </div>
+                </form>
+            </div>
+            <div class="col-2">
+                <form>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" name ="honorary" value = "honorary" id="honorary" checked>
+                      <label class="custom-control-label" for="honorary">Honorarios</label>
+                    </div>
+                </form>
+            </div>
+            <div class="container col-2">
+                <select class="btn btn-primary custom-select custom-select mb-3" >
+                    <option selected>Ordenar por:</option>
+                    <option id= "byName" value="name">Nombre</option>
+                    <option id= "byClass" value="class">Clase</option>
+                        <option id= "byPatient" value="patient">Cuentas de pacientes</option>
+                </select>
+            </div>
+            
+        </div>
+        <hr/>
+        <div class="row justify-content-md-center mb-4">
+            <div class="offset-sm-1 col-6 mb-4">
+                <div class="row"> 
+                  <div class="col-5">
+                    <label> De</label>
+                    <input type="date" name="beginDay" id = "beginDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                  </div>
+                  <div class="col-5">
+                    <label>Hasta</label>
+                    <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 offset-sm-4 mt-3">
+                        <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
+                    </div> 
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    
+    <div class="container account toPDF">
+        <h1 class = "ml-2">Ingresos</h1>
+        <table class="table table-borderless sticky1" >
+            <thead class="thead-dark ">
+                <tr>  
+                    <th scope="col"><h6 class="pad">Servicio</h6></th>
+                    <th scope="col"><h6 class="pad">Egreso</h6></th> 
+                    <th scope="col"><h6 class="pad">Ingreso</h6></th>   
+                    <th scope="col"><h6 class="pad">Ganancia</h6></th> 
+                </tr>  
+            </thead>
+            <tbody >
+            <%let total_income = 0;
+            let total_outcome = 0;
+            transactions.forEach(function(item,index){
+                let price = 0;
+                let entry_subtotal = +((item.totalSell).toFixed(3));let spent_subtotal = +((item.totalBuy).toFixed(3)); let item_subtotal = +(entry_subtotal-spent_subtotal).toFixed(3) %>
+                <tr>  
+                    <td><%=item.name%></td>
+                    <td>$<%=numberCommas((item.totalBuy).toFixed(3))%></td>  
+                    <td>$<%=numberCommas((item.totalSell).toFixed(3))%></td>
+                    <td>$<%=numberCommas(item_subtotal)%></td> 
+                </tr> 
+                <%
+                total_income += entry_subtotal;
+                total_outcome += spent_subtotal;
+            })%>
+            </tbody> 
+        </table>  
+
+            <div class = "container">
+                <%total_income = +(total_income).toFixed(3)%>
+                
+                <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total Ingresos: $<%=numberCommas(total_income.toFixed(3))%></span></h2>
+            </div>  
+         <br>  <br>
+
+
+        <h1 class = "text-danger">Egresos</h1>
+        <table class="table table-borderless  sticky2">
+            <thead class="table-danger">
+                <tr>  
+                    <th scope ="col"><h6 class="pad">Nombre</h6></th>
+                    <th scope="col"><h6 class="pad">Liquidacion</h6></th> 
+                    <th scope="col"><h6 class="pad">Pagos</h6></th>  
+                    <th scope="col"><h6 class="pad">Costo</h6></th>  
+                    <th scope="col"><h6 class="pad">Subtotal</h6></th> 
+                </tr>  
+            </thead>
+            <tbody >
+            <%
+            let total_exit = 0;
+            exits.forEach(function(item,index){
+                %>
+                <tr class = "">  
+                    <td><%=item.name%></td>
+                    <td><%=makeDMY(item.dueDate)%></td>
+                    <td><%=item.totalAmount%></td> 
+                    <td>$<%=numberCommas(item.price)%></td>  
+                    <td>$<%=numberCommas(item.totalCost)%></td>  
+                </tr> 
+                <%
+                total_exit += item.totalCost;
+                total_outcome += item.totalCost;
+            })%>
+            </tbody> 
+        </table>
+        <%
+        total_exit = +(total_exit).toFixed(3);
+        total_income = +(total_income).toFixed(3);
+        total_outcome = +(total_outcome).toFixed(3);
+        %>
+
+        <h2 class = "float-right border border-secondary rounded my-4"><span class = "mx-2 my-2">Total Egresos: $<%=numberCommas(total_exit)%></span></h2>
+        <br>  <br>
+
+            <table class="table table-borderless">
+                <thead class="table-dark">
+                        <tr>  
+                            <th scope="col"><h2 class="pad"><span class = "text-danger">Salida:</span> $<%=numberCommas(total_outcome)%></h2></th> 
+                            <th scope="col"><h2 class="pad">Entrada: $<%=numberCommas(total_income)%></h2></th> 
+                            <th scope ="col"><h2 class="pad">Ganancia: $<%=numberCommas(+(total_income-total_outcome).toFixed(3))%></h2></th>
+                        </tr>  
+                </thead>
+            </table>
+    </div>
+
+
+    <div class="container my-2">
+        <button type = "submit" class="btn btn-outline-secondary pdfReport" data-toggle="modal" data-target="#exampleModalCenter">PDF</button>
+    </div>
+
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Fijar datos para PDF</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="/exits/hospital_account" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                    <div class="row"> 
+                        <div class="col-6">
+                            <label> De</label>
+                            <input type="date" name="begin" id = "beginDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label>Hasta</label>
+                            <input type="date" name="end"  id = "endDate" value = "<%=makeYMD(nDate)%>" class="form-control">
+                        </div>
+
+                        <div class="border border-light p-3 mb-4">
+                            <div class="text-center">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" name = "honorarios" value = "honorarios"type="checkbox" id="flexSwitchCheckDefault">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Honorarios</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "row">
+                            <div class="border border-light p-3 mb-4  offset-sm-2 col-8">
+                                <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sorted" id="radio1" value="name" checked>
+                                <label class="form-check-label" for="radio1">
+                                    Name
+                                </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sorted" id="radio2" value="class">
+                                <label class="form-check-label" for="radio2">
+                                    Class
+                                </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sorted" id="radio3" value="patient">
+                                <label class="form-check-label" for="radio3">
+                                    Patient
+                                </label>
+                                </div>
+                            </div>
+                        </div>  
+
+                    </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="far fa-window-close"></i></button>
+            <button type = "submit" class="btn btn-outline-secondary pdfReport"><i class="fas fa-file-pdf"></i></button>
+        </div>
+        </div>
+        </form>
+
+    </div>
+    </div>
+</div>
+
+
+<script src="/javascripts/hospital_account_queries.js"></script>
+

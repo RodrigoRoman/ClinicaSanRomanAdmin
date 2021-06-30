@@ -228,6 +228,8 @@ module.exports.hospital_account = async (req, res) => {
             ]).collation({locale:"en", strength: 1});
         //return supplies and the sorted argument for reincluding it
         transactions.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
+        return res.render('exits/patient_report',{transactions,exits})
+
     };
     // transactions = await Transaction.find({consumtionDate:{$gte:begin,$lte:end},service:{hospitalEntry:$or[honorary,hospital]}}).populate('service')
     res.render('exits/hospital_account',{transactions,exits})
@@ -543,12 +545,12 @@ module.exports.accountReportPDF = async (req,res) =>{
     //     waitUntil: 'networkidle0'}); 
     // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill`,{
     //     waitUntil: 'networkidle0'});          // go to site
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
-        waitUntil: 'networkidle0'});
+    // await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
+    //     waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
-    // await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
-    //             waitUntil: 'networkidle0'});
+    await page.goto(`http://localhost:3000/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
+                waitUntil: 'networkidle0'});
     // await page.waitForSelector('tbody> .toPDF');
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
