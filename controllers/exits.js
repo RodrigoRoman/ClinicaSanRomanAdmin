@@ -520,6 +520,10 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.deletePayment = async (req, res) => {
     const { id } = req.params;
+    let payment = await Payment.findById(id)
+    for(let t of payment.exits){
+        await Exit.findByIdAndDelete(t._id);
+    }
     await Payment.remove({_id:id})
     res.redirect(`payments`);
 }
