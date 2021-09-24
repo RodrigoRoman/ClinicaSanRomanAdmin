@@ -426,7 +426,7 @@ module.exports.refillForm = async (req, res) => {
     let entrega = req.query.entrega;
     let recibe = req.query.recibe;
     let timePoint = await Point.findOne({name:"datePoint"});
-    let transactions =  await Transaction.find({consumtionDate:{$gte:timePoint.setPoint}}).populate("service").populate("addedBy");
+    let transactions =  await Transaction.find({consumtionDate:{$gte:timePoint.setPoint}}).populate("service").populate("addedBy").populate('patient');
     res.render(`exits/refill_form`,{transactions,entrega,recibe});
 }
 

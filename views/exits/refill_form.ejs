@@ -34,7 +34,8 @@ transactions.forEach(element => {
             principle: element.service.principle,
             expiration: element.service.expiration,
             amount: element.amount,
-            author:element.addedBy.username
+            author:element.addedBy.username,
+            patient: element.patient.name
                 }
     if(element.location in refill_location){
         refill_location[element.location].push(trans);
@@ -85,6 +86,7 @@ for(let zone in refill_location){
                                     <th>Caducidad</th>
                                     <th>Agregado</th>
                                     <th>Usuario</th>
+                                    <th>Paciente</th>
                                 </tr>
                             <%
                             refill_location[property].forEach(function(item,index){%>
@@ -96,6 +98,7 @@ for(let zone in refill_location){
                                     <td><%=makeDMY(item.expiration)%></td>
                                     <td><%=makeDMYHour(item.consumtionDate)%></td>  
                                     <td><%=item.author%></td> 
+                                    <td><%=item.patient%></td>
                                 </tr> 
                             <%})%>
                             </tbody> 
