@@ -1,4 +1,27 @@
 <% layout('layouts/boilerplate')%>
+<%
+function makeDMYHour(date){
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
+  return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
+}
+function convertUTCDateToLocalDate(date) {
+
+date = new Date(date);
+
+var localOffset = date.getTimezoneOffset() * 60000;
+
+var localTime = date.getTime();
+
+date = localTime - localOffset;
+
+//date = new Date(date);
+
+return date;
+
+}
+console.log(new Date(convertUTCDateToLocalDate(new Date())));
+%>
 <div class="row">
     <h1 class="text-center">Crear perfil de paciente</h1>
     <div class="col-md-6 offset-md-3">
@@ -9,7 +32,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label" for="admission">Fecha de Ingreso</label></br>
-                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=new Date().toISOString().substring(0, 16)%>">
+                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=new Date(convertUTCDateToLocalDate(new Date())).toISOString().substring(0, 16)%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="phone">Telefono</label>
