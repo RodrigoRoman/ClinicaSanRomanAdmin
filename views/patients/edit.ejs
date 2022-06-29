@@ -20,15 +20,15 @@ function makeDMYHour(date){
             </div>
             <div class="mb-3">
                 <label class="form-label" for="phone">Telefono</label>
-                <input class="form-control" type="number" id="phone" name="patient[phone]" value = "<%=patient.phone%>" required >
+                <input class="form-control" type="number" id="phone" name="patient[phone]" value = "<%=patient.phone%>" >
             </div>
             <div class="mb-3">
                 <label class="form-label" for="email">Email</label>
-                <input class="form-control" type="email" id="email" name="patient[email]" value = "<%=patient.email%>" required>
+                <input class="form-control" type="email" id="email" name="patient[email]" value = "<%=patient.email%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="address">Dirección</label>
-                <input class="form-control" type="text" id="address" name="patient[address]" value = "<%=patient.address%>" required>
+                <input class="form-control" type="text" id="address" name="patient[address]" value = "<%=patient.address%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="room">Cuarto</label>
@@ -36,19 +36,19 @@ function makeDMYHour(date){
             </div>
             <div class="mb-3">
                 <label class="form-label" for="age">Edad</label>
-                <input class="form-control" type="number" id="age" name="patient[edad]" value = <%=patient.edad%> required>
+                <input class="form-control" type="number" id="age" name="patient[edad]" value = <%=patient.edad%>>
             </div>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label class="form-label" for="rfc">RFC</label>
                 <input class="form-control" type="number" id="rfc" name="patient[rfc]" value = <%=patient.rfc%> required>
-            </div>
+            </div> -->
             <div class="mb-3">
                 <label class="form-label" for="description">Diagnóstico</label>
-                <textarea class="form-control" type="text" id="description" name="patient[diagnosis]" required><%=patient.diagnosis%></textarea>
+                <textarea class="form-control" type="text" id="description" name="patient[diagnosis]"><%=patient.diagnosis%></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="doctor">Medico Tratante</label>
-                <input class="form-control" type="text" id="doctor" name="patient[treatingDoctor]" value = "<%=patient.treatingDoctor%>" required>
+                <input class="form-control" type="text" id="doctor" name="patient[treatingDoctor]" value = "<%=patient.treatingDoctor%>" >
             </div>
             <div class="mb-3">
                 <button class="btn btn-success">Actualizar</button>

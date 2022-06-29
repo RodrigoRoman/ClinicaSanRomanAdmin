@@ -59,15 +59,15 @@ module.exports.hospitalSchema = Joi.object({
 module.exports.patientSchema = Joi.object({
     patient: Joi.object({
         name: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
-        phone: Joi.number().required(),
+        phone: Joi.number().allow(''),
         cuarto: Joi.string().required(),
-        edad: Joi.number().required(),
+        edad: Joi.string().allow('').regex(/^[a-zA-Z0-9.,?()-+_%*@\u0300-\u036f?/%ñ ]*$/, 'Un caracter ingresado no es valido').escapeHTML(),
         admissionDate: Joi.date(),
-        email: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').email({tlds: { allow: false } }).escapeHTML(),
-        address: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
-        rfc: Joi.number().required(),
-        diagnosis: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
-        treatingDoctor: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
+        email: Joi.string().allow('').regex(/^[a-zA-Z0-9.,?()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').email({tlds: { allow: false } }).escapeHTML(),
+        address: Joi.string().allow('').regex(/^[a-zA-Z0-9.,?()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').escapeHTML(),
+        rfc: Joi.number().allow(''),
+        diagnosis: Joi.string().allow('').regex(/^[a-zA-Z0-9.,?()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').escapeHTML(),
+        treatingDoctor: Joi.string().allow('').regex(/^[a-zA-Z0-9.,?()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
     }).required()
 });
 

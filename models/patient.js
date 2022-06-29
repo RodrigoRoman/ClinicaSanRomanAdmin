@@ -28,7 +28,7 @@ const PatientSchema = new Schema({
 });
 
 //Delete all transactions inside car after deleting the patient
-PatientSchema.post('findOneAndDelete', async function(doc) {
+PatientSchema.post('findOneAndDelete', async function(doc){
     if (doc) {
         await doc.populate({
             path: 'servicesCar',
