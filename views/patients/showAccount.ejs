@@ -17,7 +17,7 @@ function numberCommas(x) {
     return (x)?x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","):x;
 }
 function makeDMY(date){
-  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
+  const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScrit months are 0-11
   y : date.getUTCFullYear()};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y;
 }
