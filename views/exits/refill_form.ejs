@@ -104,7 +104,6 @@ for(let zone in refill_location){
                             </tbody> 
                         </table> 
                     <%}%>
-                    <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-6">
@@ -129,11 +128,9 @@ for(let zone in refill_location){
                             </div>
                         </div>
                     </div>
-                    <%}%>
                 </div>
             </div>
         </div> 
-        <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
             <div class="container mx-3 ">
                 <form action="/exits/refill?_method=PUT" method="POST" novalidate class="validated-form">
                     <div class="float-right mb-4">
@@ -141,7 +138,6 @@ for(let zone in refill_location){
                     </div>
                 </form>  
             </div>   
-        <%}%> 
  </body> 
  
 </html>
