@@ -456,7 +456,7 @@ module.exports.refillFormPDF = async (req,res) =>{
     // await page.goto(
     //     `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //       waitUntil: 'networkidle0'});
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/refill?entrega=${entrega}&recibe=${recibe}`,{
+    await page.goto(`https://clinicasanromanadmin-production.up.railway.app/exits/refill?entrega=${entrega}&recibe=${recibe}`,{
                 waitUntil: 'networkidle0'});
     // await page.goto(`http://localhost:3000/exits/refill?entrega=${entrega}&recibe=${recibe}`,{
     //             waitUntil: 'networkidle0'});
@@ -547,7 +547,7 @@ module.exports.accountReportPDF = async (req,res) =>{
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
     //     waitUntil: 'networkidle0'}); 
-    await page.goto(`https://warm-forest-49475.herokuapp.com/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
+    await page.goto(`https://clinicasanromanadmin-production.up.railway.app/exits/hospital_account?begin=${begin}&end=${end}&entry=${honorarios}&sorted=${sorted}`,{
         waitUntil: 'networkidle0'});
     // await page.goto(`https://warm-forest-49475.herokuapp.com/hospital_account`,{
     //             waitUntil: 'networkidle0'});
