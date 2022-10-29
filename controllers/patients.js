@@ -29,7 +29,7 @@ function escapeRegExp(string) {
   }
 
 module.exports.index = async (req, res) => {
-    const resPerPage = 4;
+    const resPerPage = 30;
     const page = parseInt(req.params.page) || 1;
     let {search,sorted} = req.query;
     const patients = await Patient.find({}).sort("-admissionDate").populate("author").limit(resPerPage);
@@ -42,7 +42,7 @@ module.exports.index = async (req, res) => {
 module.exports.searchAllPatients = async (req, res) => {
     let {search,sorted,begin,end,page} = req.query;
     page = parseInt(page)||1;
-    let resPerPage = 4;
+    let resPerPage = 30;
     search = new RegExp(escapeRegExp(search), 'gi');
     let dbQueries =  [
             { name: search },
