@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const services = require('../../controllers/services');
+const services = require('../controllers/services');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isServAuthor,isDinamicDirectAdmin, validateService, validateSupply, validateHospital} = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({ storage });
 
-const {Service, Supply,Hospital} = require('../../models/service');
+const {Service, Supply,Hospital} = require('../models/service');
 
 
 router.route('/')

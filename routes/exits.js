@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const exits = require('../../controllers/exits');
+const exits = require('../controllers/exits');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isServAuthor,isDinamicDirectAdmin, validateService, validateSupply, validateHospital,validateExit,validatePayment} = require('../middleware');
 
 const multer = require('multer');
 
 
-const Exit = require('../../models/exit');
-const Payment = require('../../models/payment');
+const Exit = require('../models/exit');
+const Payment = require('../models/payment');
 
 
 router.route('/')
