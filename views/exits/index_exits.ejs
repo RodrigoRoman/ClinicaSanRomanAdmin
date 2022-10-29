@@ -56,9 +56,12 @@ function makeYMD(date){
                             %>
                             <div class="card-body">
                                 <h3 class="card-title text-center"><%= payment.name %> </h3>
+                                <%if(payment.exits>1){%>
                                 <div class="clearfix split-items">
                                     <h4 class="list-group-item left-side card-title text-muted">Primer pago: <%=payment.exits[0].clearDate.toISOString().substr(0,10)%> </h4>
+                                   
                                     <h4 class="list-group-item right-side card-title text-muted">Ultimo pago: <%=payment.exits[payment.exits.length - 1].clearDate.toISOString().substr(0,10)%> </h4>
+                                    
                                 </div>
                                 <ul class="list-group list-group-flush mb-4">
                                     <li class="list-group-item text-center">Plazos</li>
@@ -74,7 +77,12 @@ function makeYMD(date){
                                     <li class="list-group-item right-side ">Suma por pagar: $<%=unpaid_amount%></li>
                                 </div> 
                                 </ul>
-                                    <li class="list-group-item">Total: $<%= paid_amount+unpaid_amount%> </li>
+                                <%}else{%>
+                                    <div class="clearfix">
+                                        <h4 class="text-center card-title text-muted">Fecha de pago: <%=payment.exits[0].clearDate.toISOString().substr(0,10)%> </h4>
+                                    </div>
+                                    <%}%>
+                                    <li class="list-group-item text-center">Total: $<%= paid_amount+unpaid_amount%> </li>
                                     <form class="d-inline" action="/exits/<%=payment._id%>?_method=DELETE" method="POST">
                                         <button class="float-right btn btn-outline-danger mx-1 my-1 btn-sm">Borrar</button>
                                     </form>

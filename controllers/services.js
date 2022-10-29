@@ -1,6 +1,7 @@
 const {Service,Supply,Hospital} = require('../models/service');
 const { cloudinary } = require("../cloudinary");
 const Transaction = require('../models/transaction');
+const { listenerCount } = require('../models/exit');
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
   }
@@ -41,10 +42,11 @@ module.exports.index_supplies = async (req, res) => {
             { principle: search },
             { doctor: search}
         ];  
+    
     console.log(typeof page);
     
     let supplies = await Supply.find({$or:dbQueries,deleted:false}).populate("author")
-        .skip((resPerPage * page) - resPerPage)
+        // .skip((resPerPage * page) - resPerPage)
         .limit(resPerPage);
     let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
     numOfProducts = numOfProducts.length;
@@ -53,8 +55,31 @@ module.exports.index_supplies = async (req, res) => {
 }
 
 module.exports.index_hospital = async (req, res) => {
-    const services = await Hospital.find({deleted:false}).sort({ class: 'asc'});
-    res.render('services/index_hospital', { services })
+    const resPerPage = 40;
+    const page = parseInt(req.params.page) || 1;
+    let {search,sorted} = req.query;
+    console.log('value of page is');
+    console.log(page);
+    if(!search){search = ''}
+    search = new RegExp(escapeRegExp(search), 'gi');
+    let dbQueries =  [
+            { name: search },
+            { class: search },
+            { doctor: search },
+        ];  
+        console.log('dbQueries  ');
+        console.log(dbQueries);
+    
+    let services = await Hospital.find({$or:dbQueries,deleted:false})
+        // .skip((resPerPage * page))
+        .limit(resPerPage);
+    let numOfServices = await Hospital.find({$or:dbQueries,deleted:false});
+    numOfServices = numOfServices.length;
+    res.render('services/index_hospital', {services,"page":page, pages: Math.ceil(numOfServices / resPerPage),
+    numOfResults: numOfServices,search:req.query.search,sorted:sorted})
+    //------
+    // const services = await Hospital.find({deleted:false}).sort({ class: 'asc'});
+    // res.render('services/index_hospital', { services })
 }
 
 module.exports.renderNewForm = (req, res) => {
@@ -152,12 +177,6 @@ module.exports.deleteService = async (req, res) => {
     const { id } = req.params;
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
     let service = await Service.findById(id);
-    //Delete products up to Date
-    // let toDelete = await Service.find({$or: [ {stock:0}, {expiration:{$lte:nDate}}]});
-    // for(let el of toDelete){
-    //     el.deleted = true;
-    //     await el.save();
-    // }
     service.deleted = true;
     service.save()
     req.flash('success', 'Servicio eliminado')
@@ -169,18 +188,21 @@ module.exports.deleteService = async (req, res) => {
 
 //return all elements that match search
 module.exports.searchAllSupplies = async (req, res) => {
+    console.log('called search supply with query');
+    console.log(req.query);
     let {search,sorted} = req.query;
     search = new RegExp(escapeRegExp(search), 'gi');
     const page = parseInt(req.query.page) || 1;
     const resPerPage = 40;
-    console.log(req.query)
     let dbQueries =  [
             { name: search },
             { class: search },
             { description: search },
             { principle: search },
             { doctor: search}
-        ];        
+        ]; 
+        console.log('dbQueries  ')
+        console.log(dbQueries)       
     if(sorted == "stock"){
         //Case for storing based on stock need
         let numOfProducts = await Supply.aggregate( 
@@ -228,31 +250,27 @@ module.exports.searchAllSupplies = async (req, res) => {
                 //porportion of total stock and optimum
                 {$addFields:{proportion :  { $divide: [ "$totalStock", "$optimum" ] }}},
                 {$sort: { proportion: 1 } },
-                { $limit: resPerPage+(resPerPage * page) - resPerPage },
-                { $skip: (resPerPage * page) - resPerPage  }
+                {$limit: resPerPage+(resPerPage * page) - resPerPage },
+                {$skip: (resPerPage * page) - resPerPage  }
                  ]
         ).collation({locale:"en", strength: 1});
         //return supplies and the sorted argument for reincluding it
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     }else{
         //other cases for the select element (other sorting options)
-        let supplies;
-        let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
-            numOfProducts = numOfProducts.length;
+        let supplies = await Supply.find({$or:dbQueries,deleted:false});
+        let numOfProducts = supplies.length;
         if(sorted == "name" ||sorted == "name"){
         //sort in alphabetical order
-        supplies = await Supply.find({$or:dbQueries,deleted:false});
-        supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
+            supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
         };
         if(sorted == "class"){
             //sort in alphabetical order
-            supplies = await Supply.find({$or:dbQueries,deleted:false})
             supplies = supplies.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
     
         };
         if(sorted == "expiration"){
             //sort in increasing order based on the expiration of the product 
-            supplies= await Supply.find({$or:dbQueries,deleted:false})
             supplies = supplies.sort((a, b) =>a.expiration-b.expiration)
             supplies = supplies.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
         };
@@ -260,42 +278,102 @@ module.exports.searchAllSupplies = async (req, res) => {
             res.locals.error = 'Ningun producto corresponde a la busqueda';
             res.json({})
         }
+        console.log('the supplies');
+        console.log(supplies);
         //return supplies and the sorted argument for reincluding it
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     };
 }
 
-//search for hospital services
+
+
 module.exports.searchAllServices = async (req, res) => {
     let {search,sorted} = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const resPerPage = 40;
     search = new RegExp(escapeRegExp(search), 'gi');
     let dbQueries =  [
-            { name: search },
-            { class: search },
-            { description: search },
-            { doctor: search}
+        { name: search},
+        { class: search},
+        { doctor: search}
         ];
-        
     let services = await Hospital.find({$or:dbQueries,deleted:false});
-    if(sorted == "name"){
-    //sort in alphabetical order
-        services.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
+    let nServices = services.length;
+    console.log('sorted!!!  ');
+    console.log(sorted);
+    if(sorted == "name" || sorted == "Ordenar por:"){
+        //sort in alphabetical order
+        services = services.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
     };
     if(sorted == "class"){
         //sort in alphabetical order
-        services.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'}))
+        services = services.sort((a,b)=>a.class.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
 
     };
     if(sorted == "doctor"){
         //sort in alphabetical order
-        services.sort((a,b)=>a.doctor.localeCompare(b.doctor,"es",{sensitivity:'base'}))
+        services = services.sort((a,b)=>a.doctor.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
     };
     if (!services) {
         res.locals.error = 'Ningun servicio corresponde a la busqueda';
         res.json({})
     }
-    res.json(services)
+    return res.json({"services":services,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(nServices / resPerPage),"numOfResults": nServices});
+
 }
+
+
+
+
+
+
+
+
+// //search for hospital services
+// module.exports.searchAllServices = async (req, res) => {
+//     let {search,sorted} = req.query;
+//     const page = parseInt(req.query.page) || 1;
+//     const resPerPage = 1;
+//     search = new RegExp(escapeRegExp(search), 'gi');
+//     let dbQueries =  [
+//         { name: search },
+//         { class: search },
+//         { doctor: search}
+//         ];
+//     // let nServices = await Hospital.find({$or:dbQueries,deleted:false});
+    
+//     console.log('sorted!!!  ');
+//     console.log(sorted);
+//     let services = await Hospital.find({$or:dbQueries,deleted:false});
+//     let nServices = services.length; 
+//     console.log('after call');
+//     console.log(services.length);
+
+//     if(sorted == "name" || sorted == "Ordenar por:"){
+//         services = services.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page-1) - resPerPage),((resPerPage * page-1) - resPerPage)+resPerPage);
+//         console.log('after call 2');
+//         console.log(services.length);
+//     };
+//     if(sorted == "class"){
+//         //sort in alphabetical order
+//         services = services.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'})).slice(((resPerPage * page-1) - resPerPage),((resPerPage * page-1) - resPerPage)+resPerPage);
+
+//     };
+//     if(sorted == "doctor"){
+//         //sort in alphabetical order
+//         services = services.sort((a,b)=>a.doctor.localeCompare(b.doctor,"es",{sensitivity:'base'})).slice(((resPerPage * page-1) - resPerPage),((resPerPage * page-1) - resPerPage)+resPerPage);
+//     };
+//     if (!services) {
+//         res.locals.error = 'Ningun servicio corresponde a la busqueda';
+//         res.json({})
+//     }
+//     console.log('the services');
+//     console.log(services);
+//     console.log('The pages');
+//     console.log(Math.ceil(nServices / resPerPage));
+//     return res.json({"services":services,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(nServices / resPerPage),"numOfResults": nServices});
+
+// }
 
 
 

@@ -25,8 +25,10 @@ return  newDate.y+ "-" + ((newDate.m.toString().length>1)?newDate.m:"0"+newDate.
 }
 // Fill table with data
 function foundPatients(event) {
-    event.preventDefault();
-    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'begin':$("#beginDate").val(),'end':$("#endDate").val()};
+    
+    // let currentRequest = null;
+    // event.preventDefault();
+    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'begin':$("#beginDate").val(),'end':$("#endDate").val(),page:$(event).attr("alt")};
     let patientsContent = '';
    $.ajax({
     type: 'GET',
@@ -34,11 +36,17 @@ function foundPatients(event) {
     data: dat,
     dataType: 'JSON',
     processData: true,
-    cache: false
+    // beforeSend : function()    {          
+    //     if(currentRequest != null) {
+    //         currentRequest.abort();
+    //     }
+    // },
+    cache: false,
     }).done(function( response ){
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        patientsContent+=`<div class="patients row mt-4">`
+        patientsContent+=`<div class="patients row scrollDiv mt-4">`
         $.each(response.patients, function(){
+            console.log('search in patients!!!')
             patientsContent+= '<div class="col-md-6">'
             let borderColor = (this.discharged)?"secondary":"primary";
             patientsContent+=`
@@ -48,6 +56,11 @@ function foundPatients(event) {
                         <div class="col-md-16">
                             <div class="card-body">
                                 <h3 class="card-title">`+this.name+` </h3>
+                                <div class="col-2">`
+                                    if(this.cuarto){
+                                        patientsContent+=` <h3 class="card-title border border-`+borderColor+` rounded-circle p-3 float-right">`+this.cuarto+`</h3>`
+                                    }
+                                    patientsContent+=` </div>
                                 <h4 class="card-title text-muted">Fecha de ingreso:`+ new Date(this.admissionDate).toLocaleDateString('es-ES', options)+`</h4>`
                                 if(this.discharged){
                                     patientsContent+=`<h4 class="card-title text-muted">Fecha de egreso:`+ new Date(this.dischargedDate).toLocaleDateString('es-ES', options)+`</h4>`
@@ -86,10 +99,26 @@ function foundPatients(event) {
             
                  });
                  patientsContent+=`</div>`
+                 let pagination = `<div class="row my-3 pagination customClass">
+                 <div class="btn-group float-right" role="group" aria-label="First group">`;
+                    if(response.page >1){
+                        pagination += `<a onclick="foundPatients(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
+                    }
+                    for(let step = 1; step < response.pages+1; step++) {
+                        let act = (step == response.page)?"active":"";
+                        pagination += `<a onclick="foundPatients(this)" alt="${step}" class="btn btn-light ${act}" role="button" aria-pressed="true">${step}</a>`
+                    }
+                    if(response.page+1 <= response.pages){
+                        pagination += `<a onclick="foundPatients(this)" alt="${response.page+1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>`
+                    }
+                     pagination += `</div>
+                     </div>`
                 // Inject the whole content string into our existing HTML table
                  $('.patients').html( patientsContent);
+                 $('.pagination').replaceWith( pagination); 
                  $('#beginDate').val(makeYMD(response.begin));
                  $('#endDate').val(makeYMD(response.end));
+                 $("selector").find('option[value="'+response.sorted+'"]').attr('selected','selected')
    });
  };
 

@@ -1,7 +1,6 @@
 <% layout('layouts/boilerplate')%>
 
 <%
-console.log("inside")
 function makeYMD(date){
 const newDate = {d:date.getUTCDate(), m : date.getUTCMonth()+1,// JavaScript months are 0-11
 y : date.getUTCFullYear()};
@@ -14,9 +13,52 @@ function makeHour(date){
 }
 patients.sort((a, b) => (a.discharged) ? 1 : -1)
 %>
-<div class="container">
+<div class="container">   
+    <div class="container">
+        <div class="row">
+          <div class="col d-flex text-center flex-column justify-content-between"> 
+            <lottie-player src="/lotties/patients_lot.json" onclick="myFunction()" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop  autoplay></lottie-player>
+          </div>
+          <div class="col d-flex text-center flex-column justify-content-between"> 
+            <div></div>
+   
+            <h1 class= "display-3 font-weight-bold text-center">Pacientes</h1>
+            <div></div>
+
+            </div>
+          <div class="col d-flex  text-center flex-column justify-content-between">
+            <!-- <div class="row justify-content-around mb-4"> -->
+                    <div></div>
+                    <div class="mr- ml-5">
+                        <a class="btn btn-info " href="/patients/new">
+                            <div class="col">
+                                <div class="row d-flex text-center flex-row justify-content-between"> 
+                                    <lottie-player src="/lotties/register.json" onclick="myFunction()" background="transparent"  speed="1"  style="width: 200px; height: 100px;" loop  autoplay></lottie-player>
+                                </div>
+                                <div class="row ml-3 d-flex text-center flex-row justify-content-between"> 
+                                    Registrar Paciente
+                                </div>
+                                <!-- <div class="col d-flex text-center flex-column justify-content-between">
+                                </div> -->
+                            </div>
+                        </a> 
+                    </div>
+                    <select class="btn btn-outline-primary custom-select custom-select-lg mb-3" >
+                        <option selected>Ordenar por:</option>
+                        <option id= "byName" value="name">Nombre</option>
+                        <option id= "byDoctor" value="doctor">Medico Tratante</option>
+                        <option id= "byDisease" value="disease">Padecimiento</option>
+                    </select>
+                    <div></div>
+            <!-- </div> -->
+          </div>
+          <!-- <div class="col d-flex mt-4 flex-column justify-content-between">
+            <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
+          </div> -->
+        </div>
+    </div>
     
-    <h1 class= "display-3 font-weight-bold text-center">Pacientes</h1>
+    <!-- <img src="/imgs/pacientes.png" class = "image_print" alt="clinica"> -->
     <div class = "container mb-4">
         <div class = "row offset-sm-2 justify-content-md-center">
             <div class="col col-lg-10">
@@ -26,39 +68,9 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
             </div>
         </div>
     </div>
-    <div class="row justify-content-around mb-4">
-        <div class = "container col-2">
-            <a class="btn btn-info " href="/patients/new">Registrar paciente</a>
-        </div>
-        <div class="col-6 mb-4">
-            <div class="row">
-                
-              <div class="col-5">
-                <label> De</label>
-                <input type="date" name="beginDay" id = "beginDate" value = "2020-10-02" class="form-control">
-              </div>
-              <div class="col-5">
-                <label>Hasta</label>
-                <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(new Date)%>" class="form-control">
-              </div>
-            </div>
-            <div class="row">
-                <div class="col-4 offset-sm-4 mt-3">
-                    <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
-                </div> 
-            </div>
-        </div> 
-        <div class="container col-2">
-            <select class="btn btn-outline-primary custom-select custom-select-lg mb-3" >
-                <option selected>Ordenar por:</option>
-                <option id= "byName" value="name">Nombre</option>
-                <option id= "byDoctor" value="doctor">Medico Tratante</option>
-                <option id= "byDisease" value="disease">Padecimiento</option>
-            </select>
-        </div>
-    </div>
     
-    <div class="patients row mt-4">
+    
+    <div class="patients row scrollDiv mt-4">
     <%for (let patient of patients){%>
         <div class="col-md-6">
             <%let borderColor = (patient.discharged)?"secondary":"primary"%>
@@ -134,6 +146,7 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     <%}%>
                                 <%}%>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -142,4 +155,41 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
     <% }%>
     </div>
 </div>
+<div class="container">
+    <div class="row">
+      <div class="col d-flex text-center flex-column justify-content-between">
+        <label>De</label>
+        <input type="date" name="beginDay" id = "beginDate" value = "2020-10-02" class="form-control">
+      </div>
+      <div class="col d-flex text-center flex-column justify-content-between">
+        <label>Hasta</label>
+        <input type="date" name="endDay"  id = "endDate" value = "<%=makeYMD(new Date)%>" class="form-control">
+      </div>
+      <div class="col d-flex mt-4 flex-column justify-content-between">
+        <button type="button" class="float-left btn btn-primary btn-sm apply_dates">Aplicar fechas</button>
+      </div>
+    </div>
+</div>
+
+<div class = "container">
+    <div class="row my-3 pagination customClass" >
+        <div class="btn-group float-right" role="group" aria-label="First group">
+            <%if(page >1){%>
+                <a onclick="foundPatients(this)" alt="<%=page-1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>
+            <%}%>
+            <%for(let step = 1; step < pages+1; step++) {
+                let act = (step == page)?"active":"";%>
+                <a onclick="foundPatients(this)" alt="<%=step%>" class="btn btn-light <%=act%>" role="button" aria-pressed="true"><%=step%></a>
+            <%}%>
+            <%if(page+1 <= pages){%>
+                <a onclick="foundPatients(this)" alt="<%=page+1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>
+            <%}%>
+        </div>
+    </div>
+</div>
 <script src="/javascripts/search_in_patients.js" />
+<script>
+function myFunction() {
+  alert("I am an alert box!");
+}
+</script>

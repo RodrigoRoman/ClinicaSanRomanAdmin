@@ -6,7 +6,28 @@ $(document).ready(function() {
 // populate body with found elements
 $('#search_val').keyup(foundServices);
 
-$('.custom-select').change(foundServices);
+// $('.custom-select').change(foundServices);
+
+$("body").delegate(".individual", "click",function(event) {
+    $("#search_val").val($(this).val())
+    $(".custom-select").val("name")
+    foundServices(event)
+  })
+//   $( "#individual" ).click(function(event) {
+//     event.preventDefault()
+//     alert( "Handler for .click() called." );
+//   })
+
+$('.custom-select').change(function(event){
+    const id = $(this).find("option:selected").attr("id");
+    foundServices(event);
+  });
+
+
+//   $( "#individual" ).click(function(event) {
+//     event.preventDefault()
+//     alert( "Handler for .click() called." );
+//   })
 
 
 //======== Functions=====
@@ -16,11 +37,15 @@ function truncate(str, n){
     return (str.length > n) ? str.substr(0, n-1) + '...' : str;
   };
 
+  function myFunction(){
+    alert("The button was pressed");
+};   
 
-// Fill table with data
-function foundServices(event) {
-    event.preventDefault();
-    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val()};
+
+ function foundServices(event) {
+    let currentRequest = null;
+    // event.preventDefault();
+    const dat = {'search':$("#search_val").val(),'sorted':$(".custom-select").val(),'page':$(event).attr("alt")};
     let servicesContent = '';
    $.ajax({
     type: 'GET',
@@ -28,10 +53,16 @@ function foundServices(event) {
     data: dat,
     dataType: 'JSON',
     processData: true,
+    beforeSend : function()    {          
+        if(currentRequest != null) {
+            currentRequest.abort();
+        }
+    },
     cache: false
     }).done(function( response ){
-        servicesContent+=`<div class="row services">`
-        $.each(response, function(){
+        servicesContent+=`<div class="row services scrollDiv">`
+        $.each(response.services, function(){
+            // alert(response.page);
             //create a unique id. Add "a" as prefix so that avery string is acceptable
             let id_name = "a"+Math.random().toString(36).substring(7);
             servicesContent+=(`
@@ -91,13 +122,24 @@ function foundServices(event) {
             
                  });
                  servicesContent+=`</div>`
-                // Inject the whole content string into our existing HTML table
-                 $('.services').html( servicesContent);
-
+                 let pagination = `<div class="row my-3 pagination customClass">
+                 <div class="btn-group float-right" role="group" aria-label="First group">`;
+                    if(response.page >1){
+                        pagination += `<a onclick="foundServices(this)" alt="${response.page-1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>`
+                    }
+                    for(let step = 1; step < response.pages+1; step++) {
+                        let act = (step == response.page)?"active":"";
+                        pagination += `<a onclick="foundServices(this)" alt="${step}" class="btn btn-light ${act}" role="button" aria-pressed="true">${step}</a>`
+                    }
+                    if(response.page+1 <= response.pages){
+                        pagination += `<a onclick="foundServices(this)" alt="${response.page+1}" class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>`
+                    }
+                     pagination += `</div>
+                     </div>`
+                 $('.services').html( servicesContent);  
+                 $('.pagination').replaceWith( pagination); 
+                 $("selector").find('option[value="'+response.sorted+'"]').attr('selected','selected')
+                 $("#search_val").val(response.search)
      
    });
  };
-
-
-
-  

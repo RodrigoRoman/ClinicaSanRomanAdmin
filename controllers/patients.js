@@ -29,8 +29,53 @@ function escapeRegExp(string) {
   }
 
 module.exports.index = async (req, res) => {
-    const patients = await Patient.find({}).sort("-admissionDate").populate("author");
-    res.render('patients/index',{patients})
+    const resPerPage = 4;
+    const page = parseInt(req.params.page) || 1;
+    let {search,sorted} = req.query;
+    const patients = await Patient.find({}).sort("-admissionDate").populate("author").limit(resPerPage);
+    const count =  await Patient.countDocuments({});
+    res.render('patients/index',{patients,"page":page, pages: Math.ceil(count / resPerPage),
+    numOfResults: count,search:req.query.search,sorted:sorted})
+}
+
+//search for patients with keyword
+module.exports.searchAllPatients = async (req, res) => {
+    let {search,sorted,begin,end,page} = req.query;
+    page = parseInt(page)||1;
+    let resPerPage = 4;
+    search = new RegExp(escapeRegExp(search), 'gi');
+    let dbQueries =  [
+            { name: search },
+            { treatingDoctor: search },
+            { diagnosis: search },
+            { description: search },
+        ];
+    begin = new Date(begin+"T00:00:01.000Z")
+    end = new Date(end+"T23:59:01.000Z")
+    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).sort("-admissionDate").populate("author");
+    let numPatients = patients.length;
+    begin = req.query.begin;
+    end = req.query.end;
+    if(sorted == "name"||sorted == "Ordenar por:"){
+        //sort in alphabetical order
+        patients = patients.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage).sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}));
+    };
+    if(sorted == "doctor"){
+        //sort in alphabetical order
+        patients = patients.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage).sort((a,b)=>a.doctor.localeCompare(b.name,"es",{sensitivity:'base'}));
+    };
+    if(sorted == "diagnosis"){
+        //sort in alphabetical order
+        patients = patients.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage).sort((a,b)=>a.class.localeCompare(b.diagnosis,"es",{sensitivity:'base'}));
+    };
+    if (!patients) {
+        res.locals.error = 'Ningun servicio corresponde a la busqueda';
+        res.json({})
+    }
+    console.log('the returnvalue')
+    console.log(patients.length)
+    res.json({'patients':patients,'begin':begin,'end':end,"page":page, 'pages': Math.ceil(numPatients / resPerPage),
+    'numOfResults': numPatients,'search':req.query.search,'sorted':sorted})
 }
 
 
@@ -439,38 +484,6 @@ module.exports.search_3 = async (req, res) => {
 }
 
 
-//search for hospital services
-module.exports.searchAllPatients = async (req, res) => {
-    let {search,sorted,begin,end} = req.query;
-    search = new RegExp(escapeRegExp(search), 'gi');
-    let dbQueries =  [
-            { name: search },
-            { treatingDoctor: search },
-            { description: search },
-        ];
-    begin = new Date(begin+"T00:00:01.000Z")
-    end = new Date(end+"T23:59:01.000Z")
-    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).sort("-admissionDate").populate("author");
-    begin = req.query.begin;
-    end = req.query.end;
-    if(sorted == "name"){
-    //sort in alphabetical order
-        patients.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'}))
-    };
-    if(sorted == "doctor"){
-        //sort in alphabetical order
-        patients.sort((a,b)=>a.treatingDoctor.localeCompare(b.treatingDoctor,"es",{sensitivity:'base'}))
-    };
-    if(sorted == "diagnosis"){
-        //sort in alphabetical order
-        patients.sort((a,b)=>a.diagnosis.localeCompare(b.diagnosis,"es",{sensitivity:'base'}))
-    };
-    if (!patients) {
-        res.locals.error = 'Ningun servicio corresponde a la busqueda';
-        res.json({})
-    }
-    res.json({'patients':patients,'begin':begin,'end':end})
-}
 
 function getDaysInMonthUTC(month, year) {
     var date = new Date(Date.UTC(year, month, 1));

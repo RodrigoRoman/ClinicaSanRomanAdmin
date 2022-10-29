@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const patients = require('../controllers/patients');
+const patients = require('../../controllers/patients');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isServAuthor,isDinamicDirectAdmin, validateService, validateSupply, validateHospital,validatePatient} = require('../middleware');
 const multer = require('multer');
 
-const Patient = require('../models/patient');
+const Patient = require('../../models/patient');
 
 
 router.route('/')

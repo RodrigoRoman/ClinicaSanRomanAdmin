@@ -481,7 +481,7 @@ module.exports.refillFormPDF = async (req,res) =>{
 module.exports.createPayment = async (req, res, next) => {
     let {name, dueDate, moneyAmount} = req.body.payment;
     let payment =  new Payment(req.body.payment);
-    let terms = parseInt(req.body.payment.terms);
+    let terms = parseInt(req.body.payment.terms)||1;
     let exitAmount = (moneyAmount/terms);
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
     let datesArray = getDates(nDate, dueDate,terms);

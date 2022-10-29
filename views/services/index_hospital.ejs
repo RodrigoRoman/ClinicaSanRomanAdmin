@@ -22,7 +22,7 @@
     </div>
 </div>
     <!-- //search preview table -->
-<div class="row services">
+<div class="row services scrollDiv">
     <%for(let service of services){%>
         <!--Create random string for carousel id use-->
         <%let id_name = "a"+Math.random().toString(36).substring(7); %>
@@ -76,6 +76,26 @@
         <% } %>
     </div>
 </div>
+<div class = "container">
+    <div class="row my-3 pagination customClass" >
+        <div class="btn-group float-right" role="group" aria-label="First group">
+            <%
+            console.log('desde pagina principal valor de page mas 1');
+            %>
+            <%if(page >1){%>
+                <a onclick="foundServices(this)" alt="<%=page-1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-left"></i></a>
+            <%}%>
+            <%for(let step = 1; step < pages+1; step++) {
+                let act = (step == page)?"active":"";%>
+                <a onclick="foundServices(this)" alt="<%=step%>" class="btn btn-light <%=act%>" role="button" aria-pressed="true"><%=step%></a>
+            <%}%>
+            <%if(page+1 <= pages){%>
+                <a onclick="foundServices(this)" alt="<%=page+1%>"  class="btn btn-light " role="button" aria-pressed="true"><i class="fas fa-arrow-circle-right"></i></a>
+            <%}%>
+        </div>
+    </div>
+</div>
+
 <script src="/javascripts/search_in_services.js" ></script>
 
 

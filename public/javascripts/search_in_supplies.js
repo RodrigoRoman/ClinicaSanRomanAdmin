@@ -16,14 +16,7 @@ function debounce(f, delay){
 }
   
 // populate body with found elements
-$('#search_val').keyup(debounce( function(event){
-    const id = $('.custom-select').find("option:selected").attr("id");
-    if(id == "byStock"){
-        foundSupplies_existence(event);
-    }else{
-        foundSupplies(event);
-    }
-  },600));
+$('#search_val').keyup(foundServices);
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())

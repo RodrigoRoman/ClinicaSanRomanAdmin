@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const services = require('../controllers/services');
+const services = require('../../controllers/services');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isServAuthor,isDinamicDirectAdmin, validateService, validateSupply, validateHospital} = require('../middleware');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({ storage });
 
-const {Service, Supply,Hospital} = require('../models/service');
+const {Service, Supply,Hospital} = require('../../models/service');
 
 
 router.route('/')
@@ -15,7 +15,7 @@ router.route('/')
     .post(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), validateService, catchAsync(services.createService))
 
 router.get('/searchSupplies/:page?',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllSupplies))
-router.get('/searchServices',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllServices))
+router.get('/searchServices/:page?',isLoggedIn,isDinamicDirectAdmin,catchAsync(services.searchAllServices))
 
 
 router.route('/supply/:page?')
@@ -23,7 +23,7 @@ router.route('/supply/:page?')
     .post(isLoggedIn,isDinamicDirectAdmin, upload.array('image'), validateSupply, catchAsync(services.createSupply))
   
 
-router.route('/hospital')
+router.route('/hospital/:page?')
     .get(catchAsync(services.index_hospital))
     .post(isLoggedIn, isDinamicDirectAdmin,upload.array('image'), validateHospital, catchAsync(services.createHospital))
 

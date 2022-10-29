@@ -10,7 +10,7 @@ const PaymentSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Exit"
 	}],
-    moneyAmount: { type: Number, required: true, get: p => `${p}.00` }
+    moneyAmount: {type: Number, required: true, get: p => `${p}.00` }
 });
 
 module.exports = mongoose.model("Payment", PaymentSchema)

@@ -84,7 +84,7 @@ module.exports.paymentSchema = Joi.object({
         name: Joi.string().regex(/^[a-zA-Z0-9.,()-+_%*@\u0300-\u036f/%ñ ]*$/, 'Un caracter ingresado no es valido').required().escapeHTML(),
         dueDate: Joi.date().required(),
         moneyAmount: Joi.number().required(),
-        terms: Joi.number().required()
+        terms: Joi.number()
     }).required()
 });
 
