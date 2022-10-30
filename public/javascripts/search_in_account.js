@@ -1,17 +1,9 @@
 const userListData = [];
 function convertUTCDateToLocalDate(date) {
 
-  date = new Date(date);
-
-  var localOffset = date.getTimezoneOffset() * 60000;
-
-  var localTime = date.getTime();
-
-  date = localTime - localOffset;
-
-  //date = new Date(date);
-
-  return date;
+  Date(date).toLocaleString('en-US', {
+    timeZone: 'America/Mexico_City'
+  })
 
   }
   function numberCommas(x) {

@@ -9,18 +9,33 @@ const puppeteer = require('puppeteer');
 // const service = require('../models/services');
 
 function convertUTCDateToLocalDate(date) {
+    // const nDate = new Date().toLocaleString('en-US', {
+    //     timeZone: 'America/Mexico_City'
+    //   });
+      
+    // console.log('time in here!!!');
+    // console.log(nDate);
+    // date = new Date(date);
 
-    date = new Date(date);
+    // var localOffset = date.getTimezoneOffset() * 60000;
 
-    var localOffset = date.getTimezoneOffset() * 60000;
+    // var localTime = date.getTime();
 
-    var localTime = date.getTime();
-
-    date = localTime - localOffset;
+    // date = localTime - localOffset;
 
     //date = new Date(date);
 
-    return date;
+    date = new Date(date);
+
+var localOffset = date.getTimezoneOffset() * 60000;
+
+var localTime = date.getTime();
+
+date = localTime - localOffset;
+
+//date = new Date(dat);
+
+return date;
 
     }
 

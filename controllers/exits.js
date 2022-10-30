@@ -6,18 +6,18 @@ const Payment = require('../models/payment');
 const { date } = require('joi');
 const puppeteer = require('puppeteer'); 
 function convertUTCDateToLocalDate(date) {
-
+    // America/Mexico_City
     date = new Date(date);
-  
-    var localOffset = date.getTimezoneOffset() * 60000;
-  
-    var localTime = date.getTime();
-  
-    date = localTime - localOffset;
-  
-    //date = new Date(date);
-  
-    return date;
+
+var localOffset = date.getTimezoneOffset() * 60000;
+
+var localTime = date.getTime();
+
+date = localTime - localOffset;
+
+//date = new Date(dat);
+
+return date;
   
     }
 

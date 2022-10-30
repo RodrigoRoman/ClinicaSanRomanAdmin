@@ -9,15 +9,15 @@ function convertUTCDateToLocalDate(date) {
 
     date = new Date(date);
 
-    var localOffset = date.getTimezoneOffset() * 60000;
+var localOffset = date.getTimezoneOffset() * 60000;
 
-    var localTime = date.getTime();
+var localTime = date.getTime();
 
-    date = localTime - localOffset;
+date = localTime - localOffset;
 
-    //date = new Date(date);
+//date = new Date(dat);
 
-    return date;
+return date;
 
 }
 

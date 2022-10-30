@@ -34,17 +34,9 @@ mongoose.connect(dbUrl, {
 });
 function convertUTCDateToLocalDate(date) {
 
-    date = new Date(date);
-
-    var localOffset = date.getTimezoneOffset() * 60000;
-
-    var localTime = date.getTime();
-
-    date = localTime - localOffset;
-
-    //date = new Date(date);
-
-    return date;
+    return Date(date).toLocaleString('en-US', {
+        timeZone: 'America/Mexico_City'
+      })
 
     }
 const db = mongoose.connection;
