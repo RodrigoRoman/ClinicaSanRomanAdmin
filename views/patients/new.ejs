@@ -16,6 +16,10 @@ var diff = date.getTime() - invdate.getTime();
 return new Date(date.getTime() - diff); // needs to substract
 
 }
+console.log('this is convertUTC clean');
+console.log(convertUTCDateToLocalDate(new Date()));
+console.log('this is the unecesary additional')
+console.log(new Date(convertUTCDateToLocalDate(new Date())));
 
 
 // function convertUTCDateToLocalDate(date) {

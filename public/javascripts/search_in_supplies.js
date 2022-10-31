@@ -3,20 +3,27 @@ $(document).ready(function() {
 });
   
 
-function debounce(f, delay){
-    let timer = null;
-    return function(){
-        let context = this, args = arguments;
-        clearTimeout(timer);
-        timer = window.setTimeout(function(){
-            f.apply(context, args);
-        },
-        delay || 500);
-    };
-}
+// function debounce(f, delay){
+//     let timer = null;
+//     return function(){
+//         let context = this, args = arguments;
+//         clearTimeout(timer);
+//         timer = window.setTimeout(function(){
+//             f.apply(context, args);
+//         },
+//         delay || 500);
+//     };
+// }
   
+function debounce(func, timeout = 300){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
 // populate body with found elements
-$('#search_val').keyup(foundServices);
+$('#search_val').keyup(debounce(foundSupplies));
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())

@@ -3,8 +3,15 @@ $(document).ready(function() {
 
 });
   
+function debounce(func, timeout = 300){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
 // populate body with found elements
-$('#search_val').keyup(foundServices);
+$('#search_val').keyup(debounce(foundServices));
 
 // $('.custom-select').change(foundServices);
 
