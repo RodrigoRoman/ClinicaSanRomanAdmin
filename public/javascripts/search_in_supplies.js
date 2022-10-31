@@ -127,7 +127,7 @@ function foundSupplies(event) {
                         <span class="sr-only">Next</span>
                     </a>`);
                   }
-                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',timeZone: 'America/Mexico_City' };
                  
                  let dateColor = defineBorder(diff_months(new Date(this.expiration) , new Date())/12);
                   suppliesContent+=(`
@@ -137,7 +137,7 @@ function foundSupplies(event) {
                             <h5 class="card-title text-muted">`+ this.class+`</h5>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item border border-`+dateColor+`">Caducidad: `+new Date(this.expiration).toLocaleDateString('es-ES', options)+`</li>
+                            <li class="list-group-item border border-`+dateColor+`">Caducidad: `+new Date(this.expiration.replace(/-/g, '\/').replace(/T.+/, '')).toLocaleDateString('es-ES', options)+`</li>
                             <li class="list-group-item">Existencias: `+this.stock+`</li>`);
                     if(this.outside){
                         suppliesContent+=(`<li class="list-group-item">En Bodega: `+(this.stock-this.outside)+`</li>`)
