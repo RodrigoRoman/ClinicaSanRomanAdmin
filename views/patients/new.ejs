@@ -7,20 +7,53 @@ function makeDMYHour(date){
 }
 function convertUTCDateToLocalDate(date) {
 
-date = new Date(date);
+invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
 
-var localOffset = date.getTimezoneOffset() * 60000;
+// and the diff is 5 hours
+var diff = date.getTime() - invdate.getTime();
 
-var localTime = date.getTime();
+// so 12:00 in Toronto is 17:00 UTC
+return new Date(date.getTime() - diff); // needs to substract
 
-date = localTime - localOffset;
+}
+
+
+// function convertUTCDateToLocalDate(date) {
+
+// var strDate =  date.toLocaleString('en-US', {timeZone: 'America/Mexico_City'});
+// console.log('the date to be transformed')
+// console.log(new Date(Date.parse(strDate)).toISOString().substring(0, 16))
+
+// var parts = strDate.split(' ');
+// var year = parts[2];
+// var month = months[parts[0].toLowerCase()];
+// var day = parts[1].replace(/\,/g,"");
+
+// var timeParts = parts[3].split(':');
+// var hours = timeParts[0];
+// var minutes = timeParts[1];
+// var seconds = timeParts[2];
+
+// if (parts[4]==="PM") {
+//     hours = parseInt(hours) + 12;
+// }
+
+// var d = new Date(year, month, day, hours, minutes, seconds);
+
+// var localOffset = date.toLocaleString('en-US', {timeZone: 'America/Mexico_City'}) * 60000;
+
+// var localOffset = date.getTimezoneOffset() * 60000;
+
+// var localTime = date.getTime();
+
+// date = localTime - localOffset;
 
 //date = new Date(dat);
 
-return date;
+// return new Date(Date.parse(strDate));
 
-}
-console.log(new Date(convertUTCDateToLocalDate(new Date())));
+// }
+// console.log(new Date(convertUTCDateToLocalDate(new Date())));
 %>
 <div class="row">
     <h1 class="text-center">Crear perfil de paciente</h1>
@@ -32,7 +65,7 @@ console.log(new Date(convertUTCDateToLocalDate(new Date())));
             </div>
             <div class="mb-3">
                 <label class="form-label" for="admission">Fecha de Ingreso</label></br>
-                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=new Date(convertUTCDateToLocalDate(new Date())).toISOString().substring(0, 16)%>">
+                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=convertUTCDateToLocalDate(new Date()).toISOString().substring(0, 16)%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="phone">Telefono</label>
