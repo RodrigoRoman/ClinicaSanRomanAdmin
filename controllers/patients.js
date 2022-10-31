@@ -8,17 +8,22 @@ const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 // const service = require('../models/services');
 
+//Convertir a partir de una fecha que ya esta correcta.
+//pero el new Date vuelve a transformar de forma equivocada
+function convertUTCFromSettedDate(date){
+    invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
+ 
+    // and the diff is 5 hours
+    // var diff = date.getTime() - invdate.getTime();
+    // so 12:00 in Toronto is 17:00 UTC
+    return invdate;
+}
 function convertUTCDateToLocalDate(date) {
-
-    invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
-    
+    invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
     // and the diff is 5 hours
     var diff = date.getTime() - invdate.getTime();
-    
     // so 12:00 in Toronto is 17:00 UTC
     return new Date(date.getTime() - diff); // needs to substract
-
-
  }
 
 function escapeRegExp(string) {
@@ -102,7 +107,9 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updatePatient = async (req, res) => {
     const { id } = req.params;
-    req.body.patient.admissionDate = new Date(convertUTCDateToLocalDate(req.body.patient.admissionDate));
+    console.log('the new date')
+    console.log(new Date(req.body.patient.admissionDate));
+    req.body.patient.admissionDate = convertUTCFromSettedDate(req.body.patient.admissionDate);
     const patient = await Patient.findByIdAndUpdate(id, { ...req.body.patient });
     await patient.save();
     req.flash('success', 'Paciente actualizado correctamente!');
