@@ -7,19 +7,16 @@ const { date } = require('joi');
 const puppeteer = require('puppeteer'); 
 function convertUTCDateToLocalDate(date) {
     // America/Mexico_City
-    date = new Date(date);
-
-var localOffset = date.getTimezoneOffset() * 60000;
-
-var localTime = date.getTime();
-
-date = localTime - localOffset;
-
-//date = new Date(dat);
-
-return date;
   
-    }
+invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
+
+// and the diff is 5 hours
+var diff = date.getTime() - invdate.getTime();
+
+// so 12:00 in Toronto is 17:00 UTC
+return new Date(date.getTime() - diff); // needs to substract
+  
+}
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
