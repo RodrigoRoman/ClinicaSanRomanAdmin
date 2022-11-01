@@ -123,11 +123,11 @@ module.exports.updatePatient = async (req, res) => {
     console.log('original date');
     console.log(req.body.patient.admissionDate)
     console.log('the new date')
-    console.log(new Date(req.body.patient.admissionDate));
+    console.log(new Date(req.body.patient.admissionDate+':00.000Z'));
     adDate = convertUTCDateToLocalDate(new Date(req.body.patient.admissionDate));
     console.log('what actually gets stored');
     console.log(adDate);
-    req.body.patient.admissionDate = adDate;
+    req.body.patient.admissionDate = new Date(req.body.patient.admissionDate+':00.000Z');
     const patient = await Patient.findByIdAndUpdate(id, { ...req.body.patient });
     await patient.save();
     req.flash('success', 'Paciente actualizado correctamente!');
