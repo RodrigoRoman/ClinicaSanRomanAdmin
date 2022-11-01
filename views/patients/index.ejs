@@ -100,7 +100,6 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     </div>
                                   </div>
                                   <!-- <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }) %> </h4> -->
-                                  <h4 class="card-title text-muted">Fecha de ingreso 1: <%=patient.admissionDate+'---'+ patient.admissionDate.getHours() + ':'+patient.admissionDate.getMinutes()%> </h4>
 
                                 <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-US', options)+" a las "+makeHour(patient.admissionDate) %>  </h4>
                                 <%if(patient.discharged){%>
