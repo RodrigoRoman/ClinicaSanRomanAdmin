@@ -634,12 +634,11 @@ module.exports.updateServiceFromAccount = async (req, res) => {
 module.exports.updateTimeService = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const patient = await Patient.findById(req.params.id);
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
-    console.log()
+    const nDate = convertUTCDateToLocalDate(new Date);
     // let transact = await Transaction.findById(req.body.trans_id);
     let toggle = req.body.toggle == "true";
-    let start = new Date(convertUTCDateToLocalDate(new Date(req.body.start))),
-        end = (toggle)?nDate:new Date(convertUTCDateToLocalDate(new Date(req.body.until)));
+    let start = new Date(req.body.start+":01.000Z"),
+        end = (toggle)?nDate:new Date(req.body.until+":01.000Z");
     //calculate the unit time in miliseconds
     let miliUnit = (service.unit == "Dia")?(86400*1000):(3600*1000);
     //divide the difference between start and end batween the miliseconds unit
@@ -662,3 +661,35 @@ module.exports.updateTimeService = async (req, res) => {
     //update transactions (delete all transactions with that service and create a new one with new amount)
     return res.send({ msg: "True",serviceName:`${service.name}`,patientName:`${patient.name}`});
 }
+
+// module.exports.updateTimeService = async (req, res) => {
+//     const service = await Service.findById(req.body.serviceID);
+//     const patient = await Patient.findById(req.params.id);
+//     const nDate = new Date(convertUTCDateToLocalDate(new Date))
+//     console.log()
+//     // let transact = await Transaction.findById(req.body.trans_id);
+//     let toggle = req.body.toggle == "true";
+//     let start = new Date(convertUTCDateToLocalDate(new Date(req.body.start))),
+//         end = (toggle)?nDate:new Date(convertUTCDateToLocalDate(new Date(req.body.until)));
+//     //calculate the unit time in miliseconds
+//     let miliUnit = (service.unit == "Dia")?(86400*1000):(3600*1000);
+//     //divide the difference between start and end batween the miliseconds unit
+//     let new_amount = (end.getTime() - start.getTime())/miliUnit;
+//     new_amount = Math.round(new_amount * 100) / 100;
+//     await Transaction.deleteMany({_id:req.body.trans_id});
+//     const transaction = new Transaction({
+//         patient: patient,
+//         service:service,
+//         amount:new_amount,
+//         consumtionDate:start,
+//         addedBy:req.user,
+//         terminalDate:end,
+//         toggle:toggle
+//     });
+//     patient.servicesCar.push(transaction);
+//     await transaction.save()
+//     //Remove supply from the inventory
+//     await patient.save();
+//     //update transactions (delete all transactions with that service and create a new one with new amount)
+//     return res.send({ msg: "True",serviceName:`${service.name}`,patientName:`${patient.name}`});
+// }
