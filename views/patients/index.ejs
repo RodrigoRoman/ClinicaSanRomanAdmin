@@ -11,6 +11,14 @@ function makeHour(date){
   y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
   return  (newDate.h+":"+newDate.min);
 }
+function convertUTCDateToLocalDate(date) {
+    invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
+    // and the diff is 5 hours
+    var diff = date.getTime() - invdate.getTime();
+    // so 12:00 in Toronto is 17:00 UTC
+    return new Date(date.getTime() - diff); // needs to substract
+ }
+
 patients.sort((a, b) => (a.discharged) ? 1 : -1)
 %>
 <div class="container">   
@@ -91,7 +99,10 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     <%}%>
                                     </div>
                                   </div>
-                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.admissionDate) %> </h4>
+                                  <!-- <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }) %> </h4> -->
+                                  <h4 class="card-title text-muted">Fecha de ingreso sin filtro: <%= patient.admissionDate.toLocaleDateString()%> </h4>
+
+                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.admissionDate) %>  </h4>
                                 <%if(patient.discharged){%>
                                     <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.dischargedDate) %> </h4>
                                 <%}%>

@@ -10,19 +10,30 @@ const puppeteer = require('puppeteer');
 
 //Convertir a partir de una fecha que ya esta correcta.
 //pero el new Date vuelve a transformar de forma equivocada
-function convertUTCFromSettedDate(date){
-    invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
+// function convertUTCFromSettedDate(date){
+    
+//     invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
+
+//     // dt = new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })
  
-    // and the diff is 5 hours
-    // var diff = date.getTime() - invdate.getTime();
-    // so 12:00 in Toronto is 17:00 UTC
-    return invdate;
-}
+//     // // and the diff is 5 hours
+//     // // var diff = date.getTime() - invdate.getTime();
+//     // // so 12:00 in Toronto is 17:00 UTC
+//     console.log('original date');
+//     console.log(date);
+//     // console.log('date after local');
+//     // console.log(new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' }));
+//     // console.log('Date after invadate');
+//     // console.log(invdate);
+//     // var diff = dt.getTime() - invdate.getTime()
+
+//     return date;
+// }
 function convertUTCDateToLocalDate(date) {
     invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
     // and the diff is 5 hours
     var diff = date.getTime() - invdate.getTime();
-    // so 12:00 in Toronto is 17:00 UTC
+
     return new Date(date.getTime() - diff); // needs to substract
  }
 
@@ -87,7 +98,9 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = convertUTCDateToLocalDate(new Date);
+    console.log('the date with which this will be created');
+    console.log(nDate)
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -107,9 +120,14 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updatePatient = async (req, res) => {
     const { id } = req.params;
+    console.log('original date');
+    console.log(req.body.patient.admissionDate)
     console.log('the new date')
     console.log(new Date(req.body.patient.admissionDate));
-    req.body.patient.admissionDate = convertUTCFromSettedDate(req.body.patient.admissionDate);
+    adDate = convertUTCDateToLocalDate(new Date(req.body.patient.admissionDate));
+    console.log('what actually gets stored');
+    console.log(adDate);
+    req.body.patient.admissionDate = adDate;
     const patient = await Patient.findByIdAndUpdate(id, { ...req.body.patient });
     await patient.save();
     req.flash('success', 'Paciente actualizado correctamente!');
@@ -617,6 +635,7 @@ module.exports.updateTimeService = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const patient = await Patient.findById(req.params.id);
     const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    console.log()
     // let transact = await Transaction.findById(req.body.trans_id);
     let toggle = req.body.toggle == "true";
     let start = new Date(convertUTCDateToLocalDate(new Date(req.body.start))),
