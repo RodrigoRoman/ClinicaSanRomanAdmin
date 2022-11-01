@@ -100,11 +100,11 @@ patients.sort((a, b) => (a.discharged) ? 1 : -1)
                                     </div>
                                   </div>
                                   <!-- <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }) %> </h4> -->
-                                  <h4 class="card-title text-muted">Fecha de ingreso sin filtro: <%= patient.admissionDate.toLocaleDateString()%> </h4>
+                                  <h4 class="card-title text-muted">Fecha de ingreso 1: <%=patient.admissionDate+'---'+ patient.admissionDate.getHours() + ':'+patient.admissionDate.getMinutes()%> </h4>
 
-                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.admissionDate) %>  </h4>
+                                <h4 class="card-title text-muted">Fecha de ingreso: <%= patient.admissionDate.toLocaleDateString('es-US', options)+" a las "+makeHour(patient.admissionDate) %>  </h4>
                                 <%if(patient.discharged){%>
-                                    <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-ES', options)+" a las "+makeHour(patient.dischargedDate) %> </h4>
+                                    <h4 class="card-title text-muted">Fecha de egreso: <%= patient.dischargedDate.toLocaleDateString('es-US', options)+" a las "+makeHour(patient.dischargedDate) %> </h4>
                                 <%}%>
                                 <ul class="list-group list-group-flush mb-4">
                                     <li class="list-group-item">Email: <%= patient.email%></li>

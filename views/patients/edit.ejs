@@ -13,7 +13,7 @@ function makeIputableDate(date){
 d = patient.admissionDate
 %>
 <div class="row">
-    <h1 class="text-center">Editar perfil de paciente<%=patient.admissionDate.toISOString()%></h1>
+    <h1 class="text-center">Editar perfil de paciente<%=patient.admissionDate%></h1>
     <div class="col-md-6 offset-md-3">
         <form action="/patients/<%=patient._id%>?_method=PUT" method="POST" novalidate class="validated-form">
             <div class="mb-3">
