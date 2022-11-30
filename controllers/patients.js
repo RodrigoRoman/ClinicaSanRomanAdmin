@@ -99,8 +99,6 @@ module.exports.renderNewForm = (req, res) => {
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
     const nDate = convertUTCDateToLocalDate(new Date);
-    console.log('the date with which this will be created');
-    console.log(nDate)
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -120,13 +118,6 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updatePatient = async (req, res) => {
     const { id } = req.params;
-    console.log('original date');
-    console.log(req.body.patient.admissionDate)
-    console.log('the new date')
-    console.log(new Date(req.body.patient.admissionDate+':00.000Z'));
-    adDate = convertUTCDateToLocalDate(new Date(req.body.patient.admissionDate));
-    console.log('what actually gets stored');
-    console.log(adDate);
     req.body.patient.admissionDate = new Date(req.body.patient.admissionDate+':00.000Z');
     const patient = await Patient.findByIdAndUpdate(id, { ...req.body.patient });
     await patient.save();
@@ -423,6 +414,9 @@ module.exports.accountToPDF = async (req,res) =>{
     await page.goto(
         `https://clinicasanromanadmin-production.up.railway.app/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
           waitUntil: 'networkidle0'});
+    // await page.goto(
+    // `http://localhost:3000/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
+    //     waitUntil: 'networkidle0'});
 
     const dom = await page.$eval('.toPDF', (element) => {
         return element.innerHTML
@@ -430,12 +424,20 @@ module.exports.accountToPDF = async (req,res) =>{
     await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
     await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
     await page.addStyleTag({content: `.image_print{
-        position:absolute;
-        top:50px;
-        left:20px;
-        width:250px;
-        height: 120px;
-      }`})
+            position:absolute;
+            top:10px;
+            left:200px;
+            width:200px;
+            height: 100px;
+        }
+        .subRed {
+            font-size: 70% !important;
+            line-height: 1 !important;
+          }
+            .reduced {
+                font-size: 60% !important;
+                line-height: 1 !important;
+              }`})
     const pdf = await page.pdf({landscape: false})
     await browser.close(); 
     res.contentType("application/pdf");
@@ -473,12 +475,20 @@ module.exports.dischAccountPDF = async (req,res) =>{
     await page.setContent(dom)   // HTML markup to assign to the page for generate pdf
     await page.addStyleTag({url: "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"});
     await page.addStyleTag({content: `.image_print{
-        position:absolute;
-        top:50px;
-        left:20px;
-        width:250px;
-        height: 120px;
-      }`})
+            position:absolute;
+            top:10px;
+            left:200px;
+            width:200px;
+            height: 100px;
+        }
+        .subRed {
+            font-size: 70% !important;
+            line-height: 1 !important;
+          }
+            .reduced {
+                font-size: 60% !important;
+                line-height: 1 !important;
+              }`})
     const pdf = await page.pdf({landscape: false})
     await browser.close(); 
     res.contentType("application/pdf");

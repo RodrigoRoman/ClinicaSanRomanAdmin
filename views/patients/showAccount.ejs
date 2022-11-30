@@ -37,23 +37,25 @@ let newPatient = patientNoHonorary.concat(honoraries);
             <div class="jumbotron">
                 <div class="container mt-4">
                     <div class="row justify-content-center ">
+                        <div  class = "col-5"></div>
                         <div class = "col-6">
-                            <h5>
-                                Administracion ClinicaSR
+                            <h6 class = "text-center pl-2"> Administracion</h6>
+                            <h5 class = "text-center pl-2">
+                                Clinica San Roman
                             </h5>
-                            <h4 class="display-6 text-right text-nowrap ">Estado de Cuenta</h4>
+                            <h5 class="text-center text-nowrap pl-2 ">Estado de Cuenta</h5>
                             <br><br> 
                             <img src="/imgs/clinicaSR_img.jpg" class = "image_print" alt="clinica">
                             <!-- <h1 class="display-4"><%=patient[0].patientName%></h1> -->
                         </div>
                     </div>
                     <br>
-                    <div class="row justify-content-between">
-                        <div class="col-5">
+                    <div class="row justify-content-between border">
+                        <div class="col-5 reduced">
                             <p class = "">Admisión: <%= makeDMY(patient[0].admissionDate)%></p>
                             <p class = "">Paciente: <%= patient[0].patientName%></p>
                         </div>
-                        <div class="col-5">
+                        <div class="col-5 reduced">
                             <p class = "">Medico tratante: <%= patient[0].treatingDoctor%></p>
                             <p class = "">Diagnostico: <%= patient[0].diagnosis%></p>
                         </div>
@@ -63,18 +65,18 @@ let newPatient = patientNoHonorary.concat(honoraries);
             <div class = "m-4 p-4">
                 <table class="table table-borderless" id="simple_table">
                     <thead class="thead-dark">
-                        <tr class="border-bottom border-dark">  
-                            <th scope="col"><h3>Clase</h3></th>
-                            <th scope="col"><h3>Nombre</h3></th> 
-                            <th scope="col"><h3>Cantidad</h3></th>  
-                            <th scope="col"><h3>Precio Unit</h3></th>
-                            <th scope="col"><h3>Subtotal</h3></th>
+                        <tr class="border-bottom border-dark reduced">  
+                            <th scope="col"><h6>Clase</h6></th>
+                            <th scope="col"><h6>Nombre</h6></th> 
+                            <th scope="col"><h6>Cantidad</h6></th>  
+                            <th scope="col"><h6>Precio Unitario</h6></th>
+                            <th scope="col"><h6>Subtotal</h6></th>
                         </tr>  
                     </thead>
                     <tbody>
                     <%let prev_class= "", subtotal_class = 0, sub_amount = 0,total = 0; 
                     newPatient.forEach(function(item,index){%>
-                            <tr>  
+                            <tr class = 'subRed'>  
                                 <th><%=item.class%></th> 
                                 <th></th> 
                                 <th></th>  
@@ -88,7 +90,7 @@ let newPatient = patientNoHonorary.concat(honoraries);
                         (item.amount).forEach(function(amnt,i){
                             if(item.service_type == "supply"){price = item.sell_price[i]}else{price = item.price[i]}
                             let item_subtotal = +(price * amnt).toFixed(3);%>
-                        <tr>  
+                        <tr class = "reduced">  
                             <td></td>
                             <td><%=item.serviceName[i]%></td> 
                             <td><%=Math.round(amnt)%></td>  
@@ -100,7 +102,7 @@ let newPatient = patientNoHonorary.concat(honoraries);
                         total += item_subtotal;
                         subtotal_class = +(subtotal_class).toFixed(3)
                     })%>
-                        <tr class = "border">  
+                        <tr class = "subRed border">  
                             <th></th>
                             <th scope="row">Subtotal</th>  
                             <th scope="row"><%=Math.round(sub_amount)%></th>  
@@ -112,7 +114,7 @@ let newPatient = patientNoHonorary.concat(honoraries);
                 </table> 
                 <div>
                     <%total = +(total).toFixed(3)%>
-                    <h2 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=numberCommas(total)%></span></h2>
+                    <h5 class = "float-right border border-secondary rounded"><span class = "mx-2 my-2">Total: $<%=numberCommas(total)%></span></h5>
                 </div>
             </div>
         </div>        
