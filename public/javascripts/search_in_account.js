@@ -164,9 +164,13 @@ function populateTable(event) {
         <option id= "urgencias" value="Urgencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="CPRE">CPRE</option>
-        <option id= "quirofano" value="Quirofano">Quirofano</option>
-        <option id= "parto" value="parto">Parto</option>
-        <option id= "bodega" value="bodega">Bodega</option>
+        <option id= "CarroURG" value="Carro de Urgencias">Carro Urgencias</option>
+        <option id= "CarroCentral" value="Carro de Central">Carro Central</option>
+        <option id= "CarQX" value="CarQX">Carro de QX</option>
+        <option id= "CarToco" value="Carro de Toco">Carro TOCO</option>
+        <option id= "Quirofano" value="Quirofano">Quirofano</option>
+        <option id= "Parto" value="Parto">Parto</option>
+        <option id= "Bodega" value="Bodega">Bodega</option>
     </select>
       </td>
       `;
@@ -216,9 +220,13 @@ function populateTableModal(event) {
         <option id= "urgencias" value="Urgencias">Urgencias</option>
         <option id= "endoscopia" value="Endoscopia">Endoscopia</option>
         <option id= "cpre" value="CPRE">CPRE</option>
-        <option id= "quirofano" value="Quirofano">Quirofano</option>
-        <option id= "parto" value="parto">Parto</option>
-        <option id= "bodega" value="bodega">Bodega</option>
+        <option id= "CarroURG" value="Carro de Urgencias">Carro Urgencias</option>
+        <option id= "CarroCentral" value="Carro de Central">Carro Central</option>
+        <option id= "CarQX" value="CarQX">Carro de QX</option>
+        <option id= "CarToco" value="Carro de Toco">Carro TOCO</option>
+        <option id= "Quirofano" value="Quirofano">Quirofano</option>
+        <option id= "Parto" value="Parto">Parto</option>
+        <option id= "Bodega" value="Bodega">Bodega</option>
     </select>
              </td>
                           `;
