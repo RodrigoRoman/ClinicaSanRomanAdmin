@@ -43,17 +43,24 @@ function convertUTCDateToLocalDate(date) {
     // Create a new Date object with the local date
     return new Date(localTime);
   }  
+  
   function getMexicoCityTime() {
-    const currentDate = new Date();
-    const mexicoCityTime = new Date(currentDate.toLocaleString('en-US', { timeZone: 'America/Mexico_City', hour12: false }));
-    const mexicoCityOffset = -6; // Mexico City time zone offset without daylight saving time (UTC-6)
-  
-    const utcTime = mexicoCityTime.getTime() + (mexicoCityOffset * 60 * 60 * 1000);
-    const localTime = new Date(utcTime);
-  
-    return localTime;
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      hour12: false,
+      timeZone: "America/Mexico_City",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeStr = formatter.format(now);
+    const [hour, minute, second] = timeStr.split(":");
+    const mexicoCityTime = new Date();
+    mexicoCityTime.setUTCHours(hour);
+    mexicoCityTime.setUTCMinutes(minute);
+    mexicoCityTime.setUTCSeconds(second);
+    return mexicoCityTime;
   }
-  
   
   
   
