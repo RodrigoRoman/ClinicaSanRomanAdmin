@@ -5,16 +5,13 @@ function makeDMYHour(date){
   y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
-function convertUTCDateToLocalDate(date) {
-
-invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
-
-// and the diff is 5 hours
-var diff = date.getTime() - invdate.getTime();
-
-// so 12:00 in Toronto is 17:00 UTC
-return new Date(date.getTime() - diff); // needs to substract
-
+async function convertUTCDateToLocalDate(date) {
+  const mexicoCityDate = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City' });
+  const mexicoCityOffset = new Date(mexicoCityDate).getTimezoneOffset();
+  const localOffset = date.getTimezoneOffset();
+  const diffInMinutes = (mexicoCityOffset - localOffset);
+  const diffInMilliseconds = diffInMinutes * 60 * 1000;
+  return new Date(date.getTime() - diffInMilliseconds);
 }
 
 

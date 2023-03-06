@@ -30,15 +30,13 @@ const puppeteer = require('puppeteer');
 //     return date;
 // }
 
-function convertUTCDateToLocalDate(date) {
-    // Get the local timezone offset in milliseconds
-    const offset = new Date().getTimezoneOffset() * 60 * 1000;
-  
-    // Calculate the local date by adding the offset to the UTC date
-    const localTime = date.getTime() - offset;
-  
-    // Create a new Date object with the local date
-    return new Date(localTime);
+async function convertUTCDateToLocalDate(date) {
+    const mexicoCityDate = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City' });
+    const mexicoCityOffset = new Date(mexicoCityDate).getTimezoneOffset();
+    const localOffset = date.getTimezoneOffset();
+    const diffInMinutes = (mexicoCityOffset - localOffset);
+    const diffInMilliseconds = diffInMinutes * 60 * 1000;
+    return new Date(date.getTime() - diffInMilliseconds);
   }
 
 function escapeRegExp(string) {
