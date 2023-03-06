@@ -29,15 +29,34 @@ const puppeteer = require('puppeteer');
 
 //     return date;
 // }
-
-async function convertUTCDateToLocalDate(date) {
-    const mexicoCityDate = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City' });
-    const mexicoCityOffset = new Date(mexicoCityDate).getTimezoneOffset();
-    const localOffset = date.getTimezoneOffset();
-    const diffInMinutes = (mexicoCityOffset - localOffset);
-    const diffInMilliseconds = diffInMinutes * 60 * 1000;
-    return new Date(date.getTime() - diffInMilliseconds);
+function convertUTCDateToLocalDate(date) {
+    // Get current date and time in Mexico City
+    const nowInMexicoCity = new Date().toLocaleString("en-US", {timeZone: "America/Mexico_City"});
+    
+    // Calculate the offset for the input date using the Mexico City date and time
+    const mexicoCityDate = new Date(nowInMexicoCity);
+    const offset = mexicoCityDate.getTime() - new Date().getTime();
+  
+    // Calculate the local date by adding the offset to the UTC date
+    const localTime = date.getTime() + offset;
+  
+    // Create a new Date object with the local date
+    return new Date(localTime);
+  }  
+  function getMexicoCityTime() {
+    const currentDate = new Date();
+    const mexicoCityTime = new Date(currentDate.toLocaleString('en-US', { timeZone: 'America/Mexico_City', hour12: false }));
+    const mexicoCityOffset = -6; // Mexico City time zone offset without daylight saving time (UTC-6)
+  
+    const utcTime = mexicoCityTime.getTime() + (mexicoCityOffset * 60 * 60 * 1000);
+    const localTime = new Date(utcTime);
+  
+    return localTime;
   }
+  
+  
+  
+  
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -100,7 +119,7 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    const nDate = convertUTCDateToLocalDate(new Date());
+    const nDate = convertUTCDateToLocalDate(new Date);
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -136,7 +155,7 @@ module.exports.dischargePatient = async (req, res) => {
         },
       });
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date()));
+    const nDate = new Date(convertUTCDateToLocalDate(new Date));
     patient.discharged = true
     patient.dischargedDate = nDate;
     //create discharged data
@@ -175,10 +194,8 @@ module.exports.deletePatient = async (req, res) => {
 module.exports.showPatient = async (req, res) => {
     let {begin,bH,end,eH} = req.query;
     let pat = await Patient.findById(req.params.id);
-    console.log('query');
-    console.log(req.query);
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date()));
+    const nDate = getMexicoCityTime();
     if(!begin){
         begin = pat.admissionDate;
     }else{
@@ -292,7 +309,7 @@ module.exports.patientAccount = async (req, res) => {
     let {begin,end} = req.query;
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = getMexicoCityTime();
     if(!begin){
         begin = pat.admissionDate
     }else{
@@ -565,7 +582,7 @@ module.exports.addToCart = async (req, res) => {
     const service = await Service.findById(req.body.service);
     const timeUnits =  ["Hora", "Dia"];
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = getMexicoCityTime();
     let termDate = nDate;
     let amnt = 0;
     if(!timeUnits.includes(service.unit)){
