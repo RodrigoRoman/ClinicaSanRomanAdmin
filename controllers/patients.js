@@ -29,13 +29,17 @@ const puppeteer = require('puppeteer');
 
 //     return date;
 // }
-function convertUTCDateToLocalDate(date) {
-    invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
-    // and the diff is 5 hours
-    var diff = date.getTime() - invdate.getTime();
 
-    return new Date(date.getTime() - diff); // needs to substract
- }
+function convertUTCDateToLocalDate(date) {
+    // Get the local timezone offset in milliseconds
+    const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  
+    // Calculate the local date by adding the offset to the UTC date
+    const localTime = date.getTime() - offset;
+  
+    // Create a new Date object with the local date
+    return new Date(localTime);
+  }
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -98,7 +102,7 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    const nDate = convertUTCDateToLocalDate(new Date);
+    const nDate = convertUTCDateToLocalDate(new Date());
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -134,7 +138,7 @@ module.exports.dischargePatient = async (req, res) => {
         },
       });
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = new Date(convertUTCDateToLocalDate(new Date()));
     patient.discharged = true
     patient.dischargedDate = nDate;
     //create discharged data
@@ -176,7 +180,7 @@ module.exports.showPatient = async (req, res) => {
     console.log('query');
     console.log(req.query);
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = new Date(convertUTCDateToLocalDate(new Date()));
     if(!begin){
         begin = pat.admissionDate;
     }else{

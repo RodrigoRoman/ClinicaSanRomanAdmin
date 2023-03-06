@@ -23,20 +23,16 @@
   </div>
 </div>
 <%
+
 function convertUTCDateToLocalDate(date) {
+  // Get the local timezone offset in milliseconds
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
 
-  date = new Date(date);
+  // Calculate the local date by adding the offset to the UTC date
+  const localTime = date.getTime() - offset;
 
-var localOffset = date.toLocaleString('en-US', {timeZone: 'America/Mexico_City'}) * 60000;
-
-var localTime = date.getTime();
-
-date = localTime - localOffset;
-
-//date = new Date(dat);
-
-return date;
-
+  // Create a new Date object with the local date
+  return new Date(localTime);
 }
 function numberCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
