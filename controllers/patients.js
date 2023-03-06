@@ -173,6 +173,8 @@ module.exports.deletePatient = async (req, res) => {
 module.exports.showPatient = async (req, res) => {
     let {begin,bH,end,eH} = req.query;
     let pat = await Patient.findById(req.params.id);
+    console.log('query');
+    console.log(req.query);
     //variable for local time 
     const nDate = new Date(convertUTCDateToLocalDate(new Date));
     if(!begin){
@@ -215,6 +217,10 @@ module.exports.showPatient = async (req, res) => {
         req.flash('error', 'No se encontro paciente!');
         return res.redirect('/patients');
     }
+    console.log('begin');
+    console.log(begin);
+    console.log('end');
+    console.log(end);
     res.render(`patients/show`, { patient, str_id,begin,end,eH,bH});
 }
 
