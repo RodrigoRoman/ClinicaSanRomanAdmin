@@ -198,8 +198,8 @@ let timeElements = patientCar.filter(el=>(timeUnits.includes(el.unit)));
     <%}%>
     <div class="container">
       <%
-      const b = begin.toISOString().substr(0,10);
-      const e = end.toISOString().substr(0,10)
+      const b = begin.toISOString().substring(0,10);
+      const e = end.toISOString().substring(0,10);
       %>
       <%if(currentUser.role == "directAdmin" || currentUser.role == "dinamicAdmin"){%>
         <a href = "/patients/<%=patient._id%>/makePDF?begin=<%=b%>&end=<%=e%>&name=<%=patient.name%>">
