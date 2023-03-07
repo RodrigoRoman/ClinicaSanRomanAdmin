@@ -398,10 +398,7 @@ module.exports.accountToPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--use-gl=egl'],
-});
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
 
 
     const page = await browser.newPage();           // open new tab
@@ -457,10 +454,10 @@ module.exports.dischAccountPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--use-gl=egl'],
-});
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
+
+
+
 
 
     const page = await browser.newPage();           // open new tab
