@@ -387,7 +387,7 @@ module.exports.patientAccount = async (req, res) => {
 module.exports.accountToPDF = async (req,res) =>{ 
     let {begin,end,name} = req.query; 
                   
-    // const browser = await puppeteer.launch();       // run browser
+    // const browser = await puppeteer.launch();       // run browse
     const chromeOptions = {
         headless: true,
         defaultViewport: null,
