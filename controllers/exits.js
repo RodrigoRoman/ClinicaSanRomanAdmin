@@ -449,7 +449,11 @@ module.exports.refillFormPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--use-gl=egl'],
+});
+
 
     const page = await browser.newPage();           // open new tab yes
     
@@ -546,7 +550,11 @@ module.exports.accountReportPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--use-gl=egl'],
+});
+
 
     const page = await browser.newPage();           // open new tab
     
