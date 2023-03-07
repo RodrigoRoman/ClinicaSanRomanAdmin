@@ -385,7 +385,8 @@ module.exports.patientAccount = async (req, res) => {
 
 
 module.exports.accountToPDF = async (req,res) =>{ 
-    let {begin,end,name} = req.query;               
+    let {begin,end,name} = req.query; 
+                  
     // const browser = await puppeteer.launch();       // run browser
     const chromeOptions = {
         headless: true,
@@ -397,7 +398,8 @@ module.exports.accountToPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch(chromeOptions);
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+
     const page = await browser.newPage();           // open new tab
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
@@ -451,7 +453,8 @@ module.exports.dischAccountPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch(chromeOptions);
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+
     const page = await browser.newPage();           // open new tab
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{

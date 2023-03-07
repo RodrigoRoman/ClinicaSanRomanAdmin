@@ -449,7 +449,8 @@ module.exports.refillFormPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch(chromeOptions);
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+
     const page = await browser.newPage();           // open new tab yes
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
@@ -545,7 +546,8 @@ module.exports.accountReportPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch(chromeOptions);
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+
     const page = await browser.newPage();           // open new tab
     
     // await page.goto(`https://pure-brushlands-42473.herokuapp.com/patients/${req.params.id}/showAccount?begin=${begin}&end=${end}`,{
