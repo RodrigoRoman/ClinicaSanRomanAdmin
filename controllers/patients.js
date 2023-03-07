@@ -324,7 +324,7 @@ module.exports.patientAccount = async (req, res) => {
          },
          { $project: { fromService: 0 } },
          {$group: {
-            _id:"$name",
+            _id:{name: "$name", sell_price: "$price"},
             patientName:{$last:"$patientName"},
             class:{$last:"$class"},
             name: {$last:"$name"},
@@ -398,7 +398,7 @@ module.exports.accountToPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox']});
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
 
 
     const page = await browser.newPage();           // open new tab
@@ -454,7 +454,7 @@ module.exports.dischAccountPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox']});
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
 
 
 

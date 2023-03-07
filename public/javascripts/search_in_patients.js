@@ -36,11 +36,6 @@ function foundPatients(event) {
     data: dat,
     dataType: 'JSON',
     processData: true,
-    // beforeSend : function()    {          
-    //     if(currentRequest != null) {
-    //         currentRequest.abort();
-    //     }
-    // },
     cache: false,
     }).done(function( response ){
 
