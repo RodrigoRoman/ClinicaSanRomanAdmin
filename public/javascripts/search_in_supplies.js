@@ -81,7 +81,6 @@ $(document).ready(function() {
         foundSupplies(event);
 
     }
-    alert($(".custom-select").val())
   });
 //   $( "#individual" ).click(function(event) {
 //     event.preventDefault()

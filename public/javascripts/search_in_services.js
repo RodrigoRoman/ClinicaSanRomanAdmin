@@ -11,7 +11,21 @@ function debounce(func, timeout = 300){
     };
   }
 // populate body with found elements
-$('#search_val').keyup(debounce(foundServices));
+// $('#search_val').keyup(debounce(foundServices));
+
+$('#search_val').on('keyup', function(event) {
+    // Check if the enter key was pressed (keyCode 13)
+    if (event.keyCode === 13) {
+       
+            foundServices(event);
+    
+    }
+  });
+
+  // Add a click event listener to the search button
+  $('#search-button').on('click', function(event) {
+            foundServices(event);
+  });
 
 // $('.custom-select').change(foundServices);
 
