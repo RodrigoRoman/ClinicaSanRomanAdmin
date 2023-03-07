@@ -5,18 +5,24 @@ const Point = require('../models/refillPoint');
 const Payment = require('../models/payment');
 const { date } = require('joi');
 const puppeteer = require('puppeteer'); 
-function convertUTCDateToLocalDate(date) {
-    // America/Mexico_City
-  
-invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
 
-// and the diff is 5 hours
-var diff = date.getTime() - invdate.getTime();
-
-// so 12:00 in Toronto is 17:00 UTC
-return new Date(date.getTime() - diff); // needs to substract
-  
-}
+function getMexicoCityTime() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      hour12: false,
+      timeZone: "America/Mexico_City",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeStr = formatter.format(now);
+    const [hour, minute, second] = timeStr.split(":");
+    const mexicoCityTime = new Date();
+    mexicoCityTime.setUTCHours(hour);
+    mexicoCityTime.setUTCMinutes(minute);
+    mexicoCityTime.setUTCSeconds(second);
+    return mexicoCityTime;
+  }
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -65,8 +71,8 @@ module.exports.index = async (req, res) => {
 }
 
 module.exports.hospital_account = async (req, res) => {
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
-    let default_begin = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = getMexicoCityTime()
+    let default_begin = getMexicoCityTime();
     default_begin.setDate( default_begin.getDate() - 6 );
     let begin = req.query.begin || default_begin;
     let end =req.query.end || nDate;
@@ -74,8 +80,8 @@ module.exports.hospital_account = async (req, res) => {
     let hospital = (req.query.entry == "honorarios")?"false":"true";
     let honorary = "true";
     let transactions = {};
-    begin =new Date(convertUTCDateToLocalDate( new Date(begin)))
-    end = new Date(convertUTCDateToLocalDate(new Date(end)))
+    begin = new Date(begin);
+    end = new Date(end);
     const exits = await Exit.aggregate( 
         //recreate supply element by compressing elements with same name. Now the fields are arrays
         [   
@@ -405,7 +411,7 @@ module.exports.servicesPayments = async (req, res) => {
 //reset time point for resupply
 module.exports.editDatePoint = async (req, res) => {
     let timePoint = await Point.findOne({name:"datePoint"});
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = getMexicoCityTime()
     timePoint.setPoint = nDate
     await timePoint.save()
     res.render(`exits`);
@@ -480,7 +486,7 @@ module.exports.createPayment = async (req, res, next) => {
     let payment =  new Payment(req.body.payment);
     let terms = parseInt(req.body.payment.terms)||1;
     let exitAmount = (moneyAmount/terms);
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = getMexicoCityTime()
     let datesArray = getDates(nDate, dueDate,terms);
     exitAmount = +(exitAmount).toFixed(3);
     //create exits from range of Dates and then push them to the pyments array
@@ -497,7 +503,7 @@ module.exports.createPayment = async (req, res, next) => {
 
 
 module.exports.index_payments = async (req, res) => {
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = getMexicoCityTime()
     let dateLimit = nDate;
     dateLimit.setDate(dateLimit.getDate()-1);
     const payments = await Payment.find({}).populate("exits").sort("-dueDate");

@@ -43,9 +43,10 @@ function foundPatients(event) {
     // },
     cache: false,
     }).done(function( response ){
+
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         patientsContent+=`<div class="patients row scrollDiv mt-4">`
-        $.each(response.patients, function(){
+        $.each(response.patients.sort((a, b) => (a.discharged) ? 1 : -1), function(){
             console.log('search in patients!!!')
             patientsContent+= '<div class="col-md-6">'
             let borderColor = (this.discharged)?"secondary":"primary";
@@ -88,8 +89,8 @@ function foundPatients(event) {
                                     <a class="float-right btn btn-outline-secondary mx-1 my-1 btn-sm" href="/patients/`+this._id+`/edit"><i class="fas fa-edit"></i></a>`
                                 }else{
                                     
-                                    const b = new Date(this.admissionDate).toISOString().substr(0,10);
-                                    const e = new Date(this.dischargedDate).toISOString().substr(0,10);
+                                    const b = new Date(this.admissionDate).toISOString().substring(0,10);
+                                    const e = new Date(this.dischargedDate).toISOString().substring(0,10);
                     
                                     patientsContent+=` <a href = "/patients/`+this._id+`/dischargedPDF">
                                         <button type="button" class="btn btn-outline-secondary">Ver cuenta</button>

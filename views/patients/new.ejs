@@ -5,14 +5,24 @@ function makeDMYHour(date){
   y : date.getUTCFullYear(),h:date.getUTCHours(), min:(((""+date.getUTCMinutes()).length>1)?date.getUTCMinutes():"0"+date.getUTCMinutes())};
   return  ((newDate.d.toString().length>1)?newDate.d:"0"+newDate.d)+ "/" + newDate.m+ "/" + newDate.y+ "   "+newDate.h+":"+newDate.min;
 }
-async function convertUTCDateToLocalDate(date) {
-  const mexicoCityDate = new Date().toLocaleString('en-US', { timeZone: 'America/Mexico_City' });
-  const mexicoCityOffset = new Date(mexicoCityDate).getTimezoneOffset();
-  const localOffset = date.getTimezoneOffset();
-  const diffInMinutes = (mexicoCityOffset - localOffset);
-  const diffInMilliseconds = diffInMinutes * 60 * 1000;
-  return new Date(date.getTime() - diffInMilliseconds);
-}
+function getMexicoCityTime() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      hour12: false,
+      timeZone: "America/Mexico_City",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeStr = formatter.format(now);
+    const [hour, minute, second] = timeStr.split(":");
+    const mexicoCityTime = new Date();
+    mexicoCityTime.setUTCHours(hour);
+    mexicoCityTime.setUTCMinutes(minute);
+    mexicoCityTime.setUTCSeconds(second);
+    return mexicoCityTime;
+  }
+
 
 
 // function convertUTCDateToLocalDate(date) {
@@ -60,7 +70,7 @@ async function convertUTCDateToLocalDate(date) {
             </div>
             <div class="mb-3">
                 <label class="form-label" for="admission">Fecha de Ingreso</label></br>
-                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=convertUTCDateToLocalDate(new Date()).toISOString().substring(0, 16)%>">
+                <input type="datetime-local" id="admission" name="patient[admissionDate]" value = "<%=getMexicoCityTime().toISOString().substring(0, 16)%>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="phone">Telefono</label>

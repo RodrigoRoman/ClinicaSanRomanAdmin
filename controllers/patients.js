@@ -8,41 +8,6 @@ const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 // const service = require('../models/services');
 
-//Convertir a partir de una fecha que ya esta correcta.
-//pero el new Date vuelve a transformar de forma equivocada
-// function convertUTCFromSettedDate(date){
-    
-//     invdate = new Date(`${new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
-
-//     // dt = new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' })
- 
-//     // // and the diff is 5 hours
-//     // // var diff = date.getTime() - invdate.getTime();
-//     // // so 12:00 in Toronto is 17:00 UTC
-//     console.log('original date');
-//     console.log(date);
-//     // console.log('date after local');
-//     // console.log(new Date(date).toLocaleString('en-US', { timeZone: 'America/Mexico_City' }));
-//     // console.log('Date after invadate');
-//     // console.log(invdate);
-//     // var diff = dt.getTime() - invdate.getTime()
-
-//     return date;
-// }
-function convertUTCDateToLocalDate(date) {
-    // Get current date and time in Mexico City
-    const nowInMexicoCity = new Date().toLocaleString("en-US", {timeZone: "America/Mexico_City"});
-    
-    // Calculate the offset for the input date using the Mexico City date and time
-    const mexicoCityDate = new Date(nowInMexicoCity);
-    const offset = mexicoCityDate.getTime() - new Date().getTime();
-  
-    // Calculate the local date by adding the offset to the UTC date
-    const localTime = date.getTime() + offset;
-  
-    // Create a new Date object with the local date
-    return new Date(localTime);
-  }  
   
   function getMexicoCityTime() {
     const now = new Date();
@@ -73,7 +38,7 @@ module.exports.index = async (req, res) => {
     const resPerPage = 30;
     const page = parseInt(req.params.page) || 1;
     let {search,sorted} = req.query;
-    const patients = await Patient.find({}).sort("-admissionDate").populate("author").limit(resPerPage);
+    const patients = await Patient.find({}).limit(resPerPage).sort({discharged: 1, admissionDate: -1}).populate("author");
     const count =  await Patient.countDocuments({});
     res.render('patients/index',{patients,"page":page, pages: Math.ceil(count / resPerPage),
     numOfResults: count,search:req.query.search,sorted:sorted})
@@ -93,7 +58,7 @@ module.exports.searchAllPatients = async (req, res) => {
         ];
     begin = new Date(begin+"T00:00:01.000Z")
     end = new Date(end+"T23:59:01.000Z")
-    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).sort("-admissionDate").populate("author");
+    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).limit(resPerPage*3).sort({discharged: 1, admissionDate: -1}).populate("author");
     let numPatients = patients.length;
     begin = req.query.begin;
     end = req.query.end;
@@ -126,7 +91,7 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createPatient = async (req, res, next) => {
     const patient = new Patient(req.body.patient);
-    const nDate = convertUTCDateToLocalDate(new Date);
+    const nDate = getMexicoCityTime();
     patient.author = req.user._id;
     patient.admissionDate = nDate;
     await patient.save();
@@ -162,7 +127,7 @@ module.exports.dischargePatient = async (req, res) => {
         },
       });
     //variable for local time 
-    const nDate = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = getMexicoCityTime();
     patient.discharged = true
     patient.dischargedDate = nDate;
     //create discharged data
@@ -243,10 +208,6 @@ module.exports.showPatient = async (req, res) => {
         req.flash('error', 'No se encontro paciente!');
         return res.redirect('/patients');
     }
-    console.log('begin');
-    console.log(begin);
-    console.log('end');
-    console.log(end);
     res.render(`patients/show`, { patient, str_id,begin,end,eH,bH});
 }
 
@@ -638,7 +599,7 @@ module.exports.deleteServiceFromAccount = async (req, res) => {
 
 module.exports.updateServiceFromAccount = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
-    const nDate = new Date(convertUTCDateToLocalDate(new Date))
+    const nDate = getMexicoCityTime()
     const patient = await Patient.findByIdAndUpdate(req.params.id,{$pull:{servicesCar:{_id:req.body.trans_id}}}).populate({
         path: 'servicesCar',
         populate: {
@@ -676,7 +637,7 @@ module.exports.updateServiceFromAccount = async (req, res) => {
 module.exports.updateTimeService = async (req, res) => {
     const service = await Service.findById(req.body.serviceID);
     const patient = await Patient.findById(req.params.id);
-    const nDate = convertUTCDateToLocalDate(new Date);
+    const nDate = getMexicoCityTime();
     // let transact = await Transaction.findById(req.body.trans_id);
     let toggle = req.body.toggle == "true";
     let start = new Date(req.body.start+":01.000Z"),
@@ -707,7 +668,7 @@ module.exports.updateTimeService = async (req, res) => {
 // module.exports.updateTimeService = async (req, res) => {
 //     const service = await Service.findById(req.body.serviceID);
 //     const patient = await Patient.findById(req.params.id);
-//     const nDate = new Date(convertUTCDateToLocalDate(new Date))
+//     const nDate = getMexicoCityTime()
 //     console.log()
 //     // let transact = await Transaction.findById(req.body.trans_id);
 //     let toggle = req.body.toggle == "true";

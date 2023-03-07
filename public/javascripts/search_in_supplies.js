@@ -15,21 +15,74 @@ $(document).ready(function() {
 //     };
 // }
   
-function debounce(func, timeout = 300){
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+// function debounce(func, timeout = 400){
+//     let timer;
+//     return (...args) => {
+//       clearTimeout(timer);
+//       timer = setTimeout(() => { func.apply(this, args); }, timeout);
+//     };
+//   }
+
+//   function debounce(func, delay = 300) {
+//     let timerId;
+//     return function(...args) {
+//       if (timerId) {
+//         clearTimeout(timerId);
+//       }
+//       timerId = setTimeout(() => {
+//         func.apply(this, args);
+//         timerId = null;
+//       }, delay);
+//     };
+//   }
+  function debounce(func, delay=600) {
+    let timeoutId;
+    let lastArgs;
+    return function(...args) {
+      lastArgs = args;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        func.apply(this, lastArgs);
+        timeoutId = null;
+      }, delay);
     };
   }
 // populate body with found elements
-$('#search_val').keyup(debounce(foundSupplies));
+// $('#search_val').keyup(debounce(foundSupplies));
 
   $("body").delegate(".individual", "click",function(event) {
     $("#search_val").val($(this).val())
     $(".custom-select").val("name")
     foundSupplies(event)
   })
+
+  $('#search_val').on('keyup', function(event) {
+    // Check if the enter key was pressed (keyCode 13)
+    if (event.keyCode === 13) {
+        if($(".custom-select").val() == 'stock'){
+            foundSupplies_existence(event);
+    
+        }else{
+            foundSupplies(event);
+    
+        }
+    }
+  });
+
+  // Add a click event listener to the search button
+  $('#search-button').on('click', function(event) {
+    console.log('search btn');
+    if($(".custom-select").val() == 'stock'){
+        foundSupplies_existence(event);
+
+    }else{
+        foundSupplies(event);
+
+    }
+    alert($(".custom-select").val())
+  });
 //   $( "#individual" ).click(function(event) {
 //     event.preventDefault()
 //     alert( "Handler for .click() called." );
@@ -201,6 +254,8 @@ function foundSupplies(event) {
     dataType: 'JSON',
     processData: true,
     }).done(function(response){    
+        console.log('suplies with existence');
+        console.log(response.supplies.length);
         suppliesContent+=`<div class="row supplies scrollDiv">`
         $.each(response.supplies, function(){
             let array_len = this.expiration.length;

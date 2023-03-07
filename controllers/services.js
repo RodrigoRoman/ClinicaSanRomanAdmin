@@ -5,21 +5,28 @@ const { listenerCount } = require('../models/exit');
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched strings
   }
-function convertUTCDateToLocalDate(date) {
 
-invdate = new Date(`${date.toLocaleString('en-US', { timeZone: 'America/Mexico_City' })} GMT`)
-
-// and the diff is 5 hours
-var diff = date.getTime() - invdate.getTime();
-
-// so 12:00 in Toronto is 17:00 UTC
-return new Date(date.getTime() - diff); // needs to substract
-
-}
+  function getMexicoCityTime() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      hour12: false,
+      timeZone: "America/Mexico_City",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const timeStr = formatter.format(now);
+    const [hour, minute, second] = timeStr.split(":");
+    const mexicoCityTime = new Date();
+    mexicoCityTime.setUTCHours(hour);
+    mexicoCityTime.setUTCMinutes(minute);
+    mexicoCityTime.setUTCSeconds(second);
+    return mexicoCityTime;
+  }
 
 
 module.exports.index = async (req, res) => {
-    const services = await Service.find({});
+    const services = await Service.find({}).limit(100);
     res.render('services/index',{services})
 }
 
@@ -39,9 +46,8 @@ module.exports.index_supplies = async (req, res) => {
             { doctor: search}
         ];  
     
-    console.log(typeof page);
     
-    let supplies = await Supply.find({$or:dbQueries,deleted:false}).populate("author")
+    let supplies = await Supply.find({$or:dbQueries,deleted:false}).limit(300).populate("author")
         // .skip((resPerPage * page) - resPerPage)
         .limit(resPerPage);
     let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
@@ -63,8 +69,6 @@ module.exports.index_hospital = async (req, res) => {
             { class: search },
             { doctor: search },
         ];  
-        console.log('dbQueries  ');
-        console.log(dbQueries);
     
     let services = await Hospital.find({$or:dbQueries,deleted:false})
         // .skip((resPerPage * page))
@@ -141,7 +145,6 @@ module.exports.updateService = async (req, res) => {
     const { id } = req.params;
     const found = await Service.findById({_id:id});
 
-    console.log(found.service_type);
     if(found.service_type==="supply"){
         service = await Supply.findByIdAndUpdate(id,{ ...req.body.service});
         let name = new RegExp(escapeRegExp(service.name), 'gi');
@@ -171,7 +174,7 @@ module.exports.updateService = async (req, res) => {
 
 module.exports.deleteService = async (req, res) => {
     const { id } = req.params;
-    const nDate = new Date(convertUTCDateToLocalDate(new Date));
+    const nDate = getMexicoCityTime();
     let service = await Service.findById(id);
     service.deleted = true;
     service.save()
@@ -197,8 +200,6 @@ module.exports.searchAllSupplies = async (req, res) => {
             { principle: search },
             { doctor: search}
         ]; 
-        console.log('dbQueries  ')
-        console.log(dbQueries)       
     if(sorted == "stock"){
         //Case for storing based on stock need
         let numOfProducts = await Supply.aggregate( 
@@ -253,8 +254,9 @@ module.exports.searchAllSupplies = async (req, res) => {
         //return supplies and the sorted argument for reincluding it
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     }else{
+        console.log('not stock!')
         //other cases for the select element (other sorting options)
-        let supplies = await Supply.find({$or:dbQueries,deleted:false});
+        let supplies = await Supply.find({$or:dbQueries,deleted:false}).limit(resPerPage*3);
         let numOfProducts = supplies.length;
         if(sorted == "name" ||sorted == "name"){
         //sort in alphabetical order
@@ -274,8 +276,6 @@ module.exports.searchAllSupplies = async (req, res) => {
             res.locals.error = 'Ningun producto corresponde a la busqueda';
             res.json({})
         }
-        console.log('the supplies');
-        console.log(supplies);
         //return supplies and the sorted argument for reincluding it
         return res.json({"supplies":supplies,"search":req.query.search,"page":page,"sorted":sorted,"pages": Math.ceil(numOfProducts / resPerPage),"numOfResults": numOfProducts});
     };
