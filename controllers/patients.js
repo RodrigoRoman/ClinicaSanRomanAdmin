@@ -454,7 +454,7 @@ module.exports.dischAccountPDF = async (req,res) =>{
             "--no-zygote"
         ],
     };
-        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'], ignoreDefaultArgs: ['--disable-extensions']});
 
 
 

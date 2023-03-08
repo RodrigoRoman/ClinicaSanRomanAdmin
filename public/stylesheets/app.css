@@ -5,7 +5,13 @@
   padding: 0px 0px 0px 0px !important;
   margin: 0px 0px 0px 0px !important;
 }
-
+.pop-up-container {
+  display: inline-block;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
 .scrollDiv {
   height:800px;
   overflow-y: scroll;
