@@ -8,27 +8,12 @@ const mongoosePaginate = require("mongoose-paginate-v2");
 const puppeteer = require('puppeteer'); 
 // const service = require('../models/services');
 
-  
-  function getMexicoCityTime() {
+function getMexicoCityTime() {
     const now = new Date();
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      hour12: false,
-      timeZone: "America/Mexico_City",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    });
-    const timeStr = formatter.format(now);
-    const [hour, minute, second] = timeStr.split(":");
-    const mexicoCityTime = new Date();
-    mexicoCityTime.setUTCHours(hour);
-    mexicoCityTime.setUTCMinutes(minute);
-    mexicoCityTime.setUTCSeconds(second);
+    const mexicoCityOffset = -6 * 60; // Mexico City is UTC-6
+    const mexicoCityTime = new Date(now.getTime() + mexicoCityOffset * 60 * 1000);
     return mexicoCityTime;
   }
-  
-  
-  
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -168,6 +153,8 @@ module.exports.showPatient = async (req, res) => {
     let pat = await Patient.findById(req.params.id);
     //variable for local time 
     const nDate = getMexicoCityTime();
+    console.log('current datetime');
+    console.log(nDate);
     if(!begin){
         begin = pat.admissionDate;
     }else{
@@ -559,6 +546,8 @@ module.exports.addToCart = async (req, res) => {
     const timeUnits =  ["Hora", "Dia"];
     //variable for local time 
     const nDate = getMexicoCityTime();
+    console.log('datetime now');
+    console.log(nDate);
     let termDate = nDate;
     let amnt = 0;
     if(!timeUnits.includes(service.unit)){

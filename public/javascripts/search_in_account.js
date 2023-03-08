@@ -1,15 +1,16 @@
 const userListData = [];
-function convertUTCDateToLocalDate(date) {
 
-  Date(date).toLocaleString('en-US', {
-    timeZone: 'America/Mexico_City'
-  })
+function getMexicoCityTime() {
+  const now = new Date();
+  const mexicoCityOffset = -6 * 60; // Mexico City is UTC-6
+  const mexicoCityTime = new Date(now.getTime() + mexicoCityOffset * 60 * 1000);
+  return mexicoCityTime;
+}
 
-  }
   function numberCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-const nDate = new Date(convertUTCDateToLocalDate(new Date));
+const nDate = getMexicoCityTime();
 // DOM Ready =============================================================
 $(document).ready(function() {
   //set dates with default values

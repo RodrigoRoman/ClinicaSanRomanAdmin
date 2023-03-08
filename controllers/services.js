@@ -8,22 +8,10 @@ function escapeRegExp(string) {
 
   function getMexicoCityTime() {
     const now = new Date();
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      hour12: false,
-      timeZone: "America/Mexico_City",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    });
-    const timeStr = formatter.format(now);
-    const [hour, minute, second] = timeStr.split(":");
-    const mexicoCityTime = new Date();
-    mexicoCityTime.setUTCHours(hour);
-    mexicoCityTime.setUTCMinutes(minute);
-    mexicoCityTime.setUTCSeconds(second);
+    const mexicoCityOffset = -6 * 60; // Mexico City is UTC-6
+    const mexicoCityTime = new Date(now.getTime() + mexicoCityOffset * 60 * 1000);
     return mexicoCityTime;
   }
-
 
 module.exports.index = async (req, res) => {
     const services = await Service.find({}).limit(100);
