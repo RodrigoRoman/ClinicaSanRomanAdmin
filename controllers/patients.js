@@ -43,7 +43,7 @@ module.exports.searchAllPatients = async (req, res) => {
         ];
     begin = new Date(begin+"T00:00:01.000Z")
     end = new Date(end+"T23:59:01.000Z")
-    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).limit(resPerPage*3).sort({discharged: 1, admissionDate: 1}).populate("author");
+    let patients = await Patient.find({$or:dbQueries,admissionDate:{$gte:begin,$lte:end}}).limit(resPerPage*3).sort({discharged: 1, admissionDate:1}).populate("author");
     let numPatients = patients.length;
     begin = req.query.begin;
     end = req.query.end;
