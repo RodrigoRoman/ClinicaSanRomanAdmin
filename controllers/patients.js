@@ -23,7 +23,11 @@ module.exports.index = async (req, res) => {
     const resPerPage = 30;
     const page = parseInt(req.params.page) || 1;
     let {search,sorted} = req.query;
-    const patients = await Patient.find({}).limit(resPerPage).sort({discharged: 1, admissionDate: 1}).populate("author");
+    const patients = await Patient.find({})
+  .sort({ discharged: 1, admissionDate: -1 })
+  .limit(resPerPage)
+  .populate("author");
+    // const patients = await Patient.find({}).limit(resPerPage).sort({discharged: 1, admissionDate: 1}).populate("author");
     const count =  await Patient.countDocuments({});
     res.render('patients/index',{patients,"page":page, pages: Math.ceil(count / resPerPage),
     numOfResults: count,search:req.query.search,sorted:sorted})

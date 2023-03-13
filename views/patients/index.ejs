@@ -19,13 +19,13 @@ function convertUTCDateToLocalDate(date) {
     return new Date(date.getTime() - diff); // needs to substract
  }
 
-patients.sort((a, b) => (a.discharged) ? 1 : -1)
+//  patients.sort((a, b) => ((!a.discharged && !b.discharged)?(a.admissionDate<b.admissionDate)?-1:-1:1));
 %>
 <div class="container">   
     <div class="container">
         <div class="row">
           <div class="col d-flex text-center flex-column justify-content-between"> 
-            <lottie-player src="/lotties/patients_lot.json" onclick="myFunction()" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop  autoplay></lottie-player>
+            <lottie-player src="/lotties/clinica_can_roman.json" onclick="myFunction()" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop  autoplay></lottie-player>
           </div>
           <div class="col d-flex text-center flex-column justify-content-between"> 
             <div></div>
