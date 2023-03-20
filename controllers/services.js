@@ -14,7 +14,7 @@ function escapeRegExp(string) {
   }
 
 module.exports.index = async (req, res) => {
-    const services = await Service.find({}).limit(100);
+    const services = await Service.find({});
     res.render('services/index',{services})
 }
 
@@ -35,7 +35,7 @@ module.exports.index_supplies = async (req, res) => {
         ];  
     
     
-    let supplies = await Supply.find({$or:dbQueries,deleted:false}).limit(300).populate("author")
+    let supplies = await Supply.find({$or:dbQueries,deleted:false}).populate("author")
         // .skip((resPerPage * page) - resPerPage)
         .limit(resPerPage);
     let numOfProducts = await Supply.find({$or:dbQueries,deleted:false});
@@ -244,21 +244,28 @@ module.exports.searchAllSupplies = async (req, res) => {
     }else{
         console.log('not stock!')
         //other cases for the select element (other sorting options)
-        let supplies = await Supply.find({$or:dbQueries,deleted:false}).limit(resPerPage*3);
-        let numOfProducts = supplies.length;
+        let supplies = [];
+        const numOfProducts = await Supply.countDocuments({ $or: dbQueries, deleted: false });
         if(sorted == "name" ||sorted == "name"){
         //sort in alphabetical order
-            supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
+         supplies = await Supply.find({ $or: dbQueries, deleted: false })
+        .sort(sorted === "name" ? { name: 1 } : {})
+        .skip(resPerPage * (page - 1))
+        .limit(resPerPage);
+            // supplies = supplies.sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
         };
         if(sorted == "class"){
-            //sort in alphabetical order
-            supplies = supplies.sort((a,b)=>a.class.localeCompare(b.class,"es",{sensitivity:'base'})).slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
-    
+            supplies = await Supply.find({ $or: dbQueries, deleted: false })
+        .sort(sorted === "class" ? { class: 1 } : {})
+        .skip(resPerPage * (page - 1))
+        .limit(resPerPage);
         };
         if(sorted == "expiration"){
             //sort in increasing order based on the expiration of the product 
-            supplies = supplies.sort((a, b) =>a.expiration-b.expiration)
-            supplies = supplies.slice(((resPerPage * page) - resPerPage),((resPerPage * page) - resPerPage)+resPerPage);
+            supplies = await Supply.find({ $or: dbQueries, deleted: false })
+            .sort(sorted === "expiration" ? { expiration: 1 } : {})
+            .skip(resPerPage * (page - 1))
+            .limit(resPerPage);
         };
         if (!supplies) {
             res.locals.error = 'Ningun producto corresponde a la busqueda';
